@@ -1,0 +1,19 @@
+{
+  "name": "charm-devtools",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "rbxtsc",
+    "build:plugin": "rojo build -o %LOCALAPPDATA%/Roblox/Plugins/CharmDevTools.rbxm --watch",
+		"serve": "rojo serve serve.project.json",
+    "watch": "rbxtsc -w"
+  },
+  "author": "Speed",
+  "license": "MIT",
+  "devDependencies": {
+    "@rbxts/compiler-types": "3.0.0-types.0",
+    "@rbxts/types": "^1.0.889",
+    "roblox-ts": "^3.0.0",
+    "typescript": "^5.9.3"
+  }
+}
