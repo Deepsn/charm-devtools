@@ -3,8 +3,7 @@
 	"files.eol": "\n",
 	"editor.codeActionsOnSave": {
 		"source.organizeImports.biome": "always",
-		"source.fixAll.biome": "always",
-		"source.removeUnusedImports": "always"
+		"source.fixAll.biome": "always"
 	},
 	"[typescript]": {
 		"editor.defaultFormatter": "biomejs.biome",
