@@ -17,6 +17,8 @@
 		"target": "ESNext",
 		"typeRoots": ["node_modules/@rbxts"],
 
+		"paths": { "react": ["node_modules/@rbxts/react"] },
+
 		// configurable
 		"types": ["types/plugin"],
 		"rootDir": "src",
