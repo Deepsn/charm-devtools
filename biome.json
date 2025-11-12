@@ -19,6 +19,18 @@
 			"recommended": true,
 			"suspicious": {
 				"noShadowRestrictedNames": "off"
+			},
+			"correctness": {
+				"noUnusedFunctionParameters": {
+					"fix": "unsafe",
+					"level": "warn",
+					"options": {}
+				},
+				"noUnusedImports": {
+					"fix": "safe",
+					"level": "warn",
+					"options": {}
+				}
 			}
 		}
 	},
