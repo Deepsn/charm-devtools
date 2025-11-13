@@ -1,11 +1,9 @@
 /// <reference types="@rbxts/types/plugin" />
 
-import { atom, effect } from "@rbxts/charm";
-import { createRoot } from "@rbxts/react-roblox";
-import { App } from "app";
-import React, { StrictMode } from "react";
-
-const enabled = atom(true);
+import { effect } from "@rbxts/charm";
+import { renderApp } from "app";
+import { enabled } from "atoms";
+import "bridge";
 
 const toolbar = plugin.CreateToolbar("Charm DevTools");
 const button = toolbar.CreateButton("Open", "", "");
@@ -22,10 +20,8 @@ effect(() => {
 	widget.Enabled = enabled();
 });
 
-const root = createRoot(widget);
+const unmountApp = renderApp(widget);
 
-root.render(
-	<StrictMode>
-		<App />
-	</StrictMode>,
-);
+plugin.Unloading.Connect(() => {
+	unmountApp();
+});

@@ -1,12 +1,17 @@
 import { useAtom } from "@rbxts/react-charm";
-import { history, selectedAction } from "app/atoms";
 import { Action } from "app/components/action";
 import { Container } from "app/components/container";
+import { history, selectedAction } from "atoms";
 import { palette } from "constants/palette";
-import React from "react";
+import React, { useEffect } from "react";
 
 export function History() {
 	const actions = useAtom(history);
+	const actionSelected = useAtom(selectedAction);
+
+	useEffect(() => {
+		print("History updated:", actions);
+	}, [actions]);
 
 	return (
 		<Container
@@ -16,12 +21,15 @@ export function History() {
 			BackgroundColor3={palette.primary}
 			BackgroundTransparency={0}
 		>
-			<uilistlayout HorizontalAlignment={Enum.HorizontalAlignment.Center} />
+			<uilistlayout SortOrder={Enum.SortOrder.LayoutOrder} HorizontalAlignment={Enum.HorizontalAlignment.Center} />
 
-			{actions.map((action) => {
+			{actions.map((action, index) => {
 				return (
 					<Action
-						key={action}
+						// biome-ignore lint/suspicious/noArrayIndexKey: index is stable here
+						key={index}
+						name={action.name}
+						selected={actionSelected?.id === action.id}
 						onSelect={() => {
 							selectedAction(action);
 						}}

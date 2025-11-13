@@ -22,6 +22,7 @@ export function Button(props: PropsWithChildren & Partial<ButtonProps>) {
 	return (
 		<textbutton
 			{...rest}
+			Text={props.Text ?? ""}
 			Size={props.Size ?? UDim2.fromScale(1, 1)}
 			BackgroundTransparency={hovered && props.hoverColor ? 0.5 : 1}
 			AutoButtonColor={false}

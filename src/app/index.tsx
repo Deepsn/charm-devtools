@@ -1,6 +1,7 @@
+import { createRoot } from "@rbxts/react-roblox";
 import { History } from "app/layout/history";
 import { Preview } from "app/layout/preview";
-import React from "react";
+import React, { StrictMode } from "react";
 
 export function App() {
 	return (
@@ -10,4 +11,16 @@ export function App() {
 			<Preview />
 		</>
 	);
+}
+
+export function renderApp(widget: DockWidgetPluginGui) {
+	const root = createRoot(widget);
+
+	root.render(
+		<StrictMode>
+			<App />
+		</StrictMode>,
+	);
+
+	return () => root.unmount();
 }

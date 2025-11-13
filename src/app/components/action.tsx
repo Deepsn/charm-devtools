@@ -5,10 +5,12 @@ import { palette } from "constants/palette";
 import React from "react";
 
 interface ActionProps {
+	name: string;
+	selected: boolean;
 	onSelect: () => void;
 }
 
-export function Action({ onSelect }: ActionProps) {
+export function Action({ name, selected, onSelect }: ActionProps) {
 	return (
 		<Container
 			Size={new UDim2(1, -5, 0, 50)}
@@ -18,8 +20,12 @@ export function Action({ onSelect }: ActionProps) {
 			BorderSizePixel={3}
 			BorderMode={Enum.BorderMode.Outline}
 		>
-			<Button onClick={onSelect} hoverColor={Color3.fromRGB(186, 186, 186)}>
-				<Text Text={"Gaming"} />
+			<Button
+				onClick={onSelect}
+				hoverColor={!selected ? palette.hover : undefined}
+				BackgroundColor3={selected ? palette.hover : undefined}
+			>
+				<Text Text={name} />
 			</Button>
 		</Container>
 	);

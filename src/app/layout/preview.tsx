@@ -1,7 +1,7 @@
 import { useAtom } from "@rbxts/react-charm";
-import { selectedAction } from "app/atoms";
 import { Container } from "app/components/container";
 import { Text } from "app/components/text";
+import { selectedAction } from "atoms";
 import { palette } from "constants/palette";
 import React from "react";
 
@@ -25,7 +25,7 @@ export function Preview() {
 			</frame>
 
 			<Container Size={new UDim2(1, 0, 1, -30)}>
-				<Text Text="AAAA" />
+				<Text Text={tostring(selected.value)} />
 			</Container>
 		</Container>
 	);
