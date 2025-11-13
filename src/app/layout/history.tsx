@@ -1,7 +1,8 @@
 import { useAtom } from "@rbxts/react-charm";
+import { Components, DataSources, Dimensions, Renderers } from "@rbxts/ultimate-list";
 import { Action } from "app/components/action";
 import { Container } from "app/components/container";
-import { history, selectedAction } from "atoms";
+import { type Action as ActionType, history, selectedAction } from "atoms";
 import { palette } from "constants/palette";
 import React, { useEffect } from "react";
 
@@ -21,21 +22,26 @@ export function History() {
 			BackgroundColor3={palette.primary}
 			BackgroundTransparency={0}
 		>
-			<uilistlayout SortOrder={Enum.SortOrder.LayoutOrder} HorizontalAlignment={Enum.HorizontalAlignment.Center} />
-
-			{actions.map((action, index) => {
-				return (
-					<Action
-						// biome-ignore lint/suspicious/noArrayIndexKey: index is stable here
-						key={index}
-						name={action.name}
-						selected={actionSelected?.id === action.id}
-						onSelect={() => {
-							selectedAction(action);
-						}}
-					/>
-				);
-			})}
+			<Components.ScrollingFrame
+				native={{
+					BackgroundTransparency: 1,
+					ScrollBarThickness: 6,
+				}}
+				dataSource={DataSources.array(actions)}
+				dimensions={Dimensions.consistentSize(50)}
+				renderer={Renderers.byState((action: ActionType) => {
+					return (
+						<Action
+							name={action.name}
+							selected={actionSelected?.id === action.id}
+							onSelect={() => {
+								selectedAction(action);
+							}}
+						/>
+					);
+				})}
+				direction="y"
+			/>
 		</Container>
 	);
 }

@@ -13,16 +13,15 @@ interface ActionProps {
 export function Action({ name, selected, onSelect }: ActionProps) {
 	return (
 		<Container
-			Size={new UDim2(1, -5, 0, 50)}
+			Size={new UDim2(1, 0, 0, 50)}
 			BackgroundColor3={palette.primary}
 			BackgroundTransparency={0}
-			BorderColor3={palette.secondary}
-			BorderSizePixel={3}
-			BorderMode={Enum.BorderMode.Outline}
+			BorderSizePixel={0}
 		>
 			<Button
 				onClick={onSelect}
-				hoverColor={!selected ? palette.hover : undefined}
+				hoverColor={palette.hover}
+				BackgroundTransparency={selected ? 0.5 : undefined}
 				BackgroundColor3={selected ? palette.hover : undefined}
 			>
 				<Text Text={name} />
