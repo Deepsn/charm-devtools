@@ -5,21 +5,27 @@
 	"scripts": {
 		"build": "rbxtsc",
 		"build:plugin": "rojo build -o %LOCALAPPDATA%/Roblox/Plugins/CharmDevTools.rbxm --watch",
-		"serve": "rojo serve serve.project.json",
-		"watch": "rbxtsc -w"
+		"serve": "rojo serve default.project.json",
+		"serve:test": "rojo serve test/default.project.json",
+		"watch": "rbxtsc -w",
+		"watch:test": "rbxtsc -w -p test"
 	},
 	"author": "Speed",
 	"license": "MIT",
 	"devDependencies": {
+		"@rbxts/charm": "^0.10.0",
 		"@rbxts/compiler-types": "3.0.0-types.0",
+		"@rbxts/object-utils": "^1.0.4",
 		"@rbxts/types": "^1.0.889",
 		"roblox-ts": "^3.0.0",
 		"typescript": "^5.9.3"
 	},
 	"dependencies": {
-		"@rbxts/charm": "^0.10.0",
 		"@rbxts/react": "^17.2.3",
 		"@rbxts/react-charm": "^0.3.0",
-		"@rbxts/react-roblox": "^17.2.3"
+		"@rbxts/react-roblox": "^17.2.3",
+		"@rbxts/services": "^1.6.0",
+		"@rbxts/t": "^3.2.1",
+		"@rbxts/ultimate-list": "0.2.3-ts.2"
 	}
 }

@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@rbxts/charm':
-        specifier: ^0.10.0
-        version: 0.10.0
       '@rbxts/react':
         specifier: ^17.2.3
         version: 17.2.3
@@ -20,10 +17,25 @@ importers:
       '@rbxts/react-roblox':
         specifier: ^17.2.3
         version: 17.2.3
+      '@rbxts/services':
+        specifier: ^1.6.0
+        version: 1.6.0
+      '@rbxts/t':
+        specifier: ^3.2.1
+        version: 3.2.1
+      '@rbxts/ultimate-list':
+        specifier: 0.2.3-ts.2
+        version: 0.2.3-ts.2(@rbxts/react@17.2.3)
     devDependencies:
+      '@rbxts/charm':
+        specifier: ^0.10.0
+        version: 0.10.0
       '@rbxts/compiler-types':
         specifier: 3.0.0-types.0
         version: 3.0.0-types.0
+      '@rbxts/object-utils':
+        specifier: ^1.0.4
+        version: 1.0.4
       '@rbxts/types':
         specifier: ^1.0.889
         version: 1.0.889
@@ -42,6 +54,9 @@ packages:
   '@rbxts/compiler-types@3.0.0-types.0':
     resolution: {integrity: sha512-VGOHJPoL7+56NTatMGqQj3K7xWuzEV+aP4QD5vZiHu+bcff3kiTmtoadaF6NkJrmwfFAvbsd4Dg764ZjWNceag==}
 
+  '@rbxts/object-utils@1.0.4':
+    resolution: {integrity: sha512-dLLhf022ipV+9i910sOE7kl9losKHoon0WgeerHqVMQA5EYsLUsVT2AxhJuhk8MiDn5oJ2GiFofE/LadY9TpJQ==}
+
   '@rbxts/react-charm@0.3.0':
     resolution: {integrity: sha512-w64HoO6SxRSX86yNPiGazPQpR7cWBaWVATK9jkCphLQYmzdUV1BL9pRNN1Y1VMAk/PKiZ1mJdwX3PnwwvLXFvg==}
     peerDependencies:
@@ -57,8 +72,19 @@ packages:
   '@rbxts/react@17.2.3':
     resolution: {integrity: sha512-IoOB8e2W8MxT0MKWFf0Ls0vT61ImYL6ctHQgz5+oazma6z8bqFtJjgPxOuy6jmMSuyfBe7rYp/muou0kIjZT+Q==}
 
+  '@rbxts/services@1.6.0':
+    resolution: {integrity: sha512-YH02E1/tGHeMXB0Mam8qPdAZa2fjQWdylEscSL4Zn0RIaQeByYImA2qUsXM3nBdhcyKHDwltzSznDKyCGfFEWA==}
+
+  '@rbxts/t@3.2.1':
+    resolution: {integrity: sha512-/fnf2QSx+TI3HSJ6QW2ikvGQk0mlx/63UXo60pLAKGqbxXiAuTJh88bpKpHw6aCzfFLJAwrVIcgCUOokLMPcag==}
+
   '@rbxts/types@1.0.889':
     resolution: {integrity: sha512-5vi1JqyejUzPq72jNb4OFUHNZ8uk0bhvVL4Eiqqf6y+3z5UzBdgWZDZJR6/7aVaqADU4fEg0lUMRGzZukZvttQ==}
+
+  '@rbxts/ultimate-list@0.2.3-ts.2':
+    resolution: {integrity: sha512-KtIV8Ri1Ub76W5ipD6vGqS/55ZAT5IgC++wOovJ1LT16oY9oow5eAmVw5UN/X49byHyVqvIJxCOlFnf1sXfQkQ==}
+    peerDependencies:
+      '@rbxts/react': '*'
 
   '@roblox-ts/luau-ast@2.0.0':
     resolution: {integrity: sha512-cmMi093IdwBOLVxwuordhM8AmtbyTIyRpsTbB0D/JauidW4SXsQRQowSwWjHo4QP0DRJBXvOIlxtqEQi50uNzQ==}
@@ -269,6 +295,8 @@ snapshots:
 
   '@rbxts/compiler-types@3.0.0-types.0': {}
 
+  '@rbxts/object-utils@1.0.4': {}
+
   '@rbxts/react-charm@0.3.0(@rbxts/charm@0.10.0)(@rbxts/react@17.2.3)':
     dependencies:
       '@rbxts/charm': 0.10.0
@@ -285,7 +313,15 @@ snapshots:
     dependencies:
       '@rbxts/react-vendor': 17.2.3
 
+  '@rbxts/services@1.6.0': {}
+
+  '@rbxts/t@3.2.1': {}
+
   '@rbxts/types@1.0.889': {}
+
+  '@rbxts/ultimate-list@0.2.3-ts.2(@rbxts/react@17.2.3)':
+    dependencies:
+      '@rbxts/react': 17.2.3
 
   '@roblox-ts/luau-ast@2.0.0': {}
 
