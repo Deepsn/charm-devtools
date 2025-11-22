@@ -8,12 +8,18 @@ importers:
 
   .:
     dependencies:
+      '@rbxts/charm':
+        specifier: 0.11.0-rc.2
+        version: 0.11.0-rc.2
+      '@rbxts/inspect':
+        specifier: ^1.0.1
+        version: 1.0.1
       '@rbxts/react':
         specifier: ^17.2.3
         version: 17.2.3
       '@rbxts/react-charm':
-        specifier: ^0.3.0
-        version: 0.3.0(@rbxts/charm@0.10.0)(@rbxts/react@17.2.3)
+        specifier: 0.4.0-rc.2
+        version: 0.4.0-rc.2(@rbxts/react@17.2.3)
       '@rbxts/react-roblox':
         specifier: ^17.2.3
         version: 17.2.3
@@ -27,9 +33,6 @@ importers:
         specifier: 0.2.3-ts.2
         version: 0.2.3-ts.2(@rbxts/react@17.2.3)
     devDependencies:
-      '@rbxts/charm':
-        specifier: ^0.10.0
-        version: 0.10.0
       '@rbxts/compiler-types':
         specifier: 3.0.0-types.0
         version: 3.0.0-types.0
@@ -48,19 +51,21 @@ importers:
 
 packages:
 
-  '@rbxts/charm@0.10.0':
-    resolution: {integrity: sha512-pcGpNyqNOcJ7r9UbAjFaUqU0F9Q+wCr4/2kUs8L0hh4dVhUN7t6ur4P7zAMzNuMJQG8YP47a9rq0l0/LlhLuow==}
+  '@rbxts/charm@0.11.0-rc.2':
+    resolution: {integrity: sha512-b1YyWnSi1fY7P/lpx9pbv12r1xZDSjB47ckBJZkwqiTpeDsI9f1h7F4759W7DyHyS3STX2453zJMmXbsliCNrQ==}
 
   '@rbxts/compiler-types@3.0.0-types.0':
     resolution: {integrity: sha512-VGOHJPoL7+56NTatMGqQj3K7xWuzEV+aP4QD5vZiHu+bcff3kiTmtoadaF6NkJrmwfFAvbsd4Dg764ZjWNceag==}
 
+  '@rbxts/inspect@1.0.1':
+    resolution: {integrity: sha512-O+fbpjl0iKWfVSILrgBRoZcCUzYSbRIOrgW8RrLWNBLFzoxIBu9uydx4RavYgT2RsmRm5zK2aM3MakEZ2z+jlQ==}
+
   '@rbxts/object-utils@1.0.4':
     resolution: {integrity: sha512-dLLhf022ipV+9i910sOE7kl9losKHoon0WgeerHqVMQA5EYsLUsVT2AxhJuhk8MiDn5oJ2GiFofE/LadY9TpJQ==}
 
-  '@rbxts/react-charm@0.3.0':
-    resolution: {integrity: sha512-w64HoO6SxRSX86yNPiGazPQpR7cWBaWVATK9jkCphLQYmzdUV1BL9pRNN1Y1VMAk/PKiZ1mJdwX3PnwwvLXFvg==}
+  '@rbxts/react-charm@0.4.0-rc.2':
+    resolution: {integrity: sha512-RZ1w/8CSmeXwIQtlimtvr7epRY8aWVvMBwAcb2WVoKmlsxUWmSdP3zwlHiLzYcZN/9GDmIVy5riyGRLrWWm+Eg==}
     peerDependencies:
-      '@rbxts/charm': 0.10.0
       '@rbxts/react': '*'
 
   '@rbxts/react-roblox@17.2.3':
@@ -291,15 +296,17 @@ packages:
 
 snapshots:
 
-  '@rbxts/charm@0.10.0': {}
+  '@rbxts/charm@0.11.0-rc.2': {}
 
   '@rbxts/compiler-types@3.0.0-types.0': {}
 
+  '@rbxts/inspect@1.0.1': {}
+
   '@rbxts/object-utils@1.0.4': {}
 
-  '@rbxts/react-charm@0.3.0(@rbxts/charm@0.10.0)(@rbxts/react@17.2.3)':
+  '@rbxts/react-charm@0.4.0-rc.2(@rbxts/react@17.2.3)':
     dependencies:
-      '@rbxts/charm': 0.10.0
+      '@rbxts/charm': 0.11.0-rc.2
       '@rbxts/react': 17.2.3
 
   '@rbxts/react-roblox@17.2.3':
