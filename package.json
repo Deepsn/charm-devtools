@@ -3,12 +3,14 @@
 	"version": "1.0.0",
 	"description": "",
 	"scripts": {
+		"dev": "concurrently \"pnpm watch\" \"pnpm watch:plugin\" \"pnpm watch:test\" \"pnpm serve:test\"",
 		"build": "rbxtsc",
-		"build:plugin": "rojo build -o %LOCALAPPDATA%/Roblox/Plugins/CharmDevTools.rbxm --watch",
+		"build:plugin": "rojo build -o %LOCALAPPDATA%/Roblox/Plugins/CharmDevTools.rbxm",
 		"serve": "rojo serve default.project.json",
 		"serve:test": "rojo serve test/default.project.json",
 		"watch": "rbxtsc -w",
-		"watch:test": "rbxtsc -w -p test"
+		"watch:test": "rbxtsc -w -p test",
+		"watch:plugin": "pnpm build:plugin --watch"
 	},
 	"author": "Speed",
 	"license": "MIT",
@@ -27,6 +29,7 @@
 		"@rbxts/react-roblox": "^17.2.3",
 		"@rbxts/services": "^1.6.0",
 		"@rbxts/t": "^3.2.1",
-		"@rbxts/ultimate-list": "0.2.3-ts.2"
+		"@rbxts/ultimate-list": "0.2.3-ts.2",
+		"concurrently": "^9.2.1"
 	}
 }
