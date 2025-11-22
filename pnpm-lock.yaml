@@ -40,8 +40,8 @@ importers:
         specifier: ^1.0.4
         version: 1.0.4
       '@rbxts/types':
-        specifier: ^1.0.889
-        version: 1.0.889
+        specifier: ^1.0.892
+        version: 1.0.892
       roblox-ts:
         specifier: ^3.0.0
         version: 3.0.0
@@ -83,8 +83,8 @@ packages:
   '@rbxts/t@3.2.1':
     resolution: {integrity: sha512-/fnf2QSx+TI3HSJ6QW2ikvGQk0mlx/63UXo60pLAKGqbxXiAuTJh88bpKpHw6aCzfFLJAwrVIcgCUOokLMPcag==}
 
-  '@rbxts/types@1.0.889':
-    resolution: {integrity: sha512-5vi1JqyejUzPq72jNb4OFUHNZ8uk0bhvVL4Eiqqf6y+3z5UzBdgWZDZJR6/7aVaqADU4fEg0lUMRGzZukZvttQ==}
+  '@rbxts/types@1.0.892':
+    resolution: {integrity: sha512-/L0BjxODbZKrztTcEJ4TEngjccqDn7us1hE78/v6u1WIEXt27bkrAimgHY33/MPNH7k0XK+OuTH7pV0MzGnIiA==}
 
   '@rbxts/ultimate-list@0.2.3-ts.2':
     resolution: {integrity: sha512-KtIV8Ri1Ub76W5ipD6vGqS/55ZAT5IgC++wOovJ1LT16oY9oow5eAmVw5UN/X49byHyVqvIJxCOlFnf1sXfQkQ==}
@@ -324,7 +324,7 @@ snapshots:
 
   '@rbxts/t@3.2.1': {}
 
-  '@rbxts/types@1.0.889': {}
+  '@rbxts/types@1.0.892': {}
 
   '@rbxts/ultimate-list@0.2.3-ts.2(@rbxts/react@17.2.3)':
     dependencies:
