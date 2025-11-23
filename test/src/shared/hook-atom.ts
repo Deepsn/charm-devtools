@@ -13,7 +13,7 @@ let _bridge = ReplicatedStorage.FindFirstChild(REMOTE_NAME) as BindableEvent;
 
 function dispatch(payload: Action) {
 	task.spawn(() => {
-		if (!_bridge) {
+		if (!_bridge || !_bridge.Parent) {
 			_bridge = ReplicatedStorage.WaitForChild(REMOTE_NAME) as BindableEvent;
 		}
 
