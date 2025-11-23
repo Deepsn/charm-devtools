@@ -29,7 +29,7 @@ export function History() {
 					return (
 						<Action
 							key={action.timestamp}
-							name={action.name}
+							action={action}
 							selected={actionSelected?.id === action.id}
 							onSelect={() => {
 								selectedAction(action);
