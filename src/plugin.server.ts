@@ -3,7 +3,7 @@
 import { effect } from "@rbxts/charm";
 import { renderApp } from "app";
 import { enabled } from "atoms";
-import "bridge";
+import { createBridge } from "bridge";
 
 const toolbar = plugin.CreateToolbar("Charm DevTools");
 const button = toolbar.CreateButton("Open", "", "");
@@ -20,8 +20,10 @@ effect(() => {
 	widget.Enabled = enabled();
 });
 
+const cleanupBridge = createBridge();
 const unmountApp = renderApp(widget);
 
 plugin.Unloading.Connect(() => {
 	unmountApp();
+	cleanupBridge();
 });

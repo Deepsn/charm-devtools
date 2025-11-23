@@ -4,15 +4,11 @@ import { Action } from "app/components/action";
 import { Container } from "app/components/container";
 import { type Action as ActionType, history, selectedAction } from "atoms";
 import { palette } from "constants/palette";
-import React, { useEffect } from "react";
+import React from "react";
 
 export function History() {
 	const actions = useAtom(history);
 	const actionSelected = useAtom(selectedAction);
-
-	useEffect(() => {
-		print("History updated:", actions);
-	}, [actions]);
 
 	return (
 		<Container
@@ -32,6 +28,7 @@ export function History() {
 				renderer={Renderers.byState((action: ActionType) => {
 					return (
 						<Action
+							key={action.timestamp}
 							name={action.name}
 							selected={actionSelected?.id === action.id}
 							onSelect={() => {

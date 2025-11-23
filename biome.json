@@ -20,6 +20,9 @@
 			"suspicious": {
 				"noShadowRestrictedNames": "off"
 			},
+			"style": {
+				"useNodejsImportProtocol": "off"
+			},
 			"correctness": {
 				"noUnusedFunctionParameters": {
 					"fix": "unsafe",

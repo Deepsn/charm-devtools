@@ -1,33 +1,40 @@
 import { ReplicatedStorage } from "@rbxts/services";
 import { t } from "@rbxts/t";
 import { type Action, history } from "atoms";
-
-const REMOTE_NAME = "__CHARM_DEVTOOLS__";
+import { IS_RUNNING, IS_SERVER, REMOTE_NAME } from "constants/core";
 
 const payloadGuard: t.check<Action> = t.interface({
-	id: t.string,
+	id: t.union(t.string, t.number),
 	name: t.string,
+	timestamp: t.number,
 	value: t.any,
 });
 
-export const bridgeRemote =
-	(ReplicatedStorage.FindFirstChild(REMOTE_NAME) as BindableEvent) ?? new Instance("BindableEvent");
+export function createBridge() {
+	if (!IS_RUNNING) return () => {};
 
-bridgeRemote.Event.Connect((payloadType: "ping" | "patch", payload?: unknown) => {
-	assert(payloadType !== undefined);
+	let bridgeRemote = IS_SERVER
+		? (ReplicatedStorage.FindFirstChild(REMOTE_NAME) as BindableEvent)
+		: (ReplicatedStorage.WaitForChild(REMOTE_NAME) as BindableEvent);
 
-	if (payloadType === "ping") {
-		return;
+	if (!bridgeRemote) {
+		// todo: ask the user if they want to create it
+		bridgeRemote = new Instance("BindableEvent");
+		bridgeRemote.Name = REMOTE_NAME;
+		bridgeRemote.Archivable = false;
 	}
 
-	if (!payloadGuard(payload)) {
-		return warn("[charm-devtools] payload didn't pass type guard, payload received:", payload);
-	}
+	bridgeRemote.Event.Connect((payload?: unknown) => {
+		if (!payloadGuard(payload)) {
+			return warn("[charm-devtools] payload didn't pass type guard, payload received:", payload);
+		}
 
-	history((prev) => [...prev, payload]);
-});
+		history((prev) => [...prev, payload]);
+	});
 
-bridgeRemote.Name = REMOTE_NAME;
-bridgeRemote.Parent = ReplicatedStorage;
+	bridgeRemote.Parent = ReplicatedStorage;
 
-bridgeRemote.Fire("ping");
+	return () => {
+		bridgeRemote?.Destroy();
+	};
+}
