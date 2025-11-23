@@ -22,6 +22,7 @@
 		"typescript": "^5.9.3"
 	},
 	"dependencies": {
+		"@biomejs/biome": "^2.3.7",
 		"@rbxts/charm": "0.11.0-rc.2",
 		"@rbxts/inspect": "^1.0.1",
 		"@rbxts/react": "^17.3.7-alpha.1",
