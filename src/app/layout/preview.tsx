@@ -15,7 +15,7 @@ function ActionDisplay({ action }: { action: unknown }) {
 			const isEmpty = Object.keys(action as object).size() === 0;
 
 			if (isEmpty) {
-				return <Text Text="{}" TextXAlignment={Enum.TextXAlignment.Left} Size={new UDim2(1, 0, 0, 30)} />;
+				return <Text Text="{}" Size={new UDim2(1, 0, 0, 30)} TextXAlignment={Enum.TextXAlignment.Left} />;
 			}
 
 			return (
@@ -44,12 +44,13 @@ function ActionDisplay({ action }: { action: unknown }) {
 											<uilistlayout FillDirection={Enum.FillDirection.Horizontal} />
 
 											<Text
+												Size={UDim2.fromOffset(0, 30)}
 												TextXAlignment={Enum.TextXAlignment.Left}
-												Size={new UDim2(0.5, 0, 0, 30)}
+												AutomaticSize={Enum.AutomaticSize.X}
 												Text={`${tostring(key)}: `}
 											/>
 
-											<Container Size={UDim2.fromScale(0.5, 0)} AutomaticSize={Enum.AutomaticSize.Y}>
+											<Container Size={UDim2.fromScale(0.9, 0)} AutomaticSize={Enum.AutomaticSize.Y}>
 												<ActionDisplay action={value} />
 											</Container>
 										</Container>
@@ -69,7 +70,7 @@ function ActionDisplay({ action }: { action: unknown }) {
 			);
 		}
 		default:
-			return <Text Text={tostring(action)} Size={new UDim2(1, 0, 0, 30)} />;
+			return <Text Text={tostring(action)} Size={new UDim2(1, 0, 0, 30)} TextXAlignment={Enum.TextXAlignment.Left} />;
 	}
 }
 
@@ -95,6 +96,7 @@ export function Preview() {
 			<scrollingframe
 				BackgroundTransparency={1}
 				AutomaticCanvasSize={Enum.AutomaticSize.Y}
+				ScrollBarThickness={6}
 				CanvasSize={new UDim2()}
 				Size={new UDim2(1, 0, 1, -30)}
 			>
