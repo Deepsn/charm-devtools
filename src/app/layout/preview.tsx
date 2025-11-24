@@ -1,14 +1,32 @@
+import inspect from "@rbxts/inspect";
 import Object from "@rbxts/object-utils";
 import { useAtom } from "@rbxts/react-charm";
 import { Button } from "app/components/button";
 import { Container } from "app/components/container";
 import { Text } from "app/components/text";
+import { Options } from "app/layout/options";
 import { selectedAction } from "atoms";
-import { palette } from "constants/palette";
+import { useOptions } from "hooks/use-options";
 import React, { useState } from "react";
 
 function ActionDisplay({ action }: { action: unknown }) {
+	const isDisplayJson = useOptions("showAsJson");
 	const [open, setOpen] = useState(false);
+
+	if (isDisplayJson) {
+		const output = inspect(action, {
+			indent: "\t\t",
+		});
+
+		return (
+			<Text
+				Text={output}
+				Size={UDim2.fromScale(1, 0)}
+				AutomaticSize={Enum.AutomaticSize.Y}
+				TextXAlignment={Enum.TextXAlignment.Left}
+			/>
+		);
+	}
 
 	switch (typeOf(action)) {
 		case "table": {
@@ -89,9 +107,7 @@ export function Preview() {
 		<Container Size={UDim2.fromScale(0.6, 1)}>
 			<uilistlayout />
 
-			<frame BackgroundColor3={palette.primary} Size={new UDim2(1, 0, 0, 30)}>
-				<uilistlayout FillDirection={Enum.FillDirection.Horizontal} />
-			</frame>
+			<Options />
 
 			<scrollingframe
 				BackgroundTransparency={1}
