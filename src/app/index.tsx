@@ -1,18 +1,7 @@
-import Iris from "@rbxts/iris";
-import { History } from "app/layout/history";
-import { Preview } from "app/layout/preview";
+import { effect } from "@rbxts/charm";
+import Iris, { type Widget } from "@rbxts/iris";
+import { enabled } from "atoms";
 import { Input } from "lib/user-input-service";
-import React from "react";
-
-export function App() {
-	return (
-		<>
-			<uilistlayout FillDirection={Enum.FillDirection.Horizontal} />
-			<History />
-			<Preview />
-		</>
-	);
-}
 
 export function renderApp(container: DockWidgetPluginGui) {
 	Input.mount(container);
@@ -26,10 +15,20 @@ export function renderApp(container: DockWidgetPluginGui) {
 	Iris.Init(container);
 
 	const disconnect = Iris.Connect(() => {
-		Iris.ShowDemoWindow();
+		const window = Iris.ShowDemoWindow() as unknown as Widget<{ State: { size: Vector2; position: Vector2 } }>;
+		window.state.size.set(container.AbsoluteSize);
+		window.state.position.set(Vector2.zero);
 	});
 
+	effect(() => {
+		Iris.Disabled = !enabled();
+	});
+
+	print("App rendered");
+
 	return () => {
+		print("Unmounting app");
+		Input.destroy();
 		disconnect();
 		Iris.Shutdown();
 	};
