@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"description": "",
 	"scripts": {
-		"dev": "concurrently \"pnpm watch\" \"pnpm watch:plugin\" \"pnpm watch:test\" \"pnpm serve:test\"",
+		"dev": "concurrently \"bun watch\" \"bun watch:plugin\" \"bun watch:test\" \"bun serve:test\"",
 		"build": "rbxtsc",
 		"build:plugin": "rojo build -o %LOCALAPPDATA%/Roblox/Plugins/CharmDevTools.rbxm",
 		"serve": "rojo serve default.project.json",
