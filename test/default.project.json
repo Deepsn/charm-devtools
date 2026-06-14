@@ -1,5 +1,6 @@
 {
 	"name": "charm-devtools",
+	"servePort": 32423,
 	"globIgnorePaths": ["**/package.json", "**/tsconfig.json"],
 	"tree": {
 		"$className": "DataModel",

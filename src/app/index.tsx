@@ -1,7 +1,8 @@
-import { createRoot } from "@rbxts/react-roblox";
+import Iris from "@rbxts/iris";
 import { History } from "app/layout/history";
 import { Preview } from "app/layout/preview";
-import React, { StrictMode } from "react";
+import { Input } from "lib/user-input-service";
+import React from "react";
 
 export function App() {
 	return (
@@ -13,14 +14,23 @@ export function App() {
 	);
 }
 
-export function renderApp(widget: DockWidgetPluginGui) {
-	const root = createRoot(widget);
+export function renderApp(container: DockWidgetPluginGui) {
+	Input.mount(container);
 
-	root.render(
-		<StrictMode>
-			<App />
-		</StrictMode>,
-	);
+	Iris.Internal._utility.UserInputService = Input as unknown as UserInputService;
+	Iris.UpdateGlobalConfig({
+		UseScreenGUIs: false,
+	});
+	Iris.Disabled = true;
 
-	return () => root.unmount();
+	Iris.Init(container);
+
+	const disconnect = Iris.Connect(() => {
+		Iris.ShowDemoWindow();
+	});
+
+	return () => {
+		disconnect();
+		Iris.Shutdown();
+	};
 }
