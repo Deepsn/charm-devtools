@@ -5,7 +5,6 @@ type Selector<T> = () => T;
 export type StateOf<T extends Selector<unknown>> = T extends Selector<infer S> ? S : never;
 
 export const enabled = atom(false);
-export const history = atom<Action[]>([]);
 export const selectedAction = atom<Action | undefined>();
 
 export const options = atom({

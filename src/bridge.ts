@@ -1,7 +1,8 @@
 import { ReplicatedStorage } from "@rbxts/services";
 import { t } from "@rbxts/t";
-import { type Action, history } from "atoms";
-import { IS_RUNNING, IS_SERVER, REMOTE_NAME } from "constants/core";
+import type { Action } from "atoms";
+import { addToHistory } from "atoms/history";
+import { IS_SERVER } from "constants/core";
 
 const payloadGuard: t.check<Action> = t.interface({
 	id: t.union(t.string, t.number),
@@ -10,9 +11,9 @@ const payloadGuard: t.check<Action> = t.interface({
 	value: t.any,
 });
 
-export function createBridge() {
-	if (!IS_RUNNING) return () => {};
+export const REMOTE_NAME = "__CHARM_DEVTOOLS__";
 
+export function createBridge() {
 	let bridgeRemote = IS_SERVER
 		? (ReplicatedStorage.FindFirstChild(REMOTE_NAME) as BindableEvent)
 		: (ReplicatedStorage.WaitForChild(REMOTE_NAME) as BindableEvent);
@@ -29,7 +30,7 @@ export function createBridge() {
 			return warn("[charm-devtools] payload didn't pass type guard, payload received:", payload);
 		}
 
-		history((prev) => [...prev, payload]);
+		addToHistory(payload);
 	});
 
 	bridgeRemote.Parent = ReplicatedStorage;

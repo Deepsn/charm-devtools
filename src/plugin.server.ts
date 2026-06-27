@@ -1,10 +1,21 @@
-/// <reference types="@rbxts/types/plugin" />
+/// <reference types="@rbxts/types/plugin" />+
 
-import { effect } from "@rbxts/charm";
+import { effect, onCleanup, trigger } from "@rbxts/charm";
+import Iris from "@rbxts/iris";
 import { renderApp } from "app";
 import { enabled } from "atoms";
 import { createBridge } from "bridge";
-import { IS_RUNNING } from "constants/core";
+import { Input } from "lib/user-input-service";
+
+function createApp(widget: DockWidgetPluginGui) {
+	const cleanupBridge = createBridge();
+	const unmountApp = renderApp(widget);
+
+	return () => {
+		unmountApp();
+		cleanupBridge();
+	};
+}
 
 function main() {
 	const toolbar = plugin.CreateToolbar("Charm DevTools");
@@ -17,23 +28,37 @@ function main() {
 	widget.Name = "Charm DevTools";
 	widget.ZIndexBehavior = Enum.ZIndexBehavior.Sibling;
 
-	button.Click.Connect(() => enabled((prev) => !prev));
+	Iris.Init(widget);
+	Input.mount(widget);
 
-	effect(() => {
+	button.Click.Connect(() => enabled((prev) => !prev));
+	(widget as unknown as { BindToClose(callback: () => void): void }).BindToClose(() => enabled(false));
+
+	let cleanup: (() => void) | undefined;
+
+	const disposeEffect = effect(() => {
 		const isEnabled = enabled();
+
 		widget.Enabled = isEnabled;
 		button.SetActive(isEnabled);
-	});
 
-	const cleanupBridge = createBridge();
-	const unmountApp = renderApp(widget);
+		if (!isEnabled) return;
+
+		cleanup = createApp(widget);
+		onCleanup(cleanup);
+	});
 
 	plugin.Unloading.Connect(() => {
-		unmountApp();
-		cleanupBridge();
+		enabled(false);
+		trigger(enabled);
+
+		Input.destroy();
+		disposeEffect();
+		widget.Destroy();
+		Iris.Shutdown();
 	});
 }
 
-if (!IS_RUNNING) {
-	main();
-}
+// if (!IS_RUNNING) {
+main();
+// }
