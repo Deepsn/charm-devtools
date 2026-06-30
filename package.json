@@ -5,12 +5,12 @@
 	"scripts": {
 		"dev": "concurrently \"bun watch\" \"bun watch:plugin\" \"bun watch:test\" \"bun serve:test\"",
 		"build": "rbxtsc",
-		"build:plugin": "rojo build -o %LOCALAPPDATA%/Roblox/Plugins/CharmDevTools.rbxm",
+		"build:plugin": "rojo build -o \"$LOCALAPPDATA/Roblox/Plugins/CharmDevTools.rbxm\"",
 		"serve": "rojo serve default.project.json",
 		"serve:test": "rojo serve test/default.project.json",
 		"watch": "rbxtsc -w",
 		"watch:test": "rbxtsc -w -p test",
-		"watch:plugin": "pnpm build:plugin --watch"
+		"watch:plugin": "bun build:plugin --watch"
 	},
 	"author": "Speed",
 	"license": "MIT",
