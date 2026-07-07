@@ -8,12 +8,10 @@ import { createBridge } from "bridge";
 import { Input } from "lib/user-input-service";
 
 function createApp(widget: DockWidgetPluginGui) {
-	const cleanupBridge = createBridge();
 	const unmountApp = renderApp(widget);
 
 	return () => {
 		unmountApp();
-		cleanupBridge();
 	};
 }
 
@@ -27,6 +25,8 @@ function main() {
 	);
 	widget.Name = "Charm DevTools";
 	widget.ZIndexBehavior = Enum.ZIndexBehavior.Sibling;
+
+	const cleanupBridge = createBridge();
 
 	Iris.Init(widget);
 	Input.mount(widget);
@@ -53,12 +53,16 @@ function main() {
 		trigger(enabled);
 
 		Input.destroy();
+
+		cleanupBridge();
 		disposeEffect();
+
 		widget.Destroy();
 		Iris.Shutdown();
 	});
 }
 
-// if (!IS_RUNNING) {
-main();
-// }
+const isDev = game.PlaceId === 0;
+if (isDev) {
+	main();
+}

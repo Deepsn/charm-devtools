@@ -1,6 +1,6 @@
 import { atom } from "@rbxts/charm";
 
-export type Action = { id: string | number; name: string; timestamp: number; value: unknown };
+export type Action = { id: string; name: string; timestamp: number; value: unknown };
 type Selector<T> = () => T;
 export type StateOf<T extends Selector<unknown>> = T extends Selector<infer S> ? S : never;
 
