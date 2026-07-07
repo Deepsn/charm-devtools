@@ -1,6 +1,6 @@
 /// <reference types="@rbxts/types/plugin" />+
 
-import { effect, onCleanup, trigger } from "@rbxts/charm";
+import { effectScope, listen, onCleanup, trigger } from "@rbxts/charm";
 import Iris from "@rbxts/iris";
 import { renderApp } from "app";
 import { enabled } from "atoms";
@@ -36,15 +36,13 @@ function main() {
 
 	let cleanup: (() => void) | undefined;
 
-	const disposeEffect = effect(() => {
-		const isEnabled = enabled();
-
+	const disposeEffect = listen(enabled, (isEnabled) => {
 		widget.Enabled = isEnabled;
 		button.SetActive(isEnabled);
 
 		if (!isEnabled) return;
 
-		cleanup = createApp(widget);
+		cleanup = effectScope(() => createApp(widget));
 		onCleanup(cleanup);
 	});
 
