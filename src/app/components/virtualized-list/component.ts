@@ -12,7 +12,7 @@ import createVirtualizedListController, {
 } from "app/components/virtualized-list/controller";
 
 export interface VirtualizedListArgs {
-	Height?: number;
+	Height?: UDim;
 	RowHeight?: number;
 }
 
@@ -57,7 +57,7 @@ export function createVirtualizedList() {
 
 			const host = Make("Frame", {
 				Name: "Iris_VirtualizedList",
-				Size: new UDim2(Iris._config.ItemWidth, new UDim(0, 300)),
+				Size: new UDim2(Iris._config.ItemWidth, new UDim(0, 0)),
 				BackgroundTransparency: 1,
 				BorderSizePixel: 0,
 				LayoutOrder: thisWidget.ZIndex,
@@ -192,7 +192,7 @@ export function createVirtualizedList() {
 				dirty = true;
 			};
 			thisWidget.configure = (args: VirtualizedListArgs) => {
-				host.Size = new UDim2(Iris._config.ItemWidth, new UDim(0, args.Height ?? 300));
+				host.Size = new UDim2(Iris._config.ItemWidth, args.Height ?? new UDim(1, -Iris._config.ItemSpacing.Y * 4));
 
 				const rowHeight = args.RowHeight ?? getDefaultRowHeight();
 				dimensions = buildDimensions(rowHeight);
