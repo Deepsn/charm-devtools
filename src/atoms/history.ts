@@ -21,4 +21,19 @@ if (!IS_RUNNING) {
 			value: `Value ${index}`,
 		});
 	}
+
+	addToHistory({
+		id: "action-101",
+		name: "Action 101",
+		timestamp: DateTime.now().UnixTimestamp + 101,
+		value: {
+			huge: "complex",
+			object: {
+				that: "can",
+				be: {
+					nested: "deeply",
+				},
+			},
+		},
+	});
 }

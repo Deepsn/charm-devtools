@@ -1,4 +1,4 @@
-import Vide, { Show, source } from "@rbxts/vide";
+import Vide, { Case, Show, Switch, source } from "@rbxts/vide";
 import { FONT, THEME } from "constants/theme";
 import { displayKey, formatValue, getEntries, isTable, previewTable } from "lib/format";
 
@@ -58,7 +58,12 @@ function TreeNode(props: { name: string; value: unknown; expand?: boolean }) {
 				{primitive !== undefined ? (
 					<Cell text={primitive.text} color={primitive.color} order={3} />
 				) : (
-					<Cell text={previewTable(container as object)} color={THEME.tree.preview} order={3} />
+					<Switch condition={expanded}>
+						<Case match={true}>{() => <Cell text={"{"} color={THEME.tree.key} order={3} />}</Case>
+						<Case match={false}>
+							{() => <Cell text={previewTable(container as object)} color={THEME.tree.preview} order={3} />}
+						</Case>
+					</Switch>
 				)}
 			</textbutton>
 
@@ -77,6 +82,7 @@ function TreeNode(props: { name: string; value: unknown; expand?: boolean }) {
 							{entries?.map((entry) => (
 								<TreeNode name={displayKey(entry.key)} value={entry.value} />
 							))}
+							<Cell text={"}"} color={THEME.tree.key} order={4} />
 						</frame>
 					)}
 				</Show>
