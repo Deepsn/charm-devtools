@@ -254,7 +254,7 @@ export function getUDimRect<T extends defined>(
 	throw "Unsupported spaced dimensions";
 }
 
-function getCanvasSize<T extends defined>(
+function computeCanvasSize<T extends defined>(
 	dimensions: Dimensions<T>,
 	dataSource: DataSource<T>,
 	windowSize: Vector2,
@@ -493,7 +493,7 @@ export function createVirtualizedListController<T extends defined>(
 
 		currentView = {
 			range: newIndexRange,
-			canvasSize: getCanvasSize(),
+			canvasSize: computeCanvasSize(dimensions, dataSource, windowSize, direction),
 			windowSize,
 			lastDimensions: dimensions,
 			cachedLastResult: items,
