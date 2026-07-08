@@ -1,7 +1,11 @@
-import { renderHistory } from "app/layout/history";
-import { renderSettings } from "app/layout/settings";
+import type { WindowId } from "atoms/window";
 
-export const WINDOWS = {
-	history: renderHistory,
-	settings: renderSettings,
-};
+export interface WindowTab {
+	id: WindowId;
+	label: string;
+}
+
+export const WINDOWS: WindowTab[] = [
+	{ id: "history", label: "History" },
+	{ id: "settings", label: "Settings" },
+];

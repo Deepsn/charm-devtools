@@ -4,12 +4,12 @@ import { IS_RUNNING } from "constants/core";
 
 export const history = atom<Action[]>([]);
 
-export function getSortedHistory() {
-	return history().sort((a, b) => b.timestamp > a.timestamp);
-}
-
 export function addToHistory(action: Action) {
 	history((prev) => [...prev, action]);
+}
+
+export function clearHistory() {
+	history([]);
 }
 
 if (!IS_RUNNING) {

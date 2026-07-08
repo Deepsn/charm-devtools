@@ -1,11 +1,10 @@
-/// <reference types="@rbxts/types/plugin" />+
+/// <reference types="@rbxts/types/plugin" />
 
-import { effectScope, listen, onCleanup, trigger } from "@rbxts/charm";
-import Iris from "@rbxts/iris";
-import { renderApp } from "app";
+import { listen, trigger } from "@rbxts/charm";
+import { mount } from "@rbxts/vide";
+import { App } from "app";
 import { enabled } from "atoms/plugin";
 import { createBridge } from "bridge";
-import { Input } from "lib/user-input-service";
 
 function main() {
 	const toolbar = plugin.CreateToolbar("Charm DevTools");
@@ -20,35 +19,32 @@ function main() {
 
 	const cleanupBridge = createBridge();
 
-	Iris.Init(widget);
-	Input.mount(widget);
+	let unmount: (() => void) | undefined;
 
 	button.Click.Connect(() => enabled((prev) => !prev));
 	(widget as unknown as { BindToClose(callback: () => void): void }).BindToClose(() => enabled(false));
 
-	let cleanup: (() => void) | undefined;
-
-	const disposeEffect = listen(enabled, (isEnabled) => {
+	const disposeEnabled = listen(enabled, (isEnabled) => {
 		widget.Enabled = isEnabled;
 		button.SetActive(isEnabled);
 
-		if (!isEnabled) return;
-
-		cleanup = effectScope(() => renderApp(widget));
-		onCleanup(cleanup);
+		if (isEnabled) {
+			unmount ??= mount(() => App(), widget);
+		} else {
+			unmount?.();
+			unmount = undefined;
+		}
 	});
 
 	plugin.Unloading.Connect(() => {
 		enabled(false);
 		trigger(enabled);
 
-		Input.destroy();
-
 		cleanupBridge();
-		disposeEffect();
+		disposeEnabled();
 
+		unmount?.();
 		widget.Destroy();
-		Iris.Shutdown();
 	});
 }
 
