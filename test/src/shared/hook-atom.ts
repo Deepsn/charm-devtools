@@ -14,29 +14,31 @@ let bridgeRemote = ReplicatedStorage.FindFirstChild(`${REMOTE_NAME}_REMOTE`) as 
 
 function dispatch(payload: Action) {
 	task.spawn(() => {
-		if (RunService.IsClient()) {
-			if (!bridgeRemote?.Parent) {
-				bridgeRemote = ReplicatedStorage.WaitForChild(`${REMOTE_NAME}_REMOTE`) as RemoteEvent;
-			}
-
-			bridgeRemote.FireServer(payload);
-			return;
-		}
-
 		if (!bridgeEvent?.Parent) {
 			bridgeEvent = ReplicatedStorage.WaitForChild(REMOTE_NAME) as BindableEvent;
 		}
+
+		if (!bridgeRemote?.Parent) {
+			bridgeRemote = ReplicatedStorage.WaitForChild(`${REMOTE_NAME}_REMOTE`) as RemoteEvent;
+		}
+
 		bridgeEvent.Fire(payload);
+		RunService.IsServer() ? bridgeRemote.FireAllClients(payload) : bridgeRemote.FireServer(payload);
 	});
 }
 
 export function hookAtom<T extends AnyAtom>(atom: T, options?: HookOptions): T {
 	const trace = options?.label ?? debug.traceback(undefined, 2).split("\n")[0];
+	const atomId = HttpService.GenerateGUID(false);
 
 	listen(atom, (value) => {
-		const id = HttpService.GenerateGUID(false);
 		const now = DateTime.now().UnixTimestampMillis;
-		const payload = { id, name: trace, value, timestamp: now };
+		const payload = {
+			id: atomId,
+			name: trace,
+			value,
+			timestamp: now,
+		};
 
 		dispatch(payload);
 	});

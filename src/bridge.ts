@@ -37,8 +37,6 @@ export function createBridge() {
 	}
 
 	function onPayload(payload: unknown) {
-		print("received", payload);
-
 		if (!payloadGuard(payload)) {
 			return warn("[charm-devtools] payload didn't pass type guard, payload received:", payload);
 		}
@@ -47,7 +45,11 @@ export function createBridge() {
 	}
 
 	bridgeEvent.Event.Connect((payload?: unknown) => onPayload(payload));
-	if (IS_SERVER) bridgeRemote.OnServerEvent.Connect((_player, payload?: unknown) => onPayload(payload));
+	if (IS_SERVER) {
+		bridgeRemote.OnServerEvent.Connect((_player, payload?: unknown) => onPayload(payload));
+	} else {
+		bridgeRemote.OnClientEvent.Connect((payload?: unknown) => onPayload(payload));
+	}
 
 	bridgeEvent.Parent = ReplicatedStorage;
 	bridgeRemote.Parent = ReplicatedStorage;

@@ -1,7 +1,7 @@
 import { atom, effect } from "@rbxts/charm";
 import Iris from "@rbxts/iris";
 import { Trove } from "@rbxts/trove";
-import { enabled } from "atoms";
+import { enabled } from "atoms/plugin";
 import { WINDOWS } from "constants/windows";
 import { Input } from "lib/user-input-service";
 

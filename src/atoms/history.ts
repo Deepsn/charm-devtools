@@ -13,7 +13,7 @@ export function addToHistory(action: Action) {
 }
 
 if (!IS_RUNNING) {
-	for (const index of $range(1, 10)) {
+	for (const index of $range(1, 100)) {
 		addToHistory({
 			id: `action-${index}`,
 			name: `Action ${index}`,

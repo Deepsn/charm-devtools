@@ -3,17 +3,9 @@
 import { effectScope, listen, onCleanup, trigger } from "@rbxts/charm";
 import Iris from "@rbxts/iris";
 import { renderApp } from "app";
-import { enabled } from "atoms";
+import { enabled } from "atoms/plugin";
 import { createBridge } from "bridge";
 import { Input } from "lib/user-input-service";
-
-function createApp(widget: DockWidgetPluginGui) {
-	const unmountApp = renderApp(widget);
-
-	return () => {
-		unmountApp();
-	};
-}
 
 function main() {
 	const toolbar = plugin.CreateToolbar("Charm DevTools");
@@ -42,7 +34,7 @@ function main() {
 
 		if (!isEnabled) return;
 
-		cleanup = effectScope(() => createApp(widget));
+		cleanup = effectScope(() => renderApp(widget));
 		onCleanup(cleanup);
 	});
 
