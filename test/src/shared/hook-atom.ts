@@ -32,7 +32,7 @@ export function hookAtom<T extends AnyAtom>(atom: T, options?: HookOptions): T {
 	const atomId = HttpService.GenerateGUID(false);
 
 	listen(atom, (value) => {
-		const now = DateTime.now().UnixTimestampMillis;
+		const now = DateTime.now().UnixTimestampMillis / 1000;
 		const payload = {
 			id: atomId,
 			name: trace,
