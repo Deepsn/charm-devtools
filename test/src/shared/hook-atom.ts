@@ -3,7 +3,7 @@ import { HttpService, ReplicatedStorage, RunService } from "@rbxts/services";
 
 // biome-ignore lint/suspicious/noExplicitAny: accepts any atom
 type AnyAtom = Atom<any>;
-type Action = { id: string | number; name: string; timestamp: number; value: unknown };
+type Action = { id: string | number; name: string; timestamp: number; value: unknown; atomId: string };
 type HookOptions = {
 	label?: string;
 };
@@ -22,6 +22,10 @@ function dispatch(payload: Action) {
 			bridgeRemote = ReplicatedStorage.WaitForChild(`${REMOTE_NAME}_REMOTE`) as RemoteEvent;
 		}
 
+		while (ReplicatedStorage.GetAttribute("ready") !== 2) {
+			ReplicatedStorage.GetAttributeChangedSignal("ready").Wait();
+		}
+
 		bridgeEvent.Fire(payload);
 		RunService.IsServer() ? bridgeRemote.FireAllClients(payload) : bridgeRemote.FireServer(payload);
 	});
@@ -33,12 +37,14 @@ export function hookAtom<T extends AnyAtom>(atom: T, options?: HookOptions): T {
 
 	listen(atom, (value) => {
 		const now = DateTime.now().UnixTimestampMillis / 1000;
+		const id = HttpService.GenerateGUID(false);
 		const payload = {
-			id: atomId,
+			id,
+			atomId,
 			name: trace,
 			value,
 			timestamp: now,
-		};
+		} satisfies Action;
 
 		dispatch(payload);
 	});

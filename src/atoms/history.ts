@@ -8,6 +8,17 @@ export function addToHistory(action: Action) {
 	history((prev) => [...prev, action]);
 }
 
+export function modifyHistory(id: string | number, newAction: Action) {
+	history((prev) => {
+		return prev.map((action) => {
+			if (action.id === id) {
+				return newAction;
+			}
+			return action;
+		});
+	});
+}
+
 export function clearHistory() {
 	history([]);
 }
@@ -16,6 +27,7 @@ if (!IS_RUNNING) {
 	for (const index of $range(1, 100)) {
 		addToHistory({
 			id: `action-${index}`,
+			atomId: `atom-${index}`,
 			name: `Action ${index}`,
 			timestamp: DateTime.now().UnixTimestamp + index,
 			value: `Value ${index}`,
@@ -24,6 +36,7 @@ if (!IS_RUNNING) {
 
 	addToHistory({
 		id: "action-101",
+		atomId: "atom-101",
 		name: "Action 101",
 		timestamp: DateTime.now().UnixTimestamp + 101,
 		value: {

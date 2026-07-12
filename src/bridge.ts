@@ -2,13 +2,14 @@ import { ReplicatedStorage } from "@rbxts/services";
 import { t } from "@rbxts/t";
 import type { Action } from "atoms";
 import { addToHistory } from "atoms/history";
-import { IS_SERVER } from "constants/core";
+import { IS_RUNNING, IS_SERVER } from "constants/core";
 
-const payloadGuard: t.check<Action> = t.interface({
+const payloadGuard: t.check<Action> = t.strictInterface({
 	id: t.string,
 	name: t.string,
-	timestamp: t.number,
+	timestamp: t.numberPositive,
 	value: t.any,
+	atomId: t.string,
 });
 
 export const BRIDGE_NAME = "__CHARM_DEVTOOLS__";
@@ -36,7 +37,14 @@ export function createBridge() {
 		bridgeRemote.Archivable = false;
 	}
 
+
 	function onPayload(payload: unknown) {
+		if (payload === "ready") {
+			const readyCount = (ReplicatedStorage.GetAttribute("ready") as number) ?? 0;
+			ReplicatedStorage.SetAttribute("ready", readyCount + 1);
+			return;
+		}
+
 		if (!payloadGuard(payload)) {
 			return warn("[charm-devtools] payload didn't pass type guard, payload received:", payload);
 		}
@@ -53,6 +61,16 @@ export function createBridge() {
 
 	bridgeEvent.Parent = ReplicatedStorage;
 	bridgeRemote.Parent = ReplicatedStorage;
+
+
+	if (IS_RUNNING) { 
+		if (IS_SERVER) {
+			const readyCount = (ReplicatedStorage.GetAttribute("ready") as number) ?? 0;
+			ReplicatedStorage.SetAttribute("ready", readyCount + 1);
+		} else {
+			bridgeRemote.FireServer("ready");
+		}
+	}
 
 	return () => {
 		bridgeEvent?.Destroy();

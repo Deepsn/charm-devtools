@@ -5,6 +5,9 @@ import { mount } from "@rbxts/vide";
 import { App } from "app";
 import { enabled } from "atoms/plugin";
 import { createBridge } from "bridge";
+import { IS_RUNNING } from "constants/core";
+
+const IS_DEV = game.PlaceId === 0 && plugin.Name.match("user_")[0] !== undefined;
 
 function main() {
 	const toolbar = plugin.CreateToolbar("Charm DevTools");
@@ -36,6 +39,10 @@ function main() {
 		}
 	});
 
+	if (IS_DEV && IS_RUNNING) {
+		enabled(true);
+	}
+
 	plugin.Unloading.Connect(() => {
 		enabled(false);
 		trigger(enabled);
@@ -48,7 +55,6 @@ function main() {
 	});
 }
 
-const isDev = game.PlaceId === 0;
-if (isDev) {
+if (IS_DEV) {
 	main();
 }
