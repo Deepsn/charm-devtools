@@ -1,27 +1,15 @@
 import { ReplicatedStorage } from "@rbxts/services";
-import { t } from "@rbxts/t";
-import type { Action } from "atoms";
-import { addToHistory } from "atoms/history";
-import { IS_RUNNING, IS_SERVER } from "constants/core";
+import { IS_RUNNING, IS_SERVER } from "./constants";
+import { type Action, actionGuard, BRIDGE_NAME, BRIDGE_REMOTE_NAME } from "./protocol";
 
-const payloadGuard: t.check<Action> = t.strictInterface({
-	id: t.string,
-	name: t.string,
-	timestamp: t.numberPositive,
-	value: t.any,
-	atomId: t.string,
-});
-
-export const BRIDGE_NAME = "__CHARM_DEVTOOLS__";
-
-export function createBridge() {
+export function createBridge(onAction: (action: Action) => void) {
 	let bridgeEvent = IS_SERVER
 		? (ReplicatedStorage.FindFirstChild(BRIDGE_NAME) as BindableEvent)
 		: (ReplicatedStorage.WaitForChild(BRIDGE_NAME) as BindableEvent);
 
 	let bridgeRemote = IS_SERVER
-		? (ReplicatedStorage.FindFirstChild(`${BRIDGE_NAME}_REMOTE`) as RemoteEvent)
-		: (ReplicatedStorage.WaitForChild(`${BRIDGE_NAME}_REMOTE`) as RemoteEvent);
+		? (ReplicatedStorage.FindFirstChild(BRIDGE_REMOTE_NAME) as RemoteEvent)
+		: (ReplicatedStorage.WaitForChild(BRIDGE_REMOTE_NAME) as RemoteEvent);
 
 	// todo: ask the user if they want to create the bridge
 
@@ -33,10 +21,9 @@ export function createBridge() {
 
 	if (!bridgeRemote) {
 		bridgeRemote = new Instance("RemoteEvent");
-		bridgeRemote.Name = `${BRIDGE_NAME}_REMOTE`;
+		bridgeRemote.Name = BRIDGE_REMOTE_NAME;
 		bridgeRemote.Archivable = false;
 	}
-
 
 	function onPayload(payload: unknown) {
 		if (payload === "ready") {
@@ -45,11 +32,11 @@ export function createBridge() {
 			return;
 		}
 
-		if (!payloadGuard(payload)) {
+		if (!actionGuard(payload)) {
 			return warn("[charm-devtools] payload didn't pass type guard, payload received:", payload);
 		}
 
-		addToHistory(payload);
+		onAction(payload);
 	}
 
 	bridgeEvent.Event.Connect((payload?: unknown) => onPayload(payload));
@@ -62,8 +49,7 @@ export function createBridge() {
 	bridgeEvent.Parent = ReplicatedStorage;
 	bridgeRemote.Parent = ReplicatedStorage;
 
-
-	if (IS_RUNNING) { 
+	if (IS_RUNNING) {
 		if (IS_SERVER) {
 			const readyCount = (ReplicatedStorage.GetAttribute("ready") as number) ?? 0;
 			ReplicatedStorage.SetAttribute("ready", readyCount + 1);

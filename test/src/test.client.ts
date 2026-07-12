@@ -1,5 +1,5 @@
 import { atom } from "@rbxts/charm";
-import { hookAtom } from "shared/hook-atom";
+import { hookAtom } from "@rbxts/charm-devtools";
 
 const helloAtom = hookAtom(atom("Hello world"));
 

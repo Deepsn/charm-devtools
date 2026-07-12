@@ -1,0 +1,14 @@
+{
+	"name": "charm-devtools-test",
+	"version": "1.0.0",
+	"private": true,
+	"scripts": {
+		"build": "rbxtsc",
+		"watch": "rbxtsc -w",
+		"serve": "rojo serve default.project.json"
+	},
+	"dependencies": {
+		"@rbxts/charm": "0.11.0-rc.2",
+		"@rbxts/charm-devtools": "workspace:*"
+	}
+}

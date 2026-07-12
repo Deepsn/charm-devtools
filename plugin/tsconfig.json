@@ -1,8 +1,11 @@
 {
 	"extends": "../tsconfig.base.json",
 	"compilerOptions": {
+		"jsx": "react",
+		"jsxFactory": "Vide.jsx",
+		"jsxFragmentFactory": "Vide.Fragment",
 		"typeRoots": ["node_modules/@rbxts"],
-		"types": ["types"],
+		"types": ["types/plugin"],
 		"rootDir": "src",
 		"outDir": "out",
 		"baseUrl": "src",

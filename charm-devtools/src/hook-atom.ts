@@ -1,25 +1,25 @@
 import { type Atom, listen } from "@rbxts/charm";
 import { HttpService, ReplicatedStorage, RunService } from "@rbxts/services";
+import { type Action, BRIDGE_NAME, BRIDGE_REMOTE_NAME } from "./protocol";
 
 // biome-ignore lint/suspicious/noExplicitAny: accepts any atom
 type AnyAtom = Atom<any>;
-type Action = { id: string | number; name: string; timestamp: number; value: unknown; atomId: string };
+
 type HookOptions = {
 	label?: string;
 };
 
-const REMOTE_NAME = "__CHARM_DEVTOOLS__";
-let bridgeEvent = ReplicatedStorage.FindFirstChild(REMOTE_NAME) as BindableEvent;
-let bridgeRemote = ReplicatedStorage.FindFirstChild(`${REMOTE_NAME}_REMOTE`) as RemoteEvent;
+let bridgeEvent: BindableEvent | undefined;
+let bridgeRemote: RemoteEvent | undefined;
 
 function dispatch(payload: Action) {
 	task.spawn(() => {
 		if (!bridgeEvent?.Parent) {
-			bridgeEvent = ReplicatedStorage.WaitForChild(REMOTE_NAME) as BindableEvent;
+			bridgeEvent = ReplicatedStorage.WaitForChild(BRIDGE_NAME) as BindableEvent;
 		}
 
 		if (!bridgeRemote?.Parent) {
-			bridgeRemote = ReplicatedStorage.WaitForChild(`${REMOTE_NAME}_REMOTE`) as RemoteEvent;
+			bridgeRemote = ReplicatedStorage.WaitForChild(BRIDGE_REMOTE_NAME) as RemoteEvent;
 		}
 
 		while (ReplicatedStorage.GetAttribute("ready") !== 2) {

@@ -1,0 +1,23 @@
+{
+	"name": "@rbxts/charm-devtools",
+	"version": "1.0.0",
+	"description": "Charm DevTools bridge — instrument atoms with hookAtom and receive them in the plugin via createBridge.",
+	"main": "out/init.luau",
+	"types": "out/index.d.ts",
+	"files": [
+		"out",
+		"!**/*.tsbuildinfo"
+	],
+	"scripts": {
+		"build": "rbxtsc --type package",
+		"watch": "rbxtsc -w --type package"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"dependencies": {
+		"@rbxts/charm": "0.11.0-rc.2",
+		"@rbxts/services": "^1.6.0",
+		"@rbxts/t": "^3.2.1"
+	}
+}

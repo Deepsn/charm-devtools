@@ -1,10 +1,11 @@
 /// <reference types="@rbxts/types/plugin" />
 
 import { listen, trigger } from "@rbxts/charm";
+import { createBridge } from "@rbxts/charm-devtools";
 import { mount } from "@rbxts/vide";
 import { App } from "app";
+import { addToHistory } from "atoms/history";
 import { enabled } from "atoms/plugin";
-import { createBridge } from "bridge";
 import { IS_RUNNING } from "constants/core";
 
 const IS_DEV = game.PlaceId === 0 && plugin.Name.match("user_")[0] !== undefined;
@@ -20,7 +21,7 @@ function main() {
 	widget.Name = "Charm DevTools";
 	widget.ZIndexBehavior = Enum.ZIndexBehavior.Sibling;
 
-	const cleanupBridge = createBridge();
+	const cleanupBridge = createBridge(addToHistory);
 
 	let unmount: (() => void) | undefined;
 
