@@ -57,6 +57,5 @@ function main() {
 }
 
 if (IS_DEV) {
-	task.wait(5);
 	main();
 }
