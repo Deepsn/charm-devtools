@@ -15,10 +15,7 @@ export function hookAtom<T extends AnyAtom>(atom: T, options?: HookOptions): T {
 	const atomId = HttpService.GenerateGUID(false);
 	const bridge = resolveBridge();
 
-	print(`[charm-devtools] hooked atom ${atomId} (${trace})`);
-
 	listen(atom, (value) => {
-		print("sent atom update", atomId, trace, value);
 		bridge.dispatch({
 			id: HttpService.GenerateGUID(false),
 			atomId,

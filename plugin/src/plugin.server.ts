@@ -22,7 +22,6 @@ function main() {
 	widget.ZIndexBehavior = Enum.ZIndexBehavior.Sibling;
 
 	const bridge = createBridge(addToHistory);
-	print("bridge mounted");
 
 	let unmount: (() => void) | undefined;
 
