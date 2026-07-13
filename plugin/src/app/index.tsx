@@ -1,4 +1,5 @@
 import Vide, { match } from "@rbxts/vide";
+import { Atoms } from "app/layout/atoms";
 import { History } from "app/layout/history";
 import { Settings } from "app/layout/settings";
 import { currentWindow, type WindowId } from "atoms/window";
@@ -71,6 +72,7 @@ export function App() {
 				/>
 				{match(active)({
 					history: () => History(),
+					atoms: () => Atoms(),
 					settings: () => Settings(),
 				})}
 			</frame>

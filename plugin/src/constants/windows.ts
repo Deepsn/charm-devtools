@@ -7,5 +7,6 @@ export interface WindowTab {
 
 export const WINDOWS: WindowTab[] = [
 	{ id: "history", label: "History" },
+	{ id: "atoms", label: "Atoms" },
 	{ id: "settings", label: "Settings" },
 ];
