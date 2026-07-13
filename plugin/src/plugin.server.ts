@@ -21,7 +21,8 @@ function main() {
 	widget.Name = "Charm DevTools";
 	widget.ZIndexBehavior = Enum.ZIndexBehavior.Sibling;
 
-	const cleanupBridge = createBridge(addToHistory);
+	const bridge = createBridge(addToHistory);
+	print("bridge mounted");
 
 	let unmount: (() => void) | undefined;
 
@@ -48,7 +49,7 @@ function main() {
 		enabled(false);
 		trigger(enabled);
 
-		cleanupBridge();
+		bridge.dispose();
 		disposeEnabled();
 
 		unmount?.();
@@ -57,5 +58,6 @@ function main() {
 }
 
 if (IS_DEV) {
+	task.wait(5);
 	main();
 }

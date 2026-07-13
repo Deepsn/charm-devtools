@@ -1,65 +1,32 @@
-import { ReplicatedStorage } from "@rbxts/services";
-import { IS_RUNNING, IS_SERVER } from "./constants";
-import { type Action, actionGuard, BRIDGE_NAME, BRIDGE_REMOTE_NAME } from "./protocol";
+import { IS_SERVER } from "constants";
+import { type Action, actionGuard } from "./protocol";
+import { createTransportApi, getTransport, resolveTransport } from "./transport";
 
 export function createBridge(onAction: (action: Action) => void) {
-	let bridgeEvent = IS_SERVER
-		? (ReplicatedStorage.FindFirstChild(BRIDGE_NAME) as BindableEvent)
-		: (ReplicatedStorage.WaitForChild(BRIDGE_NAME) as BindableEvent);
+	const transport = createTransportApi(IS_SERVER ? resolveTransport() : getTransport());
 
-	let bridgeRemote = IS_SERVER
-		? (ReplicatedStorage.FindFirstChild(BRIDGE_REMOTE_NAME) as RemoteEvent)
-		: (ReplicatedStorage.WaitForChild(BRIDGE_REMOTE_NAME) as RemoteEvent);
-
-	// todo: ask the user if they want to create the bridge
-
-	if (!bridgeEvent) {
-		bridgeEvent = new Instance("BindableEvent");
-		bridgeEvent.Name = BRIDGE_NAME;
-		bridgeEvent.Archivable = false;
-	}
-
-	if (!bridgeRemote) {
-		bridgeRemote = new Instance("RemoteEvent");
-		bridgeRemote.Name = BRIDGE_REMOTE_NAME;
-		bridgeRemote.Archivable = false;
-	}
-
-	function onPayload(payload: unknown) {
-		if (payload === "ready") {
-			const readyCount = (ReplicatedStorage.GetAttribute("ready") as number) ?? 0;
-			ReplicatedStorage.SetAttribute("ready", readyCount + 1);
+	transport.connect((payload) => {
+		if (!actionGuard(payload)) {
+			warn("[charm-devtools] received a payload that failed validation:", payload);
 			return;
 		}
 
-		if (!actionGuard(payload)) {
-			return warn("[charm-devtools] payload didn't pass type guard, payload received:", payload);
-		}
-
 		onAction(payload);
-	}
+	});
 
-	bridgeEvent.Event.Connect((payload?: unknown) => onPayload(payload));
-	if (IS_SERVER) {
-		bridgeRemote.OnServerEvent.Connect((_player, payload?: unknown) => onPayload(payload));
-	} else {
-		bridgeRemote.OnClientEvent.Connect((payload?: unknown) => onPayload(payload));
-	}
+	transport.markAsReady();
 
-	bridgeEvent.Parent = ReplicatedStorage;
-	bridgeRemote.Parent = ReplicatedStorage;
+	return {
+		dispose: transport.dispose,
+		dispatch: transport.send,
+	};
+}
 
-	if (IS_RUNNING) {
-		if (IS_SERVER) {
-			const readyCount = (ReplicatedStorage.GetAttribute("ready") as number) ?? 0;
-			ReplicatedStorage.SetAttribute("ready", readyCount + 1);
-		} else {
-			bridgeRemote.FireServer("ready");
-		}
-	}
+export function resolveBridge() {
+	const transport = createTransportApi(getTransport());
 
-	return () => {
-		bridgeEvent?.Destroy();
-		bridgeRemote?.Destroy();
+	return {
+		dispose: transport.dispose,
+		dispatch: transport.send,
 	};
 }

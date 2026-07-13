@@ -1,7 +1,6 @@
 import { t } from "@rbxts/t";
 
-export const BRIDGE_NAME = "__CHARM_DEVTOOLS__";
-export const BRIDGE_REMOTE_NAME = `${BRIDGE_NAME}_REMOTE`;
+export const READY_ATTRIBUTE = "__CHARM_DEVTOOLS_READY__";
 
 export type Action = { id: string; name: string; timestamp: number; value: unknown; atomId: string };
 
