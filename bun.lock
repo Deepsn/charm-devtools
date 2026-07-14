@@ -36,6 +36,7 @@
         "@rbxts/inspect": "^1.0.1",
         "@rbxts/services": "^1.6.0",
         "@rbxts/vide": "^0.6.1",
+        "@rbxts/vide-charm": "^0.4.0",
       },
     },
     "test": {
@@ -86,6 +87,8 @@
     "@rbxts/types": ["@rbxts/types@1.0.937", "", {}, "sha512-eO5rc9JDKoanA3PiGi6YMBoGuVxMqx5QJWHOUk4GHmviqigjQQIB57ZwMYGxIRR2auM/OdvX0THPJuuj+Qq74Q=="],
 
     "@rbxts/vide": ["@rbxts/vide@0.6.1", "", {}, "sha512-syFqx+HYXy0TauDCGLhc68K2cAlfgYookIJSRtJZ01W7mUI+EKyj80x2L91dQxos3BwAAGJqBD/ovWU4M//+Lg=="],
+
+    "@rbxts/vide-charm": ["@rbxts/vide-charm@0.4.0", "", { "dependencies": { "@rbxts/charm": "^0.11.0" }, "peerDependencies": { "@rbxts/vide": "*" } }, "sha512-GVlxSQB+WBEqtRk4gX4dCYM/yWhSu7LxjU2Ia6Vo/a//50gsWDnEZ77orY8ta5mF4AIv5DI0LuO6pxC2WnrUJQ=="],
 
     "@roblox-ts/luau-ast": ["@roblox-ts/luau-ast@2.0.0", "", {}, "sha512-cmMi093IdwBOLVxwuordhM8AmtbyTIyRpsTbB0D/JauidW4SXsQRQowSwWjHo4QP0DRJBXvOIlxtqEQi50uNzQ=="],
 

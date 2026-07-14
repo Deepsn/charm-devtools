@@ -6,7 +6,7 @@ import { history } from "atoms/history";
 import { type InspectorTab, inspectorTab, selectedActionId } from "atoms/inspector";
 import { FONT, THEME } from "constants/theme";
 import { formatTime } from "lib/format";
-import { useAtom } from "lib/use-atom";
+import { useAtom } from "@rbxts/vide-charm";
 
 const HEADER_HEIGHT = 34;
 const TAB_HEIGHT = 26;

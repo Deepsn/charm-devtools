@@ -11,6 +11,7 @@
 	},
 	"dependencies": {
 		"@rbxts/charm": "catalog:",
+		"@rbxts/vide-charm": "^0.4.0",
 		"@rbxts/charm-devtools": "workspace:*",
 		"@rbxts/inspect": "^1.0.1",
 		"@rbxts/services": "^1.6.0",

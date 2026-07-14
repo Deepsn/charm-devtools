@@ -1,13 +1,13 @@
 import Vide, { source } from "@rbxts/vide";
+import { useAtom } from "@rbxts/vide-charm";
 import { VirtualizedList } from "app/components/virtualized-list";
 import { atoms } from "atoms/atoms";
 import { filter, selectedActionId } from "atoms/inspector";
 import { FONT, THEME } from "constants/theme";
 import { formatTime, includesText } from "lib/format";
-import { useAtom } from "lib/use-atom";
 
 export function ActionList() {
-	const atomsState = useAtom(atoms);
+	const atomsState = useAtom(() => atoms());
 	const search = useAtom(filter);
 	const selected = useAtom(selectedActionId);
 

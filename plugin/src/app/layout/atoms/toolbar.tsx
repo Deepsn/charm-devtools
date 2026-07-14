@@ -2,7 +2,7 @@ import Vide from "@rbxts/vide";
 import { clearHistory } from "atoms/history";
 import { filter, selectedActionId } from "atoms/inspector";
 import { FONT, THEME } from "constants/theme";
-import { useAtom } from "lib/use-atom";
+import { useAtom } from "@rbxts/vide-charm";
 
 export function Toolbar() {
 	const search = useAtom(filter);

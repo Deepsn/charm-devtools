@@ -5,7 +5,7 @@ import { Settings } from "app/layout/settings";
 import { currentWindow, type WindowId } from "atoms/window";
 import { THEME } from "constants/theme";
 import { WINDOWS } from "constants/windows";
-import { useAtom } from "lib/use-atom";
+import { useAtom } from "@rbxts/vide-charm";
 
 function Tab(props: { id: WindowId; label: string; active: () => WindowId }) {
 	return (

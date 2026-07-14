@@ -4,7 +4,7 @@ import { history } from "atoms/history";
 import { filter, selectedActionId } from "atoms/inspector";
 import { FONT, THEME } from "constants/theme";
 import { formatTime, includesText } from "lib/format";
-import { useAtom } from "lib/use-atom";
+import { useAtom } from "@rbxts/vide-charm";
 
 export function ActionList() {
 	const historyState = useAtom(history);
