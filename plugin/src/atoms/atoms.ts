@@ -6,7 +6,7 @@ export const atoms = computed(() => {
 	const atomList = new Set<Action["atomId"]>();
 	const actions: Action[] = [];
 
-	const historyList = history();
+	const historyList = table.clone(history());
 	historyList.sort((a, b) => a.timestamp > b.timestamp); // more recent first
 
 	for (const action of historyList) {
