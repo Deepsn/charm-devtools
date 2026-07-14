@@ -8,7 +8,7 @@
 		"serve": "rojo serve default.project.json"
 	},
 	"dependencies": {
-		"@rbxts/charm": "0.11.0-rc.2",
+		"@rbxts/charm": "catalog:",
 		"@rbxts/charm-devtools": "workspace:*"
 	}
 }

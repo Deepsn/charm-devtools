@@ -2,11 +2,16 @@
 	"name": "charm-devtools",
 	"version": "1.0.0",
 	"private": true,
-	"workspaces": [
-		"charm-devtools",
-		"plugin",
-		"test"
-	],
+	"workspaces": {
+		"packages": [
+			"charm-devtools",
+			"plugin",
+			"test"
+		],
+		"catalog": {
+			"@rbxts/charm": "^0.11.0"
+		}
+	},
 	"scripts": {
 		"postinstall": "bun scripts/link-node-modules.ts",
 		"build": "bun run --filter @rbxts/charm-devtools build && bun run --filter charm-devtools-plugin build && bun run --filter charm-devtools-test build",
