@@ -1,36 +1,35 @@
 {
 	"name": "charm-devtools",
 	"version": "1.0.0",
-	"description": "",
+	"private": true,
+	"workspaces": {
+		"packages": [
+			"charm-devtools",
+			"plugin",
+			"test"
+		],
+		"catalog": {
+			"@rbxts/charm": "^0.11.0"
+		}
+	},
 	"scripts": {
-		"dev": "concurrently \"pnpm watch\" \"pnpm watch:plugin\" \"pnpm watch:test\" \"pnpm serve:test\"",
-		"build": "rbxtsc",
-		"build:plugin": "rojo build -o %LOCALAPPDATA%/Roblox/Plugins/CharmDevTools.rbxm",
-		"serve": "rojo serve default.project.json",
-		"serve:test": "rojo serve test/default.project.json",
-		"watch": "rbxtsc -w",
-		"watch:test": "rbxtsc -w -p test",
-		"watch:plugin": "pnpm build:plugin --watch"
+		"postinstall": "bun scripts/link-node-modules.ts",
+		"build": "bun run --filter @rbxts/charm-devtools build && bun run --filter charm-devtools-plugin build && bun run --filter charm-devtools-test build",
+		"build:plugin": "bun run --filter charm-devtools-plugin build:rbxm",
+		"serve": "bun run --filter charm-devtools-plugin serve",
+		"serve:test": "bun run --filter charm-devtools-test serve",
+		"dev": "concurrently \"bun run --filter @rbxts/charm-devtools watch\" \"bun run --filter charm-devtools-plugin watch\" \"bun run --filter charm-devtools-test watch\" \"bun run --filter charm-devtools-plugin watch:rbxm\" \"bun run --filter charm-devtools-test serve\""
 	},
 	"author": "Speed",
 	"license": "MIT",
 	"devDependencies": {
+		"@biomejs/biome": "^2.5.1",
 		"@rbxts/compiler-types": "3.0.0-types.0",
 		"@rbxts/object-utils": "^1.0.4",
-		"@rbxts/types": "^1.0.892",
+		"@rbxts/types": "^1.0.933",
+		"@types/bun": "^1.3.14",
+		"concurrently": "^9.2.3",
 		"roblox-ts": "^3.0.0",
 		"typescript": "^5.9.3"
-	},
-	"dependencies": {
-		"@biomejs/biome": "^2.3.7",
-		"@rbxts/charm": "0.11.0-rc.2",
-		"@rbxts/inspect": "^1.0.1",
-		"@rbxts/react": "^17.3.7-alpha.1",
-		"@rbxts/react-charm": "0.4.0-rc.2",
-		"@rbxts/react-roblox": "^17.3.7-alpha.1",
-		"@rbxts/services": "^1.6.0",
-		"@rbxts/t": "^3.2.1",
-		"@rbxts/ultimate-list": "0.2.3-ts.2",
-		"concurrently": "^9.2.1"
 	}
 }

@@ -1,0 +1,20 @@
+{
+	"name": "charm-devtools-plugin",
+	"version": "1.0.0",
+	"private": true,
+	"scripts": {
+		"build": "rbxtsc",
+		"watch": "rbxtsc -w",
+		"build:rbxm": "rojo build default.project.json -o \"$LOCALAPPDATA/Roblox/Plugins/CharmDevTools.rbxm\"",
+		"watch:rbxm": "rojo build default.project.json -o \"$LOCALAPPDATA/Roblox/Plugins/CharmDevTools.rbxm\" --watch",
+		"serve": "rojo serve default.project.json"
+	},
+	"dependencies": {
+		"@rbxts/charm": "catalog:",
+		"@rbxts/vide-charm": "^0.4.0",
+		"@rbxts/charm-devtools": "workspace:*",
+		"@rbxts/inspect": "^1.0.1",
+		"@rbxts/services": "^1.6.0",
+		"@rbxts/vide": "^0.6.1"
+	}
+}
