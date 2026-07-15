@@ -19,9 +19,11 @@
       "name": "@rbxts/charm-devtools",
       "version": "1.0.0",
       "dependencies": {
-        "@rbxts/charm": "catalog:",
         "@rbxts/services": "^1.6.0",
         "@rbxts/t": "^3.2.1",
+      },
+      "devDependencies": {
+        "@rbxts/charm": "catalog:",
       },
       "peerDependencies": {
         "@rbxts/charm": "catalog:",

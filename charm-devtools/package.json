@@ -15,11 +15,13 @@
 		"access": "public"
 	},
 	"dependencies": {
-		"@rbxts/charm": "catalog:",
 		"@rbxts/services": "^1.6.0",
 		"@rbxts/t": "^3.2.1"
 	},
 	"peerDependencies": {
+		"@rbxts/charm": "catalog:"
+	},
+	"devDependencies": {
 		"@rbxts/charm": "catalog:"
 	}
 }
