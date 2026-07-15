@@ -47,14 +47,16 @@ function TreeNode(props: { name: string; value: unknown; expand?: boolean }) {
 					SortOrder={Enum.SortOrder.LayoutOrder}
 					VerticalAlignment={Enum.VerticalAlignment.Center}
 				/>
-				<Cell
-					text={() => (expandable ? (expanded() ? "▼" : "▶") : "")}
+				<Cell text={`${props.name}:`} color={THEME.tree.key} order={1} />
+				
+				{expandable ? <Cell
+					text={() => ((expanded() ? "▼" : "▶"))}
 					color={THEME.tree.arrow}
-					order={1}
+					order={2}
 					width={12}
 					size={THEME.monoSize - 2}
-				/>
-				<Cell text={`${props.name}:`} color={THEME.tree.key} order={2} />
+				/> : undefined}
+
 				{primitive !== undefined ? (
 					<Cell text={primitive.text} color={primitive.color} order={3} />
 				) : (
@@ -70,20 +72,22 @@ function TreeNode(props: { name: string; value: unknown; expand?: boolean }) {
 			{expandable ? (
 				<Show when={expanded}>
 					{() => (
-						<frame
-							Name="Children"
-							AutomaticSize={Enum.AutomaticSize.Y}
-							Size={new UDim2(1, 0, 0, 0)}
-							BackgroundTransparency={1}
-							LayoutOrder={2}
-						>
-							<uilistlayout FillDirection={Enum.FillDirection.Vertical} SortOrder={Enum.SortOrder.LayoutOrder} />
-							<uipadding PaddingLeft={new UDim(0, THEME.indent)} />
-							{entries?.map((entry) => (
-								<TreeNode name={displayKey(entry.key)} value={entry.value} />
-							))}
+						<>
+							<frame
+								Name="Children"
+								AutomaticSize={Enum.AutomaticSize.Y}
+								Size={new UDim2(1, 0, 0, 0)}
+								BackgroundTransparency={1}
+								LayoutOrder={2}
+							>
+								<uilistlayout FillDirection={Enum.FillDirection.Vertical} SortOrder={Enum.SortOrder.LayoutOrder} />
+								<uipadding PaddingLeft={new UDim(0, THEME.indent)} />
+								{entries?.map((entry) => (
+									<TreeNode name={displayKey(entry.key)} value={entry.value} />
+								))}
+							</frame>
 							<Cell text={"}"} color={THEME.tree.key} order={4} />
-						</frame>
+						</>
 					)}
 				</Show>
 			) : undefined}
