@@ -1,3 +1,3 @@
 export { createBridge } from "bridge";
-export { hookAtom } from "hook-atom";
+export { hookAtom, hookAtoms } from "hook-atom";
 export type { Action } from "protocol";
