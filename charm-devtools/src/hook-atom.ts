@@ -30,7 +30,7 @@ export function hookAtom<T extends AnyAtom>(atom: T, options?: HookOptions): T {
 
 export function hookAtoms<T extends Record<string, AnyAtom>>(atoms: T): T {
 	for (const [name, atom] of pairs(atoms)) {
-		hookAtom(atom, { label: name });
+		hookAtom(atom as AnyAtom, { label: name as string });
 	}
 	return atoms;
 }
