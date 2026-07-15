@@ -1,3 +1,3 @@
-export { createBridge } from "./bridge";
-export { hookAtom } from "./hook-atom";
-export type { Action } from "./protocol";
+export { createBridge } from "bridge";
+export { hookAtom } from "hook-atom";
+export type { Action } from "protocol";

@@ -1,6 +1,6 @@
 import { IS_SERVER } from "constants";
-import { type Action, actionGuard } from "./protocol";
-import { createTransportApi, getTransport, resolveTransport } from "./transport";
+import { type Action, actionGuard } from "protocol";
+import { createTransportApi, getTransport, resolveTransport } from "transport";
 
 export function createBridge(onAction: (action: Action) => void) {
 	const transport = createTransportApi(IS_SERVER ? resolveTransport() : getTransport());

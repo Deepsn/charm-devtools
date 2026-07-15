@@ -7,7 +7,7 @@ import { FONT, THEME } from "constants/theme";
 import { formatTime, includesText } from "lib/format";
 
 export function ActionList() {
-	const atomsState = useAtom(() => atoms());
+	const atomsState = useAtom(atoms);
 	const search = useAtom(filter);
 	const selected = useAtom(selectedActionId);
 

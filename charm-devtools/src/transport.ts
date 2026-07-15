@@ -1,6 +1,6 @@
 import { ReplicatedStorage } from "@rbxts/services";
 import { IS_SERVER } from "constants";
-import { READY_ATTRIBUTE } from "./protocol";
+import { READY_ATTRIBUTE } from "protocol";
 
 interface Transport extends Folder {
 	RemoteEvent: RemoteEvent;

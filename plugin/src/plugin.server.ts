@@ -56,6 +56,6 @@ function main() {
 	});
 }
 
-if (IS_DEV) {
-	main();
-}
+// if (IS_DEV) {
+main();
+// }
