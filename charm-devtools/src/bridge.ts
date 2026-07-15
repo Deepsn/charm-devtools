@@ -23,10 +23,31 @@ export function createBridge(onAction: (action: Action) => void) {
 }
 
 export function resolveBridge() {
-	const transport = createTransportApi(getTransport());
+	let transport: ReturnType<typeof createTransportApi> | undefined;
+	let queue: defined[] = [];
+
+	const thread = task.spawn(() => {
+		transport = createTransportApi(getTransport());
+
+		const pending = queue;
+		queue = [];
+
+		for (const payload of pending) {
+			transport.send(payload);
+		}
+	});
 
 	return {
-		dispose: transport.dispose,
-		dispatch: transport.send,
+		dispose: () => {
+			task.cancel(thread);
+			transport?.dispose();
+		},
+		dispatch: (payload: unknown) => {
+			if (transport) {
+				transport.send(payload);
+			} else {
+				queue.push(payload as defined);
+			}
+		},
 	};
 }
