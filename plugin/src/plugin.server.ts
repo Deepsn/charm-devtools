@@ -21,7 +21,7 @@ function main() {
 	widget.Name = "Charm DevTools";
 	widget.ZIndexBehavior = Enum.ZIndexBehavior.Sibling;
 
-	const bridge = createBridge(addToHistory);
+	const bridge = !IS_DEV ? createBridge(addToHistory) : undefined;
 
 	let unmount: (() => void) | undefined;
 
@@ -48,7 +48,7 @@ function main() {
 		enabled(false);
 		trigger(enabled);
 
-		bridge.dispose();
+		bridge?.dispose();
 		disposeEnabled();
 
 		unmount?.();
