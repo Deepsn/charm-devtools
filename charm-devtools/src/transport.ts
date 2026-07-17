@@ -34,7 +34,7 @@ export function resolveTransport() {
 }
 
 export function getTransport() {
-	return ReplicatedStorage.WaitForChild(TRANSPORT_NAME) as Transport;
+	return ReplicatedStorage.WaitForChild(TRANSPORT_NAME, 9e9) as Transport;
 }
 
 export function createTransportApi(transport: Transport) {
