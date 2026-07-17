@@ -1,12 +1,13 @@
 import inspect from "@rbxts/inspect";
 import Vide, { match, Show, values } from "@rbxts/vide";
+import { useAtom } from "@rbxts/vide-charm";
+import { DiffView } from "app/components/diff-view";
 import { ValueTree } from "app/components/value-tree";
 import type { Action } from "atoms";
 import { history } from "atoms/history";
 import { type InspectorTab, inspectorTab, selectedActionId } from "atoms/inspector";
 import { FONT, THEME } from "constants/theme";
-import { formatTime } from "lib/format";
-import { useAtom } from "@rbxts/vide-charm";
+import { envColor, formatTime } from "lib/format";
 
 const HEADER_HEIGHT = 34;
 const TAB_HEIGHT = 26;
@@ -37,15 +38,45 @@ function InspectorContent(props: { action: Action }) {
 	const tab = useAtom(inspectorTab);
 	const action = props.action;
 
+	const previousAction = () => {
+		const list = history();
+		let prev: Action | undefined;
+		for (const candidate of list) {
+			if (candidate.atomId === action.atomId && candidate.timestamp < action.timestamp) {
+				if (prev === undefined || candidate.timestamp > prev.timestamp) {
+					prev = candidate;
+				}
+			}
+		}
+		return prev;
+	};
+
 	return (
 		<frame Name="Content" Size={UDim2.fromScale(1, 1)} BackgroundTransparency={1}>
 			<frame Name="Header" Size={new UDim2(1, 0, 0, HEADER_HEIGHT)} BackgroundTransparency={1} BorderSizePixel={0}>
 				<uipadding PaddingLeft={new UDim(0, 12)} PaddingRight={new UDim(0, 12)} />
 				<textlabel
+					Name="Env"
+					Size={new UDim2(0, 52, 0, 18)}
+					Position={new UDim2(0, 0, 0.5, 0)}
+					AnchorPoint={new Vector2(0, 0.5)}
+					BackgroundColor3={() => envColor(action.env)}
+					BackgroundTransparency={0}
+					BorderSizePixel={0}
+					Text={action.env.upper()}
+					TextColor3={Color3.fromRGB(255, 255, 255)}
+					TextSize={THEME.fontSize - 2}
+					Font={FONT.bold}
+					TextXAlignment={Enum.TextXAlignment.Center}
+					TextYAlignment={Enum.TextYAlignment.Center}
+				>
+					<uicorner CornerRadius={new UDim(0, 3)} />
+				</textlabel>
+				<textlabel
 					Name="Name"
 					AnchorPoint={new Vector2(0, 0.5)}
-					Position={new UDim2(0, 0, 0.5, 0)}
-					Size={new UDim2(1, -80, 0, HEADER_HEIGHT)}
+					Position={new UDim2(0, 60, 0.5, 0)}
+					Size={new UDim2(1, -140, 0, HEADER_HEIGHT)}
 					BackgroundTransparency={1}
 					Text={action.name}
 					TextColor3={THEME.text}
@@ -91,6 +122,7 @@ function InspectorContent(props: { action: Action }) {
 				<uipadding PaddingLeft={new UDim(0, 12)} PaddingTop={new UDim(0, 2)} PaddingBottom={new UDim(0, 2)} />
 				<TabButton id="tree" label="Tree" active={tab} order={1} />
 				<TabButton id="raw" label="Raw" active={tab} order={2} />
+				<TabButton id="diff" label="Diff" active={tab} order={3} />
 			</frame>
 
 			<scrollingframe
@@ -130,6 +162,65 @@ function InspectorContent(props: { action: Action }) {
 							TextYAlignment={Enum.TextYAlignment.Top}
 						/>
 					),
+					diff: () => {
+						const prev = previousAction();
+						if (prev === undefined) {
+							return (
+								<textlabel
+									Name="NoPrevious"
+									Size={UDim2.fromScale(1, 0)}
+									AutomaticSize={Enum.AutomaticSize.Y}
+									BackgroundTransparency={1}
+									Text="No previous action for this atom to diff against"
+									TextColor3={THEME.textDim}
+									TextSize={THEME.fontSize}
+									Font={FONT.ui}
+									TextXAlignment={Enum.TextXAlignment.Left}
+								/>
+							);
+						}
+						const oldText = inspect(prev.value, { depth: 6 });
+						const newText = inspect(action.value, { depth: 6 });
+						return (
+							<frame Name="Diff" Size={UDim2.fromScale(1, 1)} BackgroundTransparency={1}>
+								<uilistlayout
+									FillDirection={Enum.FillDirection.Vertical}
+									SortOrder={Enum.SortOrder.LayoutOrder}
+									HorizontalAlignment={Enum.HorizontalAlignment.Center}
+								/>
+								<frame Name="Headers" Size={new UDim2(1, 0, 0, 22)} BackgroundTransparency={1}>
+									<uilistlayout
+										FillDirection={Enum.FillDirection.Horizontal}
+										SortOrder={Enum.SortOrder.LayoutOrder}
+										VerticalAlignment={Enum.VerticalAlignment.Center}
+									/>
+									<textlabel
+										Name="OldHeader"
+										Size={new UDim2(0.5, -2, 1, 0)}
+										BackgroundTransparency={1}
+										Text={`− ${prev.name} (${formatTime(prev.timestamp)})`}
+										TextColor3={Color3.fromRGB(197, 134, 192)}
+										TextSize={THEME.fontSize - 1}
+										Font={FONT.medium}
+										TextXAlignment={Enum.TextXAlignment.Left}
+										TextTruncate={Enum.TextTruncate.AtEnd}
+									/>
+									<textlabel
+										Name="NewHeader"
+										Size={new UDim2(0.5, -2, 1, 0)}
+										BackgroundTransparency={1}
+										Text={`+ ${action.name} (${formatTime(action.timestamp)})`}
+										TextColor3={Color3.fromRGB(152, 195, 121)}
+										TextSize={THEME.fontSize - 1}
+										Font={FONT.medium}
+										TextXAlignment={Enum.TextXAlignment.Left}
+										TextTruncate={Enum.TextTruncate.AtEnd}
+									/>
+								</frame>
+								<DiffView oldText={oldText} newText={newText} />
+							</frame>
+						);
+					},
 				})}
 			</scrollingframe>
 		</frame>

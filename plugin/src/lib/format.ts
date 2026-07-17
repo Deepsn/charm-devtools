@@ -1,5 +1,10 @@
 import { THEME } from "constants/theme";
 
+/** Returns the accent color for a given action environment. */
+export function envColor(env: "client" | "server"): Color3 {
+	return env === "server" ? THEME.env.server : THEME.env.client;
+}
+
 export interface Entry {
 	key: unknown;
 	value: unknown;

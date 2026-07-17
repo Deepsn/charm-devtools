@@ -1,10 +1,10 @@
 import Vide, { source } from "@rbxts/vide";
+import { useAtom } from "@rbxts/vide-charm";
 import { VirtualizedList } from "app/components/virtualized-list";
 import { history } from "atoms/history";
 import { filter, selectedActionId } from "atoms/inspector";
 import { FONT, THEME } from "constants/theme";
-import { formatTime, includesText } from "lib/format";
-import { useAtom } from "@rbxts/vide-charm";
+import { envColor, formatTime, includesText } from "lib/format";
 
 export function ActionList() {
 	const historyState = useAtom(history);
@@ -51,9 +51,26 @@ export function ActionList() {
 						Visible={isSelected}
 					/>
 					<textlabel
+						Name="Env"
+						Size={new UDim2(0, 44, 0, 16)}
+						Position={new UDim2(0, 10, 0.5, 0)}
+						AnchorPoint={new Vector2(0, 0.5)}
+						BackgroundColor3={() => envColor(action().env)}
+						BackgroundTransparency={0}
+						BorderSizePixel={0}
+						Text={() => action().env.upper()}
+						TextColor3={Color3.fromRGB(255, 255, 255)}
+						TextSize={THEME.fontSize - 3}
+						Font={FONT.bold}
+						TextXAlignment={Enum.TextXAlignment.Center}
+						TextYAlignment={Enum.TextYAlignment.Center}
+					>
+						<uicorner CornerRadius={new UDim(0, 3)} />
+					</textlabel>
+					<textlabel
 						Name="Label"
-						Size={new UDim2(1, -62, 1, 0)}
-						Position={new UDim2(0, 10, 0, 0)}
+						Size={new UDim2(1, -118, 1, 0)}
+						Position={new UDim2(0, 60, 0, 0)}
 						BackgroundTransparency={1}
 						Text={() => action().name}
 						TextColor3={THEME.text}

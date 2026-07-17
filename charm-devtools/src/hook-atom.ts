@@ -1,6 +1,7 @@
 import { type Atom, listen } from "@rbxts/charm";
 import { HttpService } from "@rbxts/services";
 import { resolveBridge } from "bridge";
+import { IS_SERVER } from "constants";
 import type { Action } from "protocol";
 
 // biome-ignore lint/suspicious/noExplicitAny: accepts any atom
@@ -21,6 +22,7 @@ export function hookAtom<T extends AnyAtom>(atom: T, options?: HookOptions): T {
 			atomId,
 			name: trace,
 			value,
+			env: IS_SERVER ? "server" : "client",
 			timestamp: DateTime.now().UnixTimestampMillis / 1000,
 		} satisfies Action);
 	});

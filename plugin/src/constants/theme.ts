@@ -18,6 +18,12 @@ export const THEME = {
 	textDim: Color3.fromRGB(103, 103, 112),
 	scrollbar: Color3.fromRGB(82, 82, 91),
 
+	// environment badges
+	env: {
+		client: Color3.fromRGB(56, 132, 232),
+		server: Color3.fromRGB(120, 180, 90),
+	},
+
 	// value-tree syntax highlighting (VS Code dark inspired)
 	tree: {
 		key: Color3.fromRGB(156, 220, 254),

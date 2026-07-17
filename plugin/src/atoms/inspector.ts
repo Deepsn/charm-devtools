@@ -4,6 +4,6 @@ export const selectedActionId = atom<string | undefined>(undefined);
 
 export const filter = atom("");
 
-export type InspectorTab = "tree" | "raw";
+export type InspectorTab = "tree" | "raw" | "diff";
 
 export const inspectorTab = atom<InspectorTab>("tree");

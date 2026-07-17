@@ -31,6 +31,7 @@ if (!IS_RUNNING) {
 			name: `Action ${index}`,
 			timestamp: DateTime.now().UnixTimestamp + index,
 			value: `Value ${index}`,
+			env: index % 2 === 0 ? "server" : "client",
 		});
 	}
 
@@ -46,7 +47,25 @@ if (!IS_RUNNING) {
 				be: {
 					nested: "deeply",
 				},
+				wow: "123",
 			},
 		},
+		env: "server",
+	});
+
+	addToHistory({
+		id: "action-102",
+		atomId: "atom-101",
+		name: "Action 102",
+		timestamp: DateTime.now().UnixTimestamp + 102,
+		value: {
+			huge: "complexx",
+			object: {
+				that: "cant",
+				be: {},
+				wow: 123,
+			},
+		},
+		env: "client",
 	});
 }
