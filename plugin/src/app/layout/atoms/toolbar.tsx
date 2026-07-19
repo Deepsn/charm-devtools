@@ -1,8 +1,8 @@
 import Vide from "@rbxts/vide";
-import { clearHistory } from "atoms/history";
-import { filter, selectedActionId } from "atoms/inspector";
-import { FONT, THEME } from "constants/theme";
 import { useAtom } from "@rbxts/vide-charm";
+import { clearHistory } from "atoms/history";
+import { filter, selectedAtomId } from "atoms/inspector";
+import { FONT, THEME } from "constants/theme";
 
 export function Toolbar() {
 	const search = useAtom(filter);
@@ -61,7 +61,7 @@ export function Toolbar() {
 				Font={FONT.medium}
 				Activated={() => {
 					clearHistory();
-					selectedActionId(undefined);
+					selectedAtomId(undefined);
 				}}
 			>
 				<uicorner CornerRadius={new UDim(0, 4)} />

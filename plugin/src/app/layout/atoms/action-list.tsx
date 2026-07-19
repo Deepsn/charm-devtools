@@ -2,19 +2,19 @@ import Vide, { source } from "@rbxts/vide";
 import { useAtom } from "@rbxts/vide-charm";
 import { VirtualizedList } from "app/components/virtualized-list";
 import { atoms } from "atoms/atoms";
-import { filter, selectedActionId } from "atoms/inspector";
+import { filter, selectedAtomId } from "atoms/inspector";
 import { FONT, THEME } from "constants/theme";
-import { formatTime, includesText } from "lib/format";
+import { includesText } from "lib/format";
 
 export function ActionList() {
 	const atomsState = useAtom(atoms);
 	const search = useAtom(filter);
-	const selected = useAtom(selectedActionId);
+	const selected = useAtom(selectedAtomId);
 
 	const rows = () => {
 		const query = search();
 		const list = atomsState().filter((action) => includesText(action.name, query));
-		list.sort((a, b) => a.timestamp < b.timestamp);
+		list.sort((a, b) => a.name < b.name);
 		return list;
 	};
 
@@ -27,7 +27,7 @@ export function ActionList() {
 		BackgroundTransparency: 0,
 		ScrollBarImageColor3: THEME.scrollbar,
 		render: (action) => {
-			const isSelected = () => selected() === action().id;
+			const isSelected = () => selected() === action().atomId;
 			const hovered = source(false);
 
 			return (
@@ -39,7 +39,7 @@ export function ActionList() {
 					BorderSizePixel={0}
 					AutoButtonColor={false}
 					Text=""
-					Activated={() => selectedActionId(action().id)}
+					MouseButton1Click={() => selectedAtomId(action().atomId)}
 					MouseEnter={() => hovered(true)}
 					MouseLeave={() => hovered(false)}
 				>
@@ -61,18 +61,6 @@ export function ActionList() {
 						Font={FONT.medium}
 						TextXAlignment={Enum.TextXAlignment.Left}
 						TextTruncate={Enum.TextTruncate.AtEnd}
-					/>
-					<textlabel
-						Name="Time"
-						AnchorPoint={new Vector2(1, 0.5)}
-						Position={new UDim2(1, -8, 0.5, 0)}
-						Size={UDim2.fromOffset(48, THEME.rowHeight)}
-						BackgroundTransparency={1}
-						Text={() => formatTime(action().timestamp)}
-						TextColor3={THEME.textDim}
-						TextSize={THEME.fontSize - 2}
-						Font={FONT.mono}
-						TextXAlignment={Enum.TextXAlignment.Right}
 					/>
 				</textbutton>
 			);

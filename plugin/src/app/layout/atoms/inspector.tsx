@@ -1,12 +1,12 @@
 import inspect from "@rbxts/inspect";
-import Vide, { match, Show, values } from "@rbxts/vide";
+import Vide, { Case, match, Switch } from "@rbxts/vide";
+import { useAtom } from "@rbxts/vide-charm";
 import { ValueTree } from "app/components/value-tree";
 import type { Action } from "atoms";
 import { history } from "atoms/history";
-import { type InspectorTab, inspectorTab, selectedActionId } from "atoms/inspector";
+import { type InspectorTab, inspectorTab, selectedAtomId } from "atoms/inspector";
 import { FONT, THEME } from "constants/theme";
 import { formatTime } from "lib/format";
-import { useAtom } from "@rbxts/vide-charm";
 
 const HEADER_HEIGHT = 34;
 const TAB_HEIGHT = 26;
@@ -33,9 +33,11 @@ function TabButton(props: { id: InspectorTab; label: string; active: () => Inspe
 	);
 }
 
-function InspectorContent(props: { action: Action }) {
+function InspectorContent(props: { action: () => Action }) {
 	const tab = useAtom(inspectorTab);
 	const action = props.action;
+
+	// todo: reset tab when inspectorTab gets to diff
 
 	return (
 		<frame Name="Content" Size={UDim2.fromScale(1, 1)} BackgroundTransparency={1}>
@@ -47,7 +49,7 @@ function InspectorContent(props: { action: Action }) {
 					Position={new UDim2(0, 0, 0.5, 0)}
 					Size={new UDim2(1, -80, 0, HEADER_HEIGHT)}
 					BackgroundTransparency={1}
-					Text={action.name}
+					Text={() => action().name}
 					TextColor3={THEME.text}
 					TextSize={THEME.fontSize + 1}
 					Font={FONT.bold}
@@ -60,7 +62,7 @@ function InspectorContent(props: { action: Action }) {
 					Position={new UDim2(1, 0, 0.5, 0)}
 					Size={UDim2.fromOffset(72, HEADER_HEIGHT)}
 					BackgroundTransparency={1}
-					Text={formatTime(action.timestamp)}
+					Text={() => formatTime(action().timestamp)}
 					TextColor3={THEME.textDim}
 					TextSize={THEME.fontSize - 1}
 					Font={FONT.mono}
@@ -113,14 +115,14 @@ function InspectorContent(props: { action: Action }) {
 					PaddingBottom={new UDim(0, 8)}
 				/>
 				{match(tab)({
-					tree: () => <ValueTree value={action.value} />,
+					tree: () => <ValueTree value={() => action().value} />,
 					raw: () => (
 						<textlabel
 							Name="Raw"
 							AutomaticSize={Enum.AutomaticSize.Y}
 							Size={new UDim2(1, 0, 0, 0)}
 							BackgroundTransparency={1}
-							Text={inspect(action.value, { depth: 6 })}
+							Text={() => inspect(action().value, { depth: 6 })}
 							TextColor3={THEME.tree.other}
 							TextSize={THEME.monoSize}
 							Font={FONT.mono}
@@ -150,27 +152,28 @@ function EmptyState() {
 }
 
 export function Inspector() {
-	const selected = useAtom(selectedActionId);
+	const selected = useAtom(selectedAtomId);
 	const historyState = useAtom(history);
 
 	const selectedAction = () => {
 		const id = selected();
 		if (id === undefined) return undefined;
-		return historyState().find((action) => action.id === id);
+		const actions = historyState().filter((action) => action.atomId === id);
+		let latestAction: Action | undefined;
+		for (const action of actions) {
+			if (latestAction === undefined || action.timestamp > latestAction.timestamp) {
+				latestAction = action;
+			}
+		}
+		return latestAction;
 	};
 
 	return (
 		<frame Name="Inspector" Size={UDim2.fromScale(1, 1)} BackgroundColor3={THEME.windowBg} BorderSizePixel={0}>
-			{values(
-				() => {
-					const action = selectedAction();
-					return action !== undefined ? [action] : [];
-				},
-				(action) => (
-					<InspectorContent action={action} />
-				),
-			)}
-			<Show when={() => selectedAction() === undefined}>{() => <EmptyState />}</Show>
+			<Switch condition={() => selectedAction() !== undefined}>
+				<Case match={true}>{() => <InspectorContent action={selectedAction as () => Action} />}</Case>
+				<Case match={false}>{() => <EmptyState />}</Case>
+			</Switch>
 		</frame>
 	);
 }

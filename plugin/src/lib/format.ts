@@ -1,6 +1,5 @@
 import { THEME } from "constants/theme";
 
-/** Returns the accent color for a given action environment. */
 export function envColor(env: "client" | "server"): Color3 {
 	return env === "server" ? THEME.env.server : THEME.env.client;
 }
@@ -14,7 +13,6 @@ export function isTable(value: unknown): value is object {
 	return typeIs(value, "table");
 }
 
-/** Whether a Lua table is a dense array (keys 1..n). */
 export function isArray(value: object): boolean {
 	let count = 0;
 	let maxIndex = 0;
@@ -52,7 +50,6 @@ export interface FormattedValue {
 	color: Color3;
 }
 
-/** Formats a primitive (non-table) value with a syntax-highlight color. */
 export function formatValue(value: unknown): FormattedValue {
 	const kind = typeOf(value);
 
@@ -65,7 +62,6 @@ export function formatValue(value: unknown): FormattedValue {
 	return { text: tostring(value), color: THEME.tree.other };
 }
 
-/** A compact, collapsed summary of a table, e.g. `Array(3)` or `{…}`. */
 export function previewTable(value: object): string {
 	const entries = getEntries(value);
 	if (entries.size() === 0) return "{ }";
@@ -76,7 +72,6 @@ export function formatTime(unix: number): string {
 	return DateTime.fromUnixTimestamp(unix).FormatLocalTime("HH:mm:ss", "en-us");
 }
 
-/** Case-insensitive plain-text substring test. */
 export function includesText(haystack: string, needle: string): boolean {
 	if (needle === "") return true;
 	const [found] = haystack.lower().find(needle.lower(), 1, true);
