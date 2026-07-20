@@ -1,6 +1,21 @@
-import Vide, { Case, type Derivable, derive, Index, read, Show, Switch, source } from "@rbxts/vide";
+import Vide, { Case, type Derivable, derive, Index, read, Show, type Source, Switch, source } from "@rbxts/vide";
 import { FONT, THEME } from "constants/theme";
 import { displayKey, formatValue, getEntries, isTable, previewTable } from "lib/format";
+
+const expansionSources = new Map<string, Source<boolean>>();
+
+function expansionSource(path: string, initial: boolean): Source<boolean> {
+	let existing = expansionSources.get(path);
+	if (existing === undefined) {
+		existing = source(initial);
+		expansionSources.set(path, existing);
+	}
+	return existing;
+}
+
+function keySegment(key: unknown): string {
+	return `${typeOf(key)}:${tostring(key)}`;
+}
 
 function Cell(props: {
 	text: Derivable<string>;
@@ -25,7 +40,13 @@ function Cell(props: {
 	);
 }
 
-function TreeNode(props: { name: Derivable<string>; value: Derivable<unknown>; order?: number; expand?: boolean }) {
+function TreeNode(props: {
+	name: Derivable<string>;
+	value: Derivable<unknown>;
+	path: Derivable<string>;
+	order?: number;
+	expand?: boolean;
+}) {
 	const value = () => read(props.value);
 
 	const container = derive(() => {
@@ -38,8 +59,9 @@ function TreeNode(props: { name: Derivable<string>; value: Derivable<unknown>; o
 	});
 
 	const expandable = () => !entries().isEmpty();
-	const open = source(props.expand === true);
-	const expanded = () => open() && expandable();
+	// shared source for this path, so the open/closed state survives tree rebuilds
+	const open = () => expansionSource(read(props.path), props.expand === true);
+	const expanded = () => open()() && expandable();
 
 	// header text/color collapse into one reactive cell so the node re-renders in
 	// place instead of relying on a Switch to rebuild it
@@ -68,7 +90,10 @@ function TreeNode(props: { name: Derivable<string>; value: Derivable<unknown>; o
 				Text=""
 				LayoutOrder={1}
 				Activated={() => {
-					if (expandable()) open(!open());
+					if (expandable()) {
+						const state = open();
+						state(!state());
+					}
 				}}
 			>
 				<uilistlayout
@@ -108,7 +133,12 @@ function TreeNode(props: { name: Derivable<string>; value: Derivable<unknown>; o
 							<uipadding PaddingLeft={new UDim(0, THEME.indent)} />
 							<Index each={entries}>
 								{(entry, index) => (
-									<TreeNode name={() => displayKey(entry().key)} value={() => entry().value} order={index} />
+									<TreeNode
+										name={() => displayKey(entry().key)}
+										value={() => entry().value}
+										path={() => `${read(props.path)}/${keySegment(entry().key)}`}
+										order={index}
+									/>
 								)}
 							</Index>
 						</frame>
@@ -120,13 +150,16 @@ function TreeNode(props: { name: Derivable<string>; value: Derivable<unknown>; o
 	);
 }
 
-export function ValueTree(props: { value: Derivable<unknown> }) {
+export function ValueTree(props: { value: Derivable<unknown>; scope?: Derivable<string> }) {
 	const value = () => read(props.value);
 
 	const entries = derive(() => {
 		const current = value();
 		return isTable(current) ? getEntries(current) : [];
 	});
+
+	// root of the expansion path; scoping per inspected atom keeps trees independent
+	const rootPath = () => read(props.scope) ?? "root";
 
 	return (
 		<Switch condition={() => !entries().isEmpty()}>
@@ -144,6 +177,7 @@ export function ValueTree(props: { value: Derivable<unknown> }) {
 								<TreeNode
 									name={() => displayKey(entry().key)}
 									value={() => entry().value}
+									path={() => `${rootPath()}/${keySegment(entry().key)}`}
 									order={index}
 									expand={true}
 								/>
@@ -153,7 +187,7 @@ export function ValueTree(props: { value: Derivable<unknown> }) {
 				)}
 			</Case>
 
-			<Case match={false}>{() => <TreeNode name="value" value={value} />}</Case>
+			<Case match={false}>{() => <TreeNode name="value" value={value} path={() => `${rootPath()}/value`} />}</Case>
 		</Switch>
 	);
 }

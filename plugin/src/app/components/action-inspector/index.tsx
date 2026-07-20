@@ -67,7 +67,7 @@ export function ActionInspector(props: { action: Action }) {
 				>
 					<uilistlayout FillDirection={Enum.FillDirection.Vertical} SortOrder={Enum.SortOrder.LayoutOrder} />
 					{match(tab)({
-						tree: () => <ValueTree value={action.value} />,
+						tree: () => <ValueTree value={action.value} scope={action.atomId} />,
 						raw: () => <CodeBlock text={inspect(action.value, { depth: 6 })} />,
 						diff: () => {
 							const prev = previousAction();
