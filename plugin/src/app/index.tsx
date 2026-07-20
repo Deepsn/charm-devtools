@@ -1,11 +1,11 @@
 import Vide, { match } from "@rbxts/vide";
+import { useAtom } from "@rbxts/vide-charm";
 import { Atoms } from "app/layout/atoms";
 import { History } from "app/layout/history";
 import { Settings } from "app/layout/settings";
 import { currentWindow, type WindowId } from "atoms/window";
 import { THEME } from "constants/theme";
 import { WINDOWS } from "constants/windows";
-import { useAtom } from "@rbxts/vide-charm";
 
 function Tab(props: { id: WindowId; label: string; active: () => WindowId }) {
 	return (

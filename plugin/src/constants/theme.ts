@@ -7,10 +7,14 @@ export const THEME = {
 	rowHover: Color3.fromRGB(39, 39, 44),
 	rowSelected: Color3.fromRGB(38, 51, 78),
 	divider: Color3.fromRGB(45, 45, 51),
+	cardBg: Color3.fromRGB(32, 32, 36),
+	chipBg: Color3.fromRGB(39, 39, 44),
 
 	// accents / chrome
 	accent: Color3.fromRGB(59, 130, 246),
 	frameBg: Color3.fromRGB(39, 39, 42),
+	border: Color3.fromRGB(52, 52, 58),
+	rail: Color3.fromRGB(63, 63, 70),
 
 	// text
 	text: Color3.fromRGB(228, 228, 231),
@@ -41,6 +45,8 @@ export const THEME = {
 	// sizes
 	fontSize: 13,
 	monoSize: 13,
+	sectionSize: 14,
+	labelSize: 10,
 	tabHeight: 30,
 	toolbarHeight: 30,
 	rowHeight: 26,
