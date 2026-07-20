@@ -16,8 +16,7 @@ export function AtomList() {
 	const rows = () => {
 		const query = search();
 		const list = atomsState().filter((action) => includesText(action.name, query));
-		list.sort((a, b) => a.name < b.name);
-		return list;
+		return table.clone(list).sort((a, b) => a.name < b.name);
 	};
 
 	return ListPanel({

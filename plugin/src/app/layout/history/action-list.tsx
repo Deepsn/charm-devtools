@@ -16,8 +16,7 @@ export function ActionList() {
 	const rows = () => {
 		const query = search();
 		const list = historyState().filter((action) => includesText(action.name, query));
-		list.sort((a, b) => a.name < b.name);
-		return list;
+		return table.clone(list).sort((a, b) => a.name < b.name);
 	};
 
 	return ListPanel({
