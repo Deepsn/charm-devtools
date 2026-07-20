@@ -1,10 +1,10 @@
 import Vide, { Show, values } from "@rbxts/vide";
 import { useAtom } from "@rbxts/vide-charm";
 import { ActionInspector } from "app/components/action-inspector";
+import { Card } from "app/components/card";
 import { EmptyState } from "app/components/empty-state";
 import { atoms } from "atoms/atoms";
 import { selectedAtomId } from "atoms/inspector";
-import { THEME } from "constants/theme";
 
 export function Inspector() {
 	const atomsState = useAtom(atoms);
@@ -17,7 +17,7 @@ export function Inspector() {
 	};
 
 	return (
-		<frame Name="Inspector" Size={UDim2.fromScale(1, 1)} BackgroundColor3={THEME.windowBg} BorderSizePixel={0}>
+		<frame Name="Inspector" Size={UDim2.fromScale(1, 1)} BackgroundTransparency={1} BorderSizePixel={0}>
 			{values(
 				() => {
 					const action = selectedAtom();
@@ -28,7 +28,11 @@ export function Inspector() {
 				),
 			)}
 			<Show when={() => selectedAtom() === undefined}>
-				{() => <EmptyState text="Select an atom to inspect its value" />}
+				{() => (
+					<Card name="Empty">
+						<EmptyState text="Select an atom to inspect its value" />
+					</Card>
+				)}
 			</Show>
 		</frame>
 	);

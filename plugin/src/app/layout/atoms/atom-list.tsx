@@ -27,7 +27,7 @@ export function AtomList() {
 				<EnvBadge env={() => action().env} Position={new UDim2(0, 10, 0.5, 0)} AnchorPoint={new Vector2(0, 0.5)} />
 				<textlabel
 					Name="Label"
-					Size={new UDim2(1, -100, 1, 0)}
+					Size={new UDim2(1, -70, 1, 0)}
 					Position={new UDim2(0, 60, 0, 0)}
 					BackgroundTransparency={1}
 					Text={() => action().name}

@@ -16,6 +16,11 @@ export const THEME = {
 	border: Color3.fromRGB(52, 52, 58),
 	rail: Color3.fromRGB(63, 63, 70),
 
+	// activity rail
+	railBg: Color3.fromRGB(18, 18, 21),
+	icon: Color3.fromRGB(130, 130, 140),
+	iconActive: Color3.fromRGB(236, 236, 240),
+
 	// text
 	text: Color3.fromRGB(228, 228, 231),
 	textMuted: Color3.fromRGB(148, 148, 156),
@@ -47,14 +52,21 @@ export const THEME = {
 	monoSize: 13,
 	sectionSize: 14,
 	labelSize: 10,
-	tabHeight: 30,
-	toolbarHeight: 30,
-	rowHeight: 26,
-	rowSpacing: 2,
+	rowHeight: 28,
+	rowSpacing: 4,
 	treeRowHeight: 20,
 	indent: 14,
 	padding: 8,
 	listWidth: 220,
+
+	// shell chrome
+	railWidth: 44,
+	railItemHeight: 40,
+	railIconSize: 18,
+	filterHeight: 30,
+	tabHeight: 28,
+	gap: 8,
+	radius: 6,
 } as const;
 
 export const FONT = {

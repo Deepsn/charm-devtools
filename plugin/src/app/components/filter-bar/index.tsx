@@ -1,20 +1,20 @@
 import Vide, { type Derivable } from "@rbxts/vide";
 import { FONT, THEME } from "constants/theme";
 
-export interface ToolbarAction {
+export interface FilterAction {
 	label: string;
 	onClick: () => void;
 	width?: number;
 }
 
-const ACTION_WIDTH = 76;
-const ACTION_GAP = 10;
+const ACTION_WIDTH = 52;
+const ACTION_GAP = 6;
 
-export function Toolbar(props: {
+export function FilterBar(props: {
 	search: Derivable<string>;
 	placeholder: string;
 	onSearch: (text: string) => void;
-	actions?: ToolbarAction[];
+	actions?: FilterAction[];
 }) {
 	const actions = props.actions ?? [];
 
@@ -24,23 +24,16 @@ export function Toolbar(props: {
 	}
 
 	return (
-		<frame Name="Toolbar" Size={UDim2.fromScale(1, 1)} BackgroundColor3={THEME.toolbarBg} BorderSizePixel={0}>
-			<uipadding
-				PaddingLeft={new UDim(0, 6)}
-				PaddingRight={new UDim(0, 6)}
-				PaddingTop={new UDim(0, 4)}
-				PaddingBottom={new UDim(0, 4)}
-			/>
-
+		<frame Name="FilterBar" Size={UDim2.fromScale(1, 1)} BackgroundTransparency={1} BorderSizePixel={0}>
 			<frame
 				Name="Search"
 				Size={new UDim2(1, -actionsWidth, 1, 0)}
-				Position={UDim2.fromScale(0, 0)}
 				BackgroundColor3={THEME.inputBg}
 				BorderSizePixel={0}
 			>
-				<uicorner CornerRadius={new UDim(0, 4)} />
-				<uipadding PaddingLeft={new UDim(0, 8)} PaddingRight={new UDim(0, 8)} />
+				<uicorner CornerRadius={new UDim(0, THEME.radius)} />
+				<uistroke Color={THEME.border} />
+				<uipadding PaddingLeft={new UDim(0, 10)} PaddingRight={new UDim(0, 10)} />
 				<textbox
 					Name="Input"
 					Size={UDim2.fromScale(1, 1)}
@@ -63,6 +56,7 @@ export function Toolbar(props: {
 				Position={UDim2.fromScale(1, 0)}
 				Size={new UDim2(0, math.max(actionsWidth - ACTION_GAP, 0), 1, 0)}
 				BackgroundTransparency={1}
+				BorderSizePixel={0}
 			>
 				<uilistlayout
 					FillDirection={Enum.FillDirection.Horizontal}
@@ -74,17 +68,18 @@ export function Toolbar(props: {
 					<textbutton
 						Name={action.label}
 						Size={new UDim2(0, action.width ?? ACTION_WIDTH, 1, 0)}
-						BackgroundColor3={THEME.frameBg}
+						BackgroundColor3={THEME.cardBg}
 						BorderSizePixel={0}
 						AutoButtonColor={true}
 						Text={action.label}
-						TextColor3={THEME.text}
-						TextSize={THEME.fontSize}
+						TextColor3={THEME.textMuted}
+						TextSize={THEME.fontSize - 1}
 						Font={FONT.medium}
 						LayoutOrder={index}
 						Activated={action.onClick}
 					>
-						<uicorner CornerRadius={new UDim(0, 4)} />
+						<uicorner CornerRadius={new UDim(0, THEME.radius)} />
+						<uistroke Color={THEME.border} />
 					</textbutton>
 				))}
 			</frame>

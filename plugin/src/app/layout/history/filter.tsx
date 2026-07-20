@@ -1,14 +1,14 @@
 import Vide from "@rbxts/vide";
 import { useAtom } from "@rbxts/vide-charm";
-import { Toolbar as ToolbarBase } from "app/components/toolbar";
+import { FilterBar } from "app/components/filter-bar";
 import { clearHistory } from "atoms/history";
 import { actionFilter, selectedActionId } from "atoms/inspector";
 
-export function Toolbar() {
+export function Filter() {
 	const search = useAtom(actionFilter);
 
 	return (
-		<ToolbarBase
+		<FilterBar
 			search={search}
 			placeholder="Filter actions…"
 			onSearch={(text) => actionFilter(text)}

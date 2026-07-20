@@ -1,4 +1,5 @@
 import Vide, { type Derivable, Show } from "@rbxts/vide";
+import { Card } from "app/components/card";
 import { VirtualizedList } from "app/components/virtualized-list";
 import { FONT, THEME } from "constants/theme";
 
@@ -8,13 +9,13 @@ export function ListPanel<T extends defined>(props: {
 	render: (value: () => T, index: () => number) => Vide.Node;
 }) {
 	return (
-		<frame Name="ListPanel" Size={UDim2.fromScale(1, 1)} BackgroundColor3={THEME.panelBg} BorderSizePixel={0}>
+		<Card name="ListPanel" padding={6}>
 			<Show when={() => props.items().isEmpty()}>
 				{() => (
 					<textlabel
 						Name="Empty"
-						Size={new UDim2(1, -20, 0, THEME.rowHeight)}
-						Position={new UDim2(0, 10, 0, 4)}
+						Size={new UDim2(1, 0, 0, THEME.rowHeight)}
+						Position={new UDim2(0, 4, 0, 2)}
 						BackgroundTransparency={1}
 						Text={props.emptyText}
 						TextColor3={THEME.textDim}
@@ -34,6 +35,6 @@ export function ListPanel<T extends defined>(props: {
 				ScrollBarImageColor3: THEME.scrollbar,
 				render: props.render,
 			})}
-		</frame>
+		</Card>
 	);
 }
