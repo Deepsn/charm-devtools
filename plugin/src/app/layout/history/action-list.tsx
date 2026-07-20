@@ -33,7 +33,6 @@ export function ActionList() {
 				const canvasSize = scrollingFrame.CanvasSize;
 				const currentCanvasPosition = scrollControl.getCanvasPosition();
 
-				print(currentCanvasPosition.Y, canvasSize.Y.Offset - THEME.rowHeight * 2);
 				if (currentCanvasPosition.Y < canvasSize.Y.Offset - THEME.rowHeight * 2) return;
 
 				scrollControl.setCanvasPosition(new Vector2(0, canvasSize.Y.Offset));
