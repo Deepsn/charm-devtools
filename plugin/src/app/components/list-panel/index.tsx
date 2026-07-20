@@ -1,12 +1,14 @@
 import Vide, { type Derivable, Show } from "@rbxts/vide";
 import { Card } from "app/components/card";
 import { VirtualizedList } from "app/components/virtualized-list";
+import type { ScrollControl } from "app/components/virtualized-list/scroll-control";
 import { FONT, THEME } from "constants/theme";
 
 export function ListPanel<T extends defined>(props: {
 	items: () => readonly T[];
 	emptyText: Derivable<string>;
 	render: (value: () => T, index: () => number) => Vide.Node;
+	scrollControl?: ScrollControl;
 }) {
 	return (
 		<Card name="ListPanel" padding={6}>
@@ -26,15 +28,16 @@ export function ListPanel<T extends defined>(props: {
 				)}
 			</Show>
 
-			{VirtualizedList({
-				items: props.items,
-				rowHeight: THEME.rowHeight,
-				spacing: THEME.rowSpacing,
-				Size: UDim2.fromScale(1, 1),
-				BackgroundTransparency: 1,
-				ScrollBarImageColor3: THEME.scrollbar,
-				render: props.render,
-			})}
+			<VirtualizedList
+				items={props.items}
+				rowHeight={THEME.rowHeight}
+				spacing={THEME.rowSpacing}
+				Size={UDim2.fromScale(1, 1)}
+				BackgroundTransparency={1}
+				ScrollBarImageColor3={THEME.scrollbar}
+				render={props.render}
+				scrollControl={props.scrollControl}
+			/>
 		</Card>
 	);
 }

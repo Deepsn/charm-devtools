@@ -4,6 +4,7 @@ import createVirtualizedListController, {
 	type Dimensions,
 	getUDimRect,
 } from "app/components/virtualized-list/controller";
+import type { ScrollControl } from "app/components/virtualized-list/scroll-control";
 
 export interface VirtualizedListProps<T extends defined> {
 	rowHeight: Derivable<number>;
@@ -19,6 +20,8 @@ export interface VirtualizedListProps<T extends defined> {
 	ScrollBarThickness?: number;
 	ScrollBarImageColor3?: Derivable<Color3>;
 	ScrollBarImageTransparency?: number;
+
+	scrollControl?: ScrollControl;
 }
 
 type Slot<T> = { value: T; index: number };
@@ -88,6 +91,14 @@ export function VirtualizedList<T extends defined>(props: VirtualizedListProps<T
 				controller.setWindowSize(size);
 			}}
 			CanvasPositionChanged={(position) => controller.setScrollAxis(direction === "y" ? position.Y : position.X)}
+			CanvasPosition={() => props.scrollControl?.getCanvasPosition() ?? Vector2.zero}
+			action={
+				props.scrollControl
+					? (scrollingFrame) => {
+							props.scrollControl?.setScrollingFrame(scrollingFrame);
+						}
+					: undefined
+			}
 		>
 			{indexes(slots, (slot) => {
 				const rect = () => getUDimRect(dimensions(), slot().value, slot().index, windowSize(), direction);
