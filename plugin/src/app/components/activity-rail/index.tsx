@@ -79,6 +79,7 @@ export function ActivityRail(props: { active: () => WindowId }) {
 			Size={new UDim2(0, THEME.railWidth, 1, 0)}
 			BackgroundColor3={THEME.railBg}
 			BorderSizePixel={0}
+			ZIndex={30}
 		>
 			<uilistlayout
 				FillDirection={Enum.FillDirection.Vertical}
