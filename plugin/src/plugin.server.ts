@@ -6,7 +6,7 @@ import { mount } from "@rbxts/vide";
 import { App } from "app";
 import { addToHistory } from "atoms/history";
 import { enabled } from "atoms/plugin";
-import { IS_A_DEV, IS_RUNNING } from "constants/core";
+import { IS_A_DEV, IS_DEV, IS_RUNNING } from "constants/core";
 
 const toolbar = plugin.CreateToolbar("Charm DevTools");
 const button = toolbar.CreateButton("Open devtools", "", "");
@@ -37,7 +37,7 @@ const disposeEnabled = listen(enabled, (isEnabled) => {
 	}
 });
 
-if (IS_A_DEV && IS_RUNNING) {
+if (IS_A_DEV && IS_DEV(plugin) && IS_RUNNING) {
 	enabled(true);
 }
 

@@ -5,21 +5,31 @@ import { ListPanel } from "app/components/list-panel";
 import { ListRow } from "app/components/list-row";
 import { createScrollControl } from "app/components/virtualized-list/scroll-control";
 import { history } from "atoms/history";
-import { actionFilter, selectedActionId } from "atoms/inspector";
+import { actionFilter, envFilter, selectedActionId } from "atoms/inspector";
 import { FONT, THEME } from "constants/theme";
 import { formatTime, includesText } from "lib/format";
 
 export function ActionList() {
+	const scrollControl = createScrollControl();
+
 	const historyState = useAtom(history);
 	const search = useAtom(actionFilter);
+	const envs = useAtom(envFilter);
 	const selected = useAtom(selectedActionId);
-	const scrollControl = createScrollControl();
 
 	const rows = () => {
 		const query = search();
-		const list = historyState().filter((action) => includesText(action.name, query));
+		const enabled = envs();
+		const list = historyState().filter((action) => enabled[action.env] && includesText(action.name, query));
 		return table.clone(list).sort((a, b) => a.timestamp < b.timestamp);
 	};
+
+	// const emptyText = () => {
+	// 	const enabled = envs();
+	// 	if (!enabled.server && !enabled.client) return "No environments selected";
+	// 	if (historyState().isEmpty()) return "No actions recorded yet";
+	// 	return "No matching actions";
+	// };
 
 	effect(() => {
 		// watch for history changes

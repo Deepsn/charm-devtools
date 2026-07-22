@@ -10,22 +10,29 @@ export function EnvBadge(props: {
 	AnchorPoint?: Vector2;
 	TextSize?: number;
 }) {
+	const shouldCapText = props.Size === undefined || (props.Size.X.Scale === 0 && props.Size.X.Offset === 0);
 	return (
 		<textlabel
 			Name="Env"
-			Size={props.Size ?? UDim2.fromOffset(44, 16)}
+			Size={props.Size ?? UDim2.fromOffset(0, 16)}
 			Position={props.Position ?? UDim2.fromScale(0, 0)}
 			AnchorPoint={props.AnchorPoint ?? Vector2.zero}
 			BackgroundColor3={() => envColor(read(props.env))}
 			BackgroundTransparency={0}
 			BorderSizePixel={0}
-			Text={() => read(props.env).upper()}
+			AutomaticSize={Enum.AutomaticSize.X}
+			Text={() => {
+				const text = read(props.env).upper();
+				if (shouldCapText) return text.sub(0, 1);
+				return text;
+			}}
 			TextColor3={Color3.fromRGB(255, 255, 255)}
 			TextSize={props.TextSize ?? THEME.fontSize - 3}
 			Font={FONT.bold}
 			TextXAlignment={Enum.TextXAlignment.Center}
 			TextYAlignment={Enum.TextYAlignment.Center}
 		>
+			<uipadding PaddingLeft={new UDim(0, 5)} PaddingRight={new UDim(0, 5)} />
 			<uicorner CornerRadius={new UDim(0, 3)} />
 		</textlabel>
 	);

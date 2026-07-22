@@ -1,10 +1,19 @@
 import Vide from "@rbxts/vide";
 import { THEME } from "constants/theme";
 
-const LIST_OFFSET = THEME.filterHeight + THEME.gap;
+const FILTER_OFFSET = THEME.filterHeight + THEME.gap;
 const MAIN_OFFSET = THEME.listWidth + THEME.gap;
 
-export function SplitView(props: { name: string; filter: Vide.Node; list: Vide.Node; inspector: Vide.Node }) {
+export function SplitView(props: {
+	name: string;
+	filter: Vide.Node;
+	subFilter?: Vide.Node;
+	list: Vide.Node;
+	inspector: Vide.Node;
+}) {
+	const subOffset = props.subFilter !== undefined ? FILTER_OFFSET : 0;
+	const listOffset = FILTER_OFFSET + subOffset;
+
 	return (
 		<frame Name={props.name} Size={UDim2.fromScale(1, 1)} BackgroundTransparency={1} BorderSizePixel={0}>
 			<frame Name="Sidebar" Size={new UDim2(0, THEME.listWidth, 1, 0)} BackgroundTransparency={1} BorderSizePixel={0}>
@@ -17,10 +26,22 @@ export function SplitView(props: { name: string; filter: Vide.Node; list: Vide.N
 					{props.filter}
 				</frame>
 
+				{props.subFilter !== undefined ? (
+					<frame
+						Name="SubFilterSlot"
+						Size={new UDim2(1, 0, 0, THEME.filterHeight)}
+						Position={new UDim2(0, 0, 0, FILTER_OFFSET)}
+						BackgroundTransparency={1}
+						BorderSizePixel={0}
+					>
+						{props.subFilter}
+					</frame>
+				) : undefined}
+
 				<frame
 					Name="ListSlot"
-					Size={new UDim2(1, 0, 1, -LIST_OFFSET)}
-					Position={new UDim2(0, 0, 0, LIST_OFFSET)}
+					Size={new UDim2(1, 0, 1, -listOffset)}
+					Position={new UDim2(0, 0, 0, listOffset)}
 					BackgroundTransparency={1}
 					BorderSizePixel={0}
 				>

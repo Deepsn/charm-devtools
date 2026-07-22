@@ -1,4 +1,5 @@
 import Vide, { source } from "@rbxts/vide";
+import { Container } from "app/components/container";
 import { THEME } from "constants/theme";
 
 export function ListRow(props: { selected: () => boolean; onSelect: () => void; children?: Vide.Node }) {
@@ -36,7 +37,14 @@ export function ListRow(props: { selected: () => boolean; onSelect: () => void; 
 				<uicorner CornerRadius={new UDim(1, 0)} />
 			</frame>
 
-			{props.children}
+			<Container Size={UDim2.fromScale(1, 1)}>
+				<uilistlayout
+					FillDirection={Enum.FillDirection.Horizontal}
+					VerticalAlignment={Enum.VerticalAlignment.Center}
+					HorizontalFlex={Enum.UIFlexAlignment.SpaceEvenly}
+				/>
+				{props.children}
+			</Container>
 		</textbutton>
 	);
 }
