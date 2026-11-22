@@ -8,7 +8,7 @@
         "@biomejs/biome": "^2.6.8",
         "@rbxts/compiler-types": "3.0.0-types.0",
         "@rbxts/object-utils": "^1.0.4",
-        "@rbxts/types": "^1.0.933",
+        "@rbxts/types": "^1.0.963",
         "@types/bun": "^1.3.14",
         "concurrently": "^9.2.3",
         "roblox-ts": "^3.0.0",
@@ -90,7 +90,7 @@
 
     "@rbxts/t": ["@rbxts/t@3.2.1", "", {}, "sha512-/fnf2QSx+TI3HSJ6QW2ikvGQk0mlx/63UXo60pLAKGqbxXiAuTJh88bpKpHw6aCzfFLJAwrVIcgCUOokLMPcag=="],
 
-    "@rbxts/types": ["@rbxts/types@1.0.937", "", {}, "sha512-eO5rc9JDKoanA3PiGi6YMBoGuVxMqx5QJWHOUk4GHmviqigjQQIB57ZwMYGxIRR2auM/OdvX0THPJuuj+Qq74Q=="],
+    "@rbxts/types": ["@rbxts/types@1.0.963", "", {}, "sha512-mfyQRUvo76YyBw1XufnSUR1BnnHtGVLSp1h0erSZm9yCYUz4zu+lfusUQ6iA9Q064GmAAABI6316gJ1TYY53fA=="],
 
     "@rbxts/vide": ["@rbxts/vide@0.6.1", "", {}, "sha512-syFqx+HYXy0TauDCGLhc68K2cAlfgYookIJSRtJZ01W7mUI+EKyj80x2L91dQxos3BwAAGJqBD/ovWU4M//+Lg=="],
 
