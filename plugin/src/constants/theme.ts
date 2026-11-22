@@ -62,7 +62,7 @@ export const THEME = {
 	// shell chrome
 	railWidth: 44,
 	railItemHeight: 40,
-	railIconSize: 18,
+	railIconSize: 24,
 	filterHeight: 30,
 	tabHeight: 28,
 	gap: 8,

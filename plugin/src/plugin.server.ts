@@ -25,6 +25,10 @@ let unmount: (() => void) | undefined;
 button.Click.Connect(() => enabled((prev) => !prev));
 (widget as unknown as { BindToClose(callback: () => void): void }).BindToClose(() => enabled(false));
 
+if (IS_A_DEV(plugin) && IS_DEV(plugin) && !IS_RUNNING) {
+	enabled(true);
+}
+
 const disposeEnabled = listen(enabled, (isEnabled) => {
 	widget.Enabled = isEnabled;
 	button.SetActive(isEnabled);
@@ -37,10 +41,6 @@ const disposeEnabled = listen(enabled, (isEnabled) => {
 	}
 });
 
-if (IS_A_DEV && IS_DEV(plugin) && IS_RUNNING) {
-	enabled(true);
-}
-
 plugin.Unloading.Connect(() => {
 	enabled(false);
 	trigger(enabled);
@@ -52,6 +52,6 @@ plugin.Unloading.Connect(() => {
 	widget.Destroy();
 });
 
-if (IS_A_DEV) {
+if (IS_A_DEV(plugin)) {
 	print("charm-devtools running");
 }

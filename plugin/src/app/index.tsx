@@ -37,6 +37,7 @@ export function App() {
 					PaddingLeft={new UDim(0, THEME.gap)}
 					PaddingRight={new UDim(0, THEME.gap)}
 				/>
+
 				{match(active)({
 					history: () => History(),
 					atoms: () => Atoms(),

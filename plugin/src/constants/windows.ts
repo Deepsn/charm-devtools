@@ -1,8 +1,5 @@
 import type { WindowId } from "atoms/window";
 
-/** Swap for the real artwork once it is uploaded. */
-const PLACEHOLDER_ICON = "rbxasset://textures/ui/GuiImagePlaceholder.png";
-
 export interface WindowTab {
 	id: WindowId;
 	label: string;
@@ -10,7 +7,7 @@ export interface WindowTab {
 }
 
 export const WINDOWS: WindowTab[] = [
-	{ id: "atoms", label: "Atoms", icon: PLACEHOLDER_ICON },
-	{ id: "history", label: "History", icon: PLACEHOLDER_ICON },
-	{ id: "settings", label: "Settings", icon: PLACEHOLDER_ICON },
+	{ id: "atoms", label: "Atoms", icon: "rbxassetid://92694088951236" },
+	{ id: "history", label: "History", icon: "rbxassetid://71718845424462" },
+	{ id: "settings", label: "Settings", icon: "rbxassetid://101549466136132" },
 ];
