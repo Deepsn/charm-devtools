@@ -23,7 +23,7 @@
 	"author": "Speed",
 	"license": "MIT",
 	"devDependencies": {
-		"@biomejs/biome": "^2.5.1",
+		"@biomejs/biome": "^2.6.8",
 		"@rbxts/compiler-types": "3.0.0-types.0",
 		"@rbxts/object-utils": "^1.0.4",
 		"@rbxts/types": "^1.0.933",
