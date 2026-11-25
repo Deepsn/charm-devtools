@@ -1,13 +1,16 @@
+import "@rbxts/charm-devtools/out/install";
+
 import { atom } from "@rbxts/charm";
-import { hookAtom, hookAtoms } from "@rbxts/charm-devtools";
 
-const helloAtom = hookAtom(atom("Hello world"));
+const helloAtom = atom("Hello world");
 
-const atoms = hookAtoms({
+const unlabeledAtom = atom(0);
+
+const atoms = {
 	hello: atom("Hello from client"),
 	complex: atom({ foo: "bar", baz: 42, nested: { a: 1, b: 2, deep: { c: 3, more: { d: 4 } } } }),
 	anotherAtom: atom(0),
-});
+};
 
 task.wait(2);
 
@@ -17,4 +20,5 @@ helloAtom("CLIENT Hello charm devtools");
 while (true) {
 	task.wait(1);
 	helloAtom((v) => v + 1);
+	unlabeledAtom((v) => v + 1);
 }

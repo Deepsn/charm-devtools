@@ -1,7 +1,8 @@
-import { atom } from "@rbxts/charm";
-import { hookAtom } from "@rbxts/charm-devtools";
+import "@rbxts/charm-devtools/out/install";
 
-const helloAtom = hookAtom(atom("Hello world"));
+import { atom } from "@rbxts/charm";
+
+const helloAtom = atom("Hello world");
 
 task.wait(2);
 

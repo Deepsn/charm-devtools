@@ -1,5 +1,6 @@
 import Vide, { derive, match, Show } from "@rbxts/vide";
 import { useAtom } from "@rbxts/vide-charm";
+import { ToolbarButton } from "app/components/button";
 import { Card } from "app/components/card";
 import { CodeView } from "app/components/code-view";
 import { EmptyState } from "app/components/empty-state";
@@ -14,6 +15,7 @@ import { atomTimeline, timelineEnabled } from "atoms/timeline";
 import { ICONS } from "constants/icons";
 import { FONT, THEME } from "constants/theme";
 import { describeType, formatTime, kindColor, splitAtomName, valueKind } from "lib/format";
+import { openSource } from "lib/studio";
 
 const HEADER_HEIGHT = 42;
 const SECTION_GAP = THEME.gap / 2;
@@ -174,6 +176,27 @@ export function Inspector() {
 											}}
 											color={() => THEME.kind.string}
 										/>
+									)}
+								</Show>
+
+								<Show when={() => latest()?.source !== undefined}>
+									{() => (
+										<frame
+											Name="SourceSlot"
+											Size={offset(0, THEME.tabHeight)}
+											AutomaticSize={Enum.AutomaticSize.X}
+											BackgroundTransparency={1}
+											LayoutOrder={1}
+										>
+											<ToolbarButton
+												name="OpenSource"
+												text={"Open source"}
+												onClick={() => {
+													const source = latest()?.source;
+													if (source !== undefined) openSource(source);
+												}}
+											/>
+										</frame>
 									)}
 								</Show>
 

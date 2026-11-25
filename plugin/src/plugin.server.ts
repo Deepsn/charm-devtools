@@ -7,10 +7,15 @@ import { App } from "app";
 import { addToHistory } from "atoms/history";
 import { enabled } from "atoms/plugin";
 import { IS_A_DEV, IS_DEV, IS_RUNNING } from "constants/core";
+import { ICONS } from "constants/icons";
+import { logger } from "lib/logger";
+import { setPlugin } from "lib/studio";
 import { seedTestState } from "utils/seed";
 
+setPlugin(plugin);
+
 const toolbar = plugin.CreateToolbar("Charm DevTools");
-const button = toolbar.CreateButton("Open devtools", "", "");
+const button = toolbar.CreateButton("Open devtools", "", ICONS.atom);
 
 const widget = plugin.CreateDockWidgetPluginGuiAsync(
 	"charm-devtools",
@@ -55,5 +60,5 @@ plugin.Unloading.Connect(() => {
 });
 
 if (IS_A_DEV(plugin)) {
-	print("charm-devtools running");
+	logger.debug("charm-devtools running");
 }

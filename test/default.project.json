@@ -11,10 +11,7 @@
 				"node_modules": {
 					"$className": "Folder",
 					"@rbxts": {
-						"$path": "node_modules/@rbxts",
-						"charm-devtools": {
-							"$path": "../charm-devtools/out"
-						}
+						"$path": "node_modules/@rbxts"
 					}
 				}
 			}

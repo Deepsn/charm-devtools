@@ -1,4 +1,5 @@
 import { IS_SERVER } from "constants";
+import { logger } from "logger";
 import { type Action, actionGuard } from "protocol";
 import { createTransportApi, getTransport, resolveTransport } from "transport";
 
@@ -7,7 +8,7 @@ export function createBridge(onAction: (action: Action) => void) {
 
 	transport.connect((payload) => {
 		if (!actionGuard(payload)) {
-			warn("[charm-devtools] received a payload that failed validation:", payload);
+			logger.warn("received a payload that failed validation: {payload}", { payload });
 			return;
 		}
 
