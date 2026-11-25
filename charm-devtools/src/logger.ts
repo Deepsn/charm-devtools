@@ -1,1 +1,1 @@
-C:/Users/speed/Projects/charm-devtools/plugin/src/lib/logger.ts
+../../plugin/src/lib/logger.ts
