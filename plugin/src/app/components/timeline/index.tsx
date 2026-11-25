@@ -42,7 +42,7 @@ function Triangle(props: { text: string; order: number; color: () => Color3 }) {
 			Text={props.text}
 			TextColor3={props.color}
 			TextSize={px(10)}
-			Font={FONT.mono}
+			FontFace={FONT.mono}
 			LayoutOrder={props.order}
 		/>
 	);
@@ -113,7 +113,7 @@ function TimelineHeader(props: { timeline: TimelineState; title: string; count: 
 					Text={props.title}
 					TextColor3={THEME.text}
 					TextSize={px(THEME.fontSize + 1)}
-					Font={FONT.medium}
+					FontFace={FONT.medium}
 					LayoutOrder={1}
 				/>
 				<textlabel
@@ -124,7 +124,7 @@ function TimelineHeader(props: { timeline: TimelineState; title: string; count: 
 					Text={() => `${props.count()} ${props.count() === 1 ? "update" : "updates"}`}
 					TextColor3={THEME.textMuted}
 					TextSize={px(THEME.fontSize)}
-					Font={FONT.bold}
+					FontFace={FONT.bold}
 					LayoutOrder={2}
 				/>
 			</frame>
@@ -152,7 +152,7 @@ function TimelineHeader(props: { timeline: TimelineState; title: string; count: 
 					Text="Clear"
 					TextColor3={THEME.textMuted}
 					TextSize={px(THEME.fontSize - 1)}
-					Font={FONT.medium}
+					FontFace={FONT.medium}
 					LayoutOrder={0}
 					Activated={clearAll}
 				>
@@ -212,7 +212,7 @@ function EntryRow(props: {
 				Text={() => formatTime(props.entry().timestamp)}
 				TextColor3={THEME.textDim}
 				TextSize={px(THEME.monoSize - 1)}
-				Font={FONT.mono}
+				FontFace={FONT.mono}
 				TextXAlignment={Enum.TextXAlignment.Left}
 			/>
 
@@ -232,7 +232,7 @@ function EntryRow(props: {
 					return props.active() ? THEME.text : THEME.textMuted;
 				}}
 				TextSize={px(THEME.fontSize - 1)}
-				Font={props.mode === "atom" ? FONT.mono : FONT.ui}
+				FontFace={props.mode === "atom" ? FONT.mono : FONT.ui}
 				TextXAlignment={Enum.TextXAlignment.Left}
 				TextTruncate={Enum.TextTruncate.AtEnd}
 			/>
@@ -268,7 +268,7 @@ function ValueColumn(props: {
 				Text={props.title}
 				TextColor3={THEME.textMuted}
 				TextSize={px(THEME.fontSize - 2)}
-				Font={FONT.medium}
+				FontFace={FONT.medium}
 				TextXAlignment={Enum.TextXAlignment.Left}
 				LayoutOrder={0}
 			/>
@@ -296,7 +296,7 @@ function ValueColumn(props: {
 					Text={props.text}
 					TextColor3={props.color}
 					TextSize={px(THEME.monoSize - 1)}
-					Font={FONT.mono}
+					FontFace={FONT.mono}
 					TextWrapped={true}
 					TextXAlignment={Enum.TextXAlignment.Left}
 					TextYAlignment={Enum.TextYAlignment.Top}
@@ -351,7 +351,7 @@ function DiffCard(props: { entry: () => Action | undefined; mode: TimelineMode }
 								Text={() => props.entry()?.name ?? ""}
 								TextColor3={THEME.text}
 								TextSize={px(THEME.fontSize)}
-								Font={FONT.medium}
+								FontFace={FONT.medium}
 								TextXAlignment={Enum.TextXAlignment.Left}
 								TextTruncate={Enum.TextTruncate.AtEnd}
 							/>
@@ -367,7 +367,7 @@ function DiffCard(props: { entry: () => Action | undefined; mode: TimelineMode }
 								}}
 								TextColor3={THEME.textDim}
 								TextSize={px(THEME.monoSize - 1)}
-								Font={FONT.mono}
+								FontFace={FONT.mono}
 								TextXAlignment={Enum.TextXAlignment.Right}
 							/>
 							{global ? (
@@ -428,7 +428,7 @@ function DiffCard(props: { entry: () => Action | undefined; mode: TimelineMode }
 								Text={changed}
 								TextColor3={THEME.textDim}
 								TextSize={px(THEME.fontSize - 2)}
-								Font={FONT.ui}
+								FontFace={FONT.ui}
 								TextWrapped={true}
 								TextXAlignment={Enum.TextXAlignment.Left}
 								LayoutOrder={1}
@@ -451,7 +451,7 @@ function DiffCard(props: { entry: () => Action | undefined; mode: TimelineMode }
 									Text="Value"
 									TextColor3={THEME.textMuted}
 									TextSize={px(THEME.fontSize - 2)}
-									Font={FONT.medium}
+									FontFace={FONT.medium}
 									TextXAlignment={Enum.TextXAlignment.Left}
 								/>
 								<Card

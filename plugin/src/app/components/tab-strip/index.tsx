@@ -53,7 +53,7 @@ export function TabStrip<T extends string>(props: {
 						Text={tab.label}
 						TextColor3={() => (isActive() ? THEME.accent : THEME.textMuted)}
 						TextSize={px(THEME.fontSize)}
-						Font={FONT.medium}
+						FontFace={FONT.medium}
 						LayoutOrder={index}
 						Activated={() => props.onSelect(tab.id)}
 					>

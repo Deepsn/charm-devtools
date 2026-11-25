@@ -38,7 +38,7 @@ function AtStatus(props: { text: () => string; color: () => Color3 }) {
 			Text={props.text}
 			TextColor3={props.color}
 			TextSize={px(THEME.fontSize - 2)}
-			Font={FONT.mono}
+			FontFace={FONT.mono}
 			LayoutOrder={0}
 		>
 			<uicorner CornerRadius={udim(0, 4)} />
@@ -133,7 +133,7 @@ export function Inspector() {
 									}}
 									TextColor3={THEME.text}
 									TextSize={px(THEME.fontSize + 3)}
-									Font={FONT.bold}
+									FontFace={FONT.bold}
 									TextXAlignment={Enum.TextXAlignment.Left}
 									TextTruncate={Enum.TextTruncate.AtEnd}
 									LayoutOrder={0}
@@ -147,7 +147,7 @@ export function Inspector() {
 									Text={() => `atom<${describeType(value())}>`}
 									TextColor3={THEME.textDim}
 									TextSize={px(THEME.monoSize - 1)}
-									Font={FONT.mono}
+									FontFace={FONT.mono}
 									TextXAlignment={Enum.TextXAlignment.Left}
 									TextTruncate={Enum.TextTruncate.AtEnd}
 									LayoutOrder={1}

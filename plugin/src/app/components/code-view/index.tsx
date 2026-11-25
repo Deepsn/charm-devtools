@@ -39,7 +39,7 @@ export function CodeView(props: { value: () => unknown }) {
 				TextColor3={THEME.textDim}
 				TextSize={px(THEME.monoSize)}
 				LineHeight={LINE_HEIGHT}
-				Font={FONT.mono}
+				FontFace={FONT.mono}
 				TextXAlignment={Enum.TextXAlignment.Right}
 				TextYAlignment={Enum.TextYAlignment.Top}
 			/>
@@ -55,7 +55,7 @@ export function CodeView(props: { value: () => unknown }) {
 				TextColor3={THEME.text}
 				TextSize={px(THEME.monoSize)}
 				LineHeight={LINE_HEIGHT}
-				Font={FONT.mono}
+				FontFace={FONT.mono}
 				TextXAlignment={Enum.TextXAlignment.Left}
 				TextYAlignment={Enum.TextYAlignment.Top}
 			/>

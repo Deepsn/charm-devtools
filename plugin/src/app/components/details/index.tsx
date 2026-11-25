@@ -27,7 +27,7 @@ export function Section(props: { title: string; order: number; children?: Vide.N
 				Text={props.title}
 				TextColor3={THEME.text}
 				TextSize={px(THEME.sectionSize)}
-				Font={FONT.bold}
+				FontFace={FONT.bold}
 				TextXAlignment={Enum.TextXAlignment.Left}
 				LayoutOrder={0}
 			/>
@@ -62,7 +62,7 @@ export function Chip(props: { text: Derivable<string>; color?: Derivable<Color3>
 				Text={props.text}
 				TextColor3={props.color ?? THEME.text}
 				TextSize={px(THEME.monoSize - 1)}
-				Font={FONT.mono}
+				FontFace={FONT.mono}
 				TextXAlignment={Enum.TextXAlignment.Left}
 			/>
 		</frame>
@@ -91,7 +91,7 @@ export function Field(props: { label: string; value: Derivable<string>; color?: 
 				Text={props.label.upper()}
 				TextColor3={THEME.textDim}
 				TextSize={px(THEME.labelSize)}
-				Font={FONT.bold}
+				FontFace={FONT.bold}
 				TextXAlignment={Enum.TextXAlignment.Left}
 				LayoutOrder={1}
 			/>
@@ -110,7 +110,7 @@ export function SectionEmpty(props: { text: string; order: number }) {
 			Text={props.text}
 			TextColor3={THEME.textMuted}
 			TextSize={px(THEME.fontSize)}
-			Font={FONT.ui}
+			FontFace={FONT.ui}
 			TextXAlignment={Enum.TextXAlignment.Left}
 			LayoutOrder={props.order}
 		/>

@@ -19,7 +19,7 @@ function Tooltip(props: { text: string }) {
 			Text={props.text}
 			TextColor3={THEME.text}
 			TextSize={px(THEME.fontSize)}
-			Font={FONT.medium}
+			FontFace={FONT.medium}
 			ZIndex={TOOLTIP_ZINDEX}
 		>
 			<uicorner CornerRadius={udim(0, 4)} />

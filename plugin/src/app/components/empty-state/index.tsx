@@ -11,7 +11,7 @@ export function EmptyState(props: { text: Derivable<string> }) {
 			Text={props.text}
 			TextColor3={THEME.textDim}
 			TextSize={px(THEME.fontSize)}
-			Font={FONT.ui}
+			FontFace={FONT.ui}
 		/>
 	);
 }

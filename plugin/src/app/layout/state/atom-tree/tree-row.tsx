@@ -36,7 +36,7 @@ function RowChevron(props: { row: () => TreeRow; LayoutOrder: number }) {
 			}}
 			TextColor3={THEME.textMuted}
 			TextScaled={true}
-			Font={FONT.mono}
+			FontFace={FONT.mono}
 			LayoutOrder={props.LayoutOrder}
 		>
 			<uiaspectratioconstraint AspectRatio={1} DominantAxis={Enum.DominantAxis.Height} />
@@ -56,7 +56,7 @@ function RowLabel(props: { row: () => TreeRow; selected: () => boolean; LayoutOr
 			}}
 			TextColor3={() => (props.selected() || props.row().kind === "group" ? THEME.text : THEME.textMuted)}
 			TextSize={px(THEME.fontSize)}
-			Font={() => (props.row().kind === "group" ? FONT.medium : FONT.ui)}
+			FontFace={() => (props.row().kind === "group" ? FONT.medium : FONT.ui)}
 			TextXAlignment={Enum.TextXAlignment.Left}
 			TextTruncate={Enum.TextTruncate.AtEnd}
 			LayoutOrder={props.LayoutOrder}
@@ -79,7 +79,7 @@ function RowCount(props: { row: () => TreeRow; LayoutOrder: number }) {
 			}}
 			TextColor3={THEME.textDim}
 			TextSize={px(THEME.fontSize - 2)}
-			Font={FONT.mono}
+			FontFace={FONT.mono}
 			TextXAlignment={Enum.TextXAlignment.Right}
 			Visible={() => props.row().kind === "group"}
 			LayoutOrder={props.LayoutOrder}

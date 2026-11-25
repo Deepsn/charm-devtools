@@ -33,7 +33,7 @@ function Cell(props: {
 			Text={props.text}
 			TextColor3={props.color}
 			TextSize={px(props.size ?? THEME.monoSize)}
-			Font={FONT.mono}
+			FontFace={FONT.mono}
 			TextXAlignment={Enum.TextXAlignment.Left}
 			TextYAlignment={Enum.TextYAlignment.Center}
 			LayoutOrder={props.order}

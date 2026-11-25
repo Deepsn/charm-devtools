@@ -71,7 +71,7 @@ export function ToolbarButton(props: {
 						Text={props.text}
 						TextColor3={() => (active() ? THEME.accentText : hovered() ? THEME.text : THEME.textMuted)}
 						TextSize={px(THEME.fontSize - 1)}
-						Font={FONT.medium}
+						FontFace={FONT.medium}
 						LayoutOrder={1}
 					/>
 				) : undefined}

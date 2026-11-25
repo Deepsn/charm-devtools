@@ -70,7 +70,7 @@ export function PopoverTitle(props: { text: string; LayoutOrder?: number }) {
 			Text={props.text.upper()}
 			TextColor3={THEME.textDim}
 			TextSize={px(THEME.labelSize)}
-			Font={FONT.bold}
+			FontFace={FONT.bold}
 			TextXAlignment={Enum.TextXAlignment.Left}
 			LayoutOrder={props.LayoutOrder ?? 0}
 			ZIndex={52}
@@ -126,7 +126,7 @@ export function PopoverItem(props: {
 					Text="✓"
 					TextColor3={Color3.fromRGB(255, 255, 255)}
 					TextSize={px(10)}
-					Font={FONT.bold}
+					FontFace={FONT.bold}
 					Visible={checked}
 					ZIndex={54}
 				/>
@@ -154,7 +154,7 @@ export function PopoverItem(props: {
 				Text={props.text}
 				TextColor3={() => (checked() || hovered() ? THEME.text : THEME.textMuted)}
 				TextSize={px(THEME.fontSize - 1)}
-				Font={FONT.medium}
+				FontFace={FONT.medium}
 				TextXAlignment={Enum.TextXAlignment.Left}
 				ZIndex={53}
 			/>

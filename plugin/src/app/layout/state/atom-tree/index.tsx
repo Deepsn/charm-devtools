@@ -74,7 +74,7 @@ export function AtomTree() {
 						Text={emptyText}
 						TextColor3={THEME.textDim}
 						TextSize={px(THEME.fontSize)}
-						Font={FONT.ui}
+						FontFace={FONT.ui}
 						TextXAlignment={Enum.TextXAlignment.Left}
 					/>
 				)}

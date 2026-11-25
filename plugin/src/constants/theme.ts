@@ -82,9 +82,13 @@ export const THEME = {
 	radius: 6,
 } as const;
 
+const BUILDEREXTENDED = "rbxasset://fonts/families/BuilderExtended.json";
+const BUILDERSANS = "rbxasset://fonts/families/BuilderSans.json";
+const INCONSOLATA = "rbxasset://fonts/families/Inconsolata.json";
+
 export const FONT = {
-	ui: Enum.Font.Gotham,
-	medium: Enum.Font.GothamMedium,
-	bold: Enum.Font.GothamBold,
-	mono: Enum.Font.Code,
+	ui: new Font(BUILDEREXTENDED, Enum.FontWeight.SemiBold),
+	medium: new Font(BUILDEREXTENDED, Enum.FontWeight.Bold),
+	bold: new Font(BUILDERSANS, Enum.FontWeight.ExtraBold),
+	mono: new Font(INCONSOLATA, Enum.FontWeight.Medium),
 } as const;

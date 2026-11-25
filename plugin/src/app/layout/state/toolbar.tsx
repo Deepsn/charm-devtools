@@ -90,7 +90,7 @@ export function EnvDropdown() {
 				Text={label}
 				TextColor3={THEME.text}
 				TextSize={px(THEME.fontSize)}
-				Font={FONT.bold}
+				FontFace={FONT.bold}
 				TextXAlignment={Enum.TextXAlignment.Left}
 				TextTruncate={Enum.TextTruncate.AtEnd}
 			/>
@@ -104,7 +104,7 @@ export function EnvDropdown() {
 				Text={() => (open() ? "▲" : "▼")}
 				TextColor3={THEME.textMuted}
 				TextSize={px(9)}
-				Font={FONT.mono}
+				FontFace={FONT.mono}
 			/>
 
 			<Popover open={open} onClose={() => open(false)} width={ENV_WIDTH} inset={12}>
@@ -155,7 +155,7 @@ export function SearchBox(props: { search: Atom<string>; placeholder: string }) 
 				PlaceholderColor3={THEME.textDim}
 				TextColor3={THEME.text}
 				TextSize={px(THEME.fontSize)}
-				Font={FONT.medium}
+				FontFace={FONT.medium}
 				TextXAlignment={Enum.TextXAlignment.Left}
 				TextTruncate={Enum.TextTruncate.AtEnd}
 				ClearTextOnFocus={false}
@@ -173,7 +173,7 @@ export function SearchBox(props: { search: Atom<string>; placeholder: string }) 
 				Text="×"
 				TextColor3={THEME.textMuted}
 				TextSize={px(THEME.fontSize + 3)}
-				Font={FONT.medium}
+				FontFace={FONT.medium}
 				Visible={() => search() !== ""}
 				Activated={() => props.search("")}
 			/>
