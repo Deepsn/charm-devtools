@@ -2,6 +2,7 @@ import Vide, { derive, effect, Show, source, untrack } from "@rbxts/vide";
 import { useAtom } from "@rbxts/vide-charm";
 import { Card } from "app/components/card";
 import { VirtualizedList } from "app/components/virtualized-list";
+import { offset, px, udim2 } from "app/hooks/use-px";
 import type { Action } from "atoms";
 import { atoms } from "atoms/atoms";
 import { atomSearch, collapsedGroups, envScope, kindFilter, sortMode } from "atoms/inspector";
@@ -67,12 +68,12 @@ export function AtomTree() {
 				{() => (
 					<textlabel
 						Name="Empty"
-						Size={new UDim2(1, 0, 0, ROW_HEIGHT)}
-						Position={UDim2.fromOffset(8, 2)}
+						Size={udim2(1, 0, 0, ROW_HEIGHT)}
+						Position={offset(8, 2)}
 						BackgroundTransparency={1}
 						Text={emptyText}
 						TextColor3={THEME.textDim}
-						TextSize={THEME.fontSize}
+						TextSize={px(THEME.fontSize)}
 						Font={FONT.ui}
 						TextXAlignment={Enum.TextXAlignment.Left}
 					/>

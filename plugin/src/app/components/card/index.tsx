@@ -1,4 +1,5 @@
 import Vide, { type Derivable } from "@rbxts/vide";
+import { udim } from "app/hooks/use-px";
 import { THEME } from "constants/theme";
 
 export function Card(props: {
@@ -21,13 +22,13 @@ export function Card(props: {
 			BorderSizePixel={0}
 			LayoutOrder={props.LayoutOrder ?? 0}
 		>
-			<uicorner CornerRadius={new UDim(0, THEME.radius)} />
+			<uicorner CornerRadius={udim(0, THEME.radius)} />
 			<uistroke Color={THEME.border} />
 			<uipadding
-				PaddingTop={new UDim(0, padding)}
-				PaddingBottom={new UDim(0, padding)}
-				PaddingLeft={new UDim(0, padding)}
-				PaddingRight={new UDim(0, padding)}
+				PaddingTop={udim(0, padding)}
+				PaddingBottom={udim(0, padding)}
+				PaddingLeft={udim(0, padding)}
+				PaddingRight={udim(0, padding)}
 			/>
 
 			{props.children}

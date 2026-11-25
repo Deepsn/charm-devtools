@@ -5,10 +5,12 @@ import createVirtualizedListController, {
 	getUDimRect,
 } from "app/components/virtualized-list/controller";
 import type { ScrollControl } from "app/components/virtualized-list/scroll-control";
+import { px } from "app/hooks/use-px";
 
+/** `rowHeight`, `spacing` and `ScrollBarThickness` are unscaled design pixels; the list applies `px` itself. */
 export interface VirtualizedListProps<T extends defined> {
 	rowHeight: Derivable<number>;
-	spacing?: number;
+	spacing?: Derivable<number>;
 
 	items: () => readonly T[];
 	render: (value: () => T, index: () => number) => Vide.Node;
@@ -17,7 +19,7 @@ export interface VirtualizedListProps<T extends defined> {
 	Position?: Derivable<UDim2>;
 	BackgroundColor3?: Derivable<Color3>;
 	BackgroundTransparency?: Derivable<number>;
-	ScrollBarThickness?: number;
+	ScrollBarThickness?: Derivable<number>;
 	ScrollBarImageColor3?: Derivable<Color3>;
 	ScrollBarImageTransparency?: number;
 
@@ -28,19 +30,18 @@ type Slot<T> = { value: T; index: number };
 
 export function VirtualizedList<T extends defined>(props: VirtualizedListProps<T>) {
 	const direction = "y" as const;
-	const spacing = props.spacing ?? 0;
 
 	const windowSize = source(Vector2.zero);
 	const slots = source<Slot<T>[]>([]);
 	const canvasSize = source(UDim2.fromScale(0, 0));
 
-	const buildDimensions = (rowHeight: number): Dimensions<T> => ({
+	const buildDimensions = (): Dimensions<T> => ({
 		type: "spaced",
-		spacing,
-		inner: { type: "consistentSize", size: rowHeight },
+		spacing: px(read(props.spacing) ?? 0)(),
+		inner: { type: "consistentSize", size: px(read(props.rowHeight))() },
 	});
 
-	const dimensions = source<Dimensions<T>>(buildDimensions(read(props.rowHeight)));
+	const dimensions = source<Dimensions<T>>(buildDimensions());
 
 	const initialSource: DataSource<T> = { type: "array", array: [] };
 	const controller = createVirtualizedListController<T>(initialSource, dimensions(), direction);
@@ -63,7 +64,7 @@ export function VirtualizedList<T extends defined>(props: VirtualizedListProps<T
 	);
 
 	effect(() => {
-		const nextDimensions = buildDimensions(read(props.rowHeight));
+		const nextDimensions = buildDimensions();
 		dimensions(nextDimensions);
 		controller.setDimensions(nextDimensions);
 	});
@@ -83,7 +84,7 @@ export function VirtualizedList<T extends defined>(props: VirtualizedListProps<T
 			BorderSizePixel={0}
 			CanvasSize={canvasSize}
 			ScrollingDirection={Enum.ScrollingDirection.Y}
-			ScrollBarThickness={props.ScrollBarThickness ?? 8}
+			ScrollBarThickness={() => px(read(props.ScrollBarThickness) ?? 8)()}
 			ScrollBarImageColor3={props.ScrollBarImageColor3 ?? new Color3()}
 			ScrollBarImageTransparency={props.ScrollBarImageTransparency ?? 0}
 			AbsoluteWindowSizeChanged={(size) => {

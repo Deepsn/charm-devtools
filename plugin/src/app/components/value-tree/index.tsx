@@ -1,4 +1,5 @@
 import Vide, { Case, type Derivable, derive, Index, read, Show, type Source, Switch, source } from "@rbxts/vide";
+import { offset, px, udim, udim2 } from "app/hooks/use-px";
 import { FONT, THEME } from "constants/theme";
 import { displayKey, formatValue, getEntries, isTable, previewTable } from "lib/format";
 
@@ -27,11 +28,11 @@ function Cell(props: {
 	return (
 		<textlabel
 			AutomaticSize={props.width !== undefined ? Enum.AutomaticSize.None : Enum.AutomaticSize.X}
-			Size={UDim2.fromOffset(props.width ?? 0, THEME.treeRowHeight)}
+			Size={offset(props.width ?? 0, THEME.treeRowHeight)}
 			BackgroundTransparency={1}
 			Text={props.text}
 			TextColor3={props.color}
-			TextSize={props.size ?? THEME.monoSize}
+			TextSize={px(props.size ?? THEME.monoSize)}
 			Font={FONT.mono}
 			TextXAlignment={Enum.TextXAlignment.Left}
 			TextYAlignment={Enum.TextYAlignment.Center}
@@ -84,7 +85,7 @@ function TreeNode(props: {
 
 			<textbutton
 				Name="Header"
-				Size={new UDim2(1, 0, 0, THEME.treeRowHeight)}
+				Size={udim2(1, 0, 0, THEME.treeRowHeight)}
 				BackgroundTransparency={1}
 				AutoButtonColor={false}
 				Text=""
@@ -98,7 +99,7 @@ function TreeNode(props: {
 			>
 				<uilistlayout
 					FillDirection={Enum.FillDirection.Horizontal}
-					Padding={new UDim(0, 3)}
+					Padding={udim(0, 3)}
 					SortOrder={Enum.SortOrder.LayoutOrder}
 					VerticalAlignment={Enum.VerticalAlignment.Center}
 				/>
@@ -130,7 +131,7 @@ function TreeNode(props: {
 							LayoutOrder={2}
 						>
 							<uilistlayout FillDirection={Enum.FillDirection.Vertical} SortOrder={Enum.SortOrder.LayoutOrder} />
-							<uipadding PaddingLeft={new UDim(0, THEME.indent)} />
+							<uipadding PaddingLeft={udim(0, THEME.indent)} />
 							<Index each={entries}>
 								{(entry, index) => (
 									<TreeNode

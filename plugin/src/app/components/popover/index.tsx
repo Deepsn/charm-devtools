@@ -1,4 +1,5 @@
 import Vide, { type Derivable, read, Show, source } from "@rbxts/vide";
+import { offset, px, udim, udim2 } from "app/hooks/use-px";
 import { FONT, THEME } from "constants/theme";
 
 const BACKDROP_SIZE = 8000;
@@ -25,8 +26,8 @@ export function Popover(props: {
 				<>
 					<textbutton
 						Name="Backdrop"
-						Size={UDim2.fromOffset(BACKDROP_SIZE, BACKDROP_SIZE)}
-						Position={UDim2.fromOffset(-BACKDROP_SIZE / 2, -BACKDROP_SIZE / 2)}
+						Size={offset(BACKDROP_SIZE, BACKDROP_SIZE)}
+						Position={offset(-BACKDROP_SIZE / 2, -BACKDROP_SIZE / 2)}
 						BackgroundTransparency={1}
 						AutoButtonColor={false}
 						Text=""
@@ -36,20 +37,20 @@ export function Popover(props: {
 					<frame
 						Name="Popover"
 						AnchorPoint={new Vector2(right ? 1 : 0, 0)}
-						Position={new UDim2(right ? 1 : 0, right ? inset : -inset, 1, 6)}
-						Size={UDim2.fromOffset(props.width, 0)}
+						Position={udim2(right ? 1 : 0, right ? inset : -inset, 1, 6)}
+						Size={offset(props.width, 0)}
 						AutomaticSize={Enum.AutomaticSize.Y}
 						BackgroundColor3={THEME.cardBg}
 						BorderSizePixel={0}
 						ZIndex={51}
 					>
-						<uicorner CornerRadius={new UDim(0, THEME.radius)} />
+						<uicorner CornerRadius={udim(0, THEME.radius)} />
 						<uistroke Color={THEME.border} />
 						<uipadding
-							PaddingTop={new UDim(0, 4)}
-							PaddingBottom={new UDim(0, 4)}
-							PaddingLeft={new UDim(0, 4)}
-							PaddingRight={new UDim(0, 4)}
+							PaddingTop={udim(0, 4)}
+							PaddingBottom={udim(0, 4)}
+							PaddingLeft={udim(0, 4)}
+							PaddingRight={udim(0, 4)}
 						/>
 						<uilistlayout FillDirection={Enum.FillDirection.Vertical} SortOrder={Enum.SortOrder.LayoutOrder} />
 						{props.children}
@@ -64,17 +65,17 @@ export function PopoverTitle(props: { text: string; LayoutOrder?: number }) {
 	return (
 		<textlabel
 			Name="Title"
-			Size={new UDim2(1, 0, 0, 22)}
+			Size={udim2(1, 0, 0, 22)}
 			BackgroundTransparency={1}
 			Text={props.text.upper()}
 			TextColor3={THEME.textDim}
-			TextSize={THEME.labelSize}
+			TextSize={px(THEME.labelSize)}
 			Font={FONT.bold}
 			TextXAlignment={Enum.TextXAlignment.Left}
 			LayoutOrder={props.LayoutOrder ?? 0}
 			ZIndex={52}
 		>
-			<uipadding PaddingLeft={new UDim(0, 8)} />
+			<uipadding PaddingLeft={udim(0, 8)} />
 		</textlabel>
 	);
 }
@@ -93,7 +94,7 @@ export function PopoverItem(props: {
 	return (
 		<textbutton
 			Name={props.text}
-			Size={new UDim2(1, 0, 0, 26)}
+			Size={udim2(1, 0, 0, 26)}
 			BackgroundColor3={THEME.rowHover}
 			BackgroundTransparency={() => (hovered() ? 0 : 1)}
 			BorderSizePixel={0}
@@ -105,26 +106,26 @@ export function PopoverItem(props: {
 			MouseEnter={() => hovered(true)}
 			MouseLeave={() => hovered(false)}
 		>
-			<uicorner CornerRadius={new UDim(0, THEME.radius - 2)} />
+			<uicorner CornerRadius={udim(0, THEME.radius - 2)} />
 
 			<frame
 				Name="Check"
 				AnchorPoint={new Vector2(0, 0.5)}
-				Position={new UDim2(0, 8, 0.5, 0)}
-				Size={UDim2.fromOffset(12, 12)}
+				Position={udim2(0, 8, 0.5, 0)}
+				Size={offset(12, 12)}
 				BackgroundColor3={THEME.accent}
 				BackgroundTransparency={() => (checked() ? 0 : 1)}
 				BorderSizePixel={0}
 				ZIndex={53}
 			>
-				<uicorner CornerRadius={new UDim(0, 3)} />
+				<uicorner CornerRadius={udim(0, 3)} />
 				<uistroke Color={() => (checked() ? THEME.accent : THEME.textDim)} />
 				<textlabel
 					Size={UDim2.fromScale(1, 1)}
 					BackgroundTransparency={1}
 					Text="✓"
 					TextColor3={Color3.fromRGB(255, 255, 255)}
-					TextSize={10}
+					TextSize={px(10)}
 					Font={FONT.bold}
 					Visible={checked}
 					ZIndex={54}
@@ -135,8 +136,8 @@ export function PopoverItem(props: {
 				<frame
 					Name="Dot"
 					AnchorPoint={new Vector2(0, 0.5)}
-					Position={new UDim2(0, 28, 0.5, 0)}
-					Size={UDim2.fromOffset(8, 8)}
+					Position={udim2(0, 28, 0.5, 0)}
+					Size={offset(8, 8)}
 					BackgroundColor3={props.color}
 					BorderSizePixel={0}
 					ZIndex={53}
@@ -147,12 +148,12 @@ export function PopoverItem(props: {
 
 			<textlabel
 				Name="Label"
-				Position={new UDim2(0, props.color !== undefined ? 44 : 28, 0, 0)}
-				Size={new UDim2(1, -52, 1, 0)}
+				Position={udim2(0, props.color !== undefined ? 44 : 28, 0, 0)}
+				Size={udim2(1, -52, 1, 0)}
 				BackgroundTransparency={1}
 				Text={props.text}
 				TextColor3={() => (checked() || hovered() ? THEME.text : THEME.textMuted)}
-				TextSize={THEME.fontSize - 1}
+				TextSize={px(THEME.fontSize - 1)}
 				Font={FONT.medium}
 				TextXAlignment={Enum.TextXAlignment.Left}
 				ZIndex={53}

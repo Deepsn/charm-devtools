@@ -1,5 +1,6 @@
 import { TweenService } from "@rbxts/services";
 import Vide, { cleanup, effect, untrack } from "@rbxts/vide";
+import { udim } from "app/hooks/use-px";
 import { THEME } from "constants/theme";
 import { FLASH_DURATION, FLASH_START_TRANSPARENCY } from "./types";
 
@@ -14,7 +15,7 @@ export function RowFlash(props: { updatedAt: () => number | undefined }) {
 			BorderSizePixel={0}
 			ZIndex={0}
 		>
-			<uicorner CornerRadius={new UDim(0, 4)} />
+			<uicorner CornerRadius={udim(0, 4)} />
 		</frame>
 	) as Frame;
 

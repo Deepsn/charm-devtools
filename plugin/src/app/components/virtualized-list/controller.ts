@@ -289,7 +289,7 @@ function dimensionsEquals<T extends defined>(left: Dimensions<T>, right: Dimensi
 	}
 
 	if (left.type === "spaced" && right.type === "spaced") {
-		return left.spacing === right.spacing;
+		return left.spacing === right.spacing && dimensionsEquals(left.inner, right.inner);
 	}
 
 	return false;

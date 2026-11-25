@@ -1,4 +1,4 @@
-import Vide, { cleanup, derive, effect, Show, source, untrack } from "@rbxts/vide";
+import Vide, { cleanup, type Derivable, derive, effect, Show, source, untrack } from "@rbxts/vide";
 import { useAtom } from "@rbxts/vide-charm";
 import { IconButton, ToolbarButton } from "app/components/button";
 import { Card } from "app/components/card";
@@ -6,6 +6,7 @@ import { CodeView } from "app/components/code-view";
 import { EmptyState } from "app/components/empty-state";
 import { VirtualizedList } from "app/components/virtualized-list";
 import { createScrollControl } from "app/components/virtualized-list/scroll-control";
+import { offset, px, udim, udim2 } from "app/hooks/use-px";
 import type { Action } from "atoms";
 import { history } from "atoms/history";
 import { selectedAtomId } from "atoms/inspector";
@@ -25,7 +26,7 @@ type Glyph = "prev" | "next" | "pause" | "play";
 function Bar(props: { order: number; color: () => Color3; width?: number }) {
 	return (
 		<frame
-			Size={UDim2.fromOffset(props.width ?? 2, 10)}
+			Size={offset(props.width ?? 2, 10)}
 			BackgroundColor3={props.color}
 			BorderSizePixel={0}
 			LayoutOrder={props.order}
@@ -36,11 +37,11 @@ function Bar(props: { order: number; color: () => Color3; width?: number }) {
 function Triangle(props: { text: string; order: number; color: () => Color3 }) {
 	return (
 		<textlabel
-			Size={UDim2.fromOffset(8, 12)}
+			Size={offset(8, 12)}
 			BackgroundTransparency={1}
 			Text={props.text}
 			TextColor3={props.color}
-			TextSize={10}
+			TextSize={px(10)}
 			Font={FONT.mono}
 			LayoutOrder={props.order}
 		/>
@@ -54,7 +55,7 @@ function PlaybackGlyph(props: { glyph: () => Glyph; color: () => Color3 }) {
 				FillDirection={Enum.FillDirection.Horizontal}
 				HorizontalAlignment={Enum.HorizontalAlignment.Center}
 				VerticalAlignment={Enum.VerticalAlignment.Center}
-				Padding={new UDim(0, 2)}
+				Padding={udim(0, 2)}
 				SortOrder={Enum.SortOrder.LayoutOrder}
 			/>
 			<Show when={() => props.glyph() === "prev"}>
@@ -77,7 +78,7 @@ function PlaybackGlyph(props: { glyph: () => Glyph; color: () => Color3 }) {
 				{() => (
 					<>
 						<Bar order={0} width={3} color={props.color} />
-						<frame Size={UDim2.fromOffset(1, 1)} BackgroundTransparency={1} LayoutOrder={1} />
+						<frame Size={offset(1, 1)} BackgroundTransparency={1} LayoutOrder={1} />
 						<Bar order={2} width={3} color={props.color} />
 					</>
 				)}
@@ -89,17 +90,17 @@ function PlaybackGlyph(props: { glyph: () => Glyph; color: () => Color3 }) {
 
 function TimelineHeader(props: { timeline: TimelineState; title: string; count: () => number; live: () => boolean }) {
 	return (
-		<frame Name="Header" Size={new UDim2(1, 0, 0, HEADER_HEIGHT)} BackgroundTransparency={1}>
+		<frame Name="Header" Size={udim2(1, 0, 0, HEADER_HEIGHT)} BackgroundTransparency={1}>
 			<frame Name="Title" Size={UDim2.fromScale(0.6, 1)} BackgroundTransparency={1}>
 				<uilistlayout
 					FillDirection={Enum.FillDirection.Horizontal}
 					VerticalAlignment={Enum.VerticalAlignment.Center}
-					Padding={new UDim(0, 8)}
+					Padding={udim(0, 8)}
 					SortOrder={Enum.SortOrder.LayoutOrder}
 				/>
 				<imagelabel
 					Name="Icon"
-					Size={UDim2.fromOffset(16, 16)}
+					Size={offset(16, 16)}
 					BackgroundTransparency={1}
 					ImageColor3={THEME.text}
 					LayoutOrder={0}
@@ -111,7 +112,7 @@ function TimelineHeader(props: { timeline: TimelineState; title: string; count: 
 					BackgroundTransparency={1}
 					Text={props.title}
 					TextColor3={THEME.text}
-					TextSize={THEME.fontSize + 1}
+					TextSize={px(THEME.fontSize + 1)}
 					Font={FONT.medium}
 					LayoutOrder={1}
 				/>
@@ -122,7 +123,7 @@ function TimelineHeader(props: { timeline: TimelineState; title: string; count: 
 					BackgroundTransparency={1}
 					Text={() => `${props.count()} ${props.count() === 1 ? "update" : "updates"}`}
 					TextColor3={THEME.textMuted}
-					TextSize={THEME.fontSize}
+					TextSize={px(THEME.fontSize)}
 					Font={FONT.bold}
 					LayoutOrder={2}
 				/>
@@ -132,30 +133,30 @@ function TimelineHeader(props: { timeline: TimelineState; title: string; count: 
 				Name="Controls"
 				AnchorPoint={new Vector2(1, 0.5)}
 				Position={UDim2.fromScale(1, 0.5)}
-				Size={UDim2.fromOffset(0, CONTROL_SIZE)}
+				Size={offset(0, CONTROL_SIZE)}
 				AutomaticSize={Enum.AutomaticSize.X}
 				BackgroundTransparency={1}
 			>
 				<uilistlayout
 					FillDirection={Enum.FillDirection.Horizontal}
 					VerticalAlignment={Enum.VerticalAlignment.Center}
-					Padding={new UDim(0, 4)}
+					Padding={udim(0, 4)}
 					SortOrder={Enum.SortOrder.LayoutOrder}
 				/>
 
 				<textbutton
 					Name="Clear"
-					Size={UDim2.fromOffset(0, CONTROL_SIZE)}
+					Size={offset(0, CONTROL_SIZE)}
 					AutomaticSize={Enum.AutomaticSize.X}
 					BackgroundTransparency={1}
 					Text="Clear"
 					TextColor3={THEME.textMuted}
-					TextSize={THEME.fontSize - 1}
+					TextSize={px(THEME.fontSize - 1)}
 					Font={FONT.medium}
 					LayoutOrder={0}
 					Activated={clearAll}
 				>
-					<uipadding PaddingLeft={new UDim(0, 6)} PaddingRight={new UDim(0, 8)} />
+					<uipadding PaddingLeft={udim(0, 6)} PaddingRight={udim(0, 8)} />
 				</textbutton>
 
 				<IconButton name="StepBack" LayoutOrder={1} onClick={() => props.timeline.step("older")}>
@@ -201,24 +202,24 @@ function EntryRow(props: {
 			MouseEnter={() => hovered(true)}
 			MouseLeave={() => hovered(false)}
 		>
-			<uicorner CornerRadius={new UDim(0, 4)} />
+			<uicorner CornerRadius={udim(0, 4)} />
 
 			<textlabel
 				Name="Time"
-				Position={UDim2.fromOffset(10, 0)}
-				Size={new UDim2(0, 60, 1, 0)}
+				Position={offset(10, 0)}
+				Size={udim2(0, 60, 1, 0)}
 				BackgroundTransparency={1}
 				Text={() => formatTime(props.entry().timestamp)}
 				TextColor3={THEME.textDim}
-				TextSize={THEME.monoSize - 1}
+				TextSize={px(THEME.monoSize - 1)}
 				Font={FONT.mono}
 				TextXAlignment={Enum.TextXAlignment.Left}
 			/>
 
 			<textlabel
 				Name="Label"
-				Position={UDim2.fromOffset(80, 0)}
-				Size={new UDim2(1, -88, 1, 0)}
+				Position={offset(80, 0)}
+				Size={udim2(1, -88, 1, 0)}
 				BackgroundTransparency={1}
 				RichText={props.mode === "global"}
 				Text={() => {
@@ -230,7 +231,7 @@ function EntryRow(props: {
 					if (props.mode === "atom") return kindColor(valueKind(props.entry().value));
 					return props.active() ? THEME.text : THEME.textMuted;
 				}}
-				TextSize={THEME.fontSize - 1}
+				TextSize={px(THEME.fontSize - 1)}
 				Font={props.mode === "atom" ? FONT.mono : FONT.ui}
 				TextXAlignment={Enum.TextXAlignment.Left}
 				TextTruncate={Enum.TextTruncate.AtEnd}
@@ -239,28 +240,34 @@ function EntryRow(props: {
 	);
 }
 
-function ValueColumn(props: { title: string; text: () => string; color: Color3; position: UDim2; order: number }) {
+function ValueColumn(props: {
+	title: string;
+	text: () => string;
+	color: Color3;
+	position: Derivable<UDim2>;
+	order: number;
+}) {
 	return (
 		<frame
 			Name={props.title}
 			Position={props.position}
-			Size={new UDim2(0.5, -4, 0, 0)}
+			Size={udim2(0.5, -4, 0, 0)}
 			AutomaticSize={Enum.AutomaticSize.Y}
 			BackgroundTransparency={1}
 			LayoutOrder={props.order}
 		>
 			<uilistlayout
 				FillDirection={Enum.FillDirection.Vertical}
-				Padding={new UDim(0, 6)}
+				Padding={udim(0, 6)}
 				SortOrder={Enum.SortOrder.LayoutOrder}
 			/>
 			<textlabel
 				Name="Title"
-				Size={new UDim2(1, 0, 0, 14)}
+				Size={udim2(1, 0, 0, 14)}
 				BackgroundTransparency={1}
 				Text={props.title}
 				TextColor3={THEME.textMuted}
-				TextSize={THEME.fontSize - 2}
+				TextSize={px(THEME.fontSize - 2)}
 				Font={FONT.medium}
 				TextXAlignment={Enum.TextXAlignment.Left}
 				LayoutOrder={0}
@@ -273,13 +280,13 @@ function ValueColumn(props: { title: string; text: () => string; color: Color3; 
 				BorderSizePixel={0}
 				LayoutOrder={1}
 			>
-				<uicorner CornerRadius={new UDim(0, 4)} />
+				<uicorner CornerRadius={udim(0, 4)} />
 				<uistroke Color={THEME.border} />
 				<uipadding
-					PaddingLeft={new UDim(0, 8)}
-					PaddingRight={new UDim(0, 8)}
-					PaddingTop={new UDim(0, 6)}
-					PaddingBottom={new UDim(0, 6)}
+					PaddingLeft={udim(0, 8)}
+					PaddingRight={udim(0, 8)}
+					PaddingTop={udim(0, 6)}
+					PaddingBottom={udim(0, 6)}
 				/>
 				<textlabel
 					Name="Value"
@@ -288,7 +295,7 @@ function ValueColumn(props: { title: string; text: () => string; color: Color3; 
 					BackgroundTransparency={1}
 					Text={props.text}
 					TextColor3={props.color}
-					TextSize={THEME.monoSize - 1}
+					TextSize={px(THEME.monoSize - 1)}
 					Font={FONT.mono}
 					TextWrapped={true}
 					TextXAlignment={Enum.TextXAlignment.Left}
@@ -329,27 +336,21 @@ function DiffCard(props: { entry: () => Action | undefined; mode: TimelineMode }
 	};
 
 	return (
-		<Card
-			name="Diff"
-			background={THEME.cardBg}
-			padding={10}
-			Size={new UDim2(0.5, -4, 1, 0)}
-			Position={new UDim2(0.5, 4, 0, 0)}
-		>
+		<Card name="Diff" background={THEME.cardBg} padding={10} Size={udim2(0.5, -4, 1, 0)} Position={udim2(0.5, 4, 0, 0)}>
 			<Show when={() => props.entry() === undefined}>{() => <EmptyState text="No updates recorded yet" />}</Show>
 
 			<Show when={() => props.entry() !== undefined}>
 				{() => (
 					<>
-						<frame Name="Header" Size={new UDim2(1, 0, 0, 20)} BackgroundTransparency={1}>
+						<frame Name="Header" Size={udim2(1, 0, 0, 20)} BackgroundTransparency={1}>
 							<textlabel
 								Name="Name"
-								Position={UDim2.fromOffset(20, 0)}
-								Size={new UDim2(1, global ? -180 : -100, 1, 0)}
+								Position={offset(20, 0)}
+								Size={udim2(1, global ? -180 : -100, 1, 0)}
 								BackgroundTransparency={1}
 								Text={() => props.entry()?.name ?? ""}
 								TextColor3={THEME.text}
-								TextSize={THEME.fontSize}
+								TextSize={px(THEME.fontSize)}
 								Font={FONT.medium}
 								TextXAlignment={Enum.TextXAlignment.Left}
 								TextTruncate={Enum.TextTruncate.AtEnd}
@@ -358,14 +359,14 @@ function DiffCard(props: { entry: () => Action | undefined; mode: TimelineMode }
 								Name="Time"
 								AnchorPoint={new Vector2(1, 0)}
 								Position={UDim2.fromScale(1, 0)}
-								Size={new UDim2(0, 76, 1, 0)}
+								Size={udim2(0, 76, 1, 0)}
 								BackgroundTransparency={1}
 								Text={() => {
 									const entry = props.entry();
 									return entry !== undefined ? formatTime(entry.timestamp) : "";
 								}}
 								TextColor3={THEME.textDim}
-								TextSize={THEME.monoSize - 1}
+								TextSize={px(THEME.monoSize - 1)}
 								Font={FONT.mono}
 								TextXAlignment={Enum.TextXAlignment.Right}
 							/>
@@ -373,8 +374,8 @@ function DiffCard(props: { entry: () => Action | undefined; mode: TimelineMode }
 								<frame
 									Name="InspectSlot"
 									AnchorPoint={new Vector2(1, 0)}
-									Position={new UDim2(1, -84, 0, -2)}
-									Size={UDim2.fromOffset(74, 24)}
+									Position={udim2(1, -84, 0, -2)}
+									Size={offset(74, 24)}
 									BackgroundTransparency={1}
 								>
 									<ToolbarButton name="Inspect" text="Inspect" width={74} onClick={inspect} />
@@ -384,14 +385,14 @@ function DiffCard(props: { entry: () => Action | undefined; mode: TimelineMode }
 
 						<scrollingframe
 							Name="Body"
-							Position={UDim2.fromOffset(0, 30)}
-							Size={global ? new UDim2(1, 0, 0, PREVIEW_HEIGHT) : new UDim2(1, 0, 1, -30)}
+							Position={offset(0, 30)}
+							Size={global ? udim2(1, 0, 0, PREVIEW_HEIGHT) : udim2(1, 0, 1, -30)}
 							BackgroundTransparency={1}
 							BorderSizePixel={0}
 							CanvasSize={UDim2.fromScale(0, 0)}
 							AutomaticCanvasSize={Enum.AutomaticSize.Y}
 							ScrollingDirection={Enum.ScrollingDirection.Y}
-							ScrollBarThickness={4}
+							ScrollBarThickness={px(4)}
 							ScrollBarImageColor3={THEME.scrollbar}
 						>
 							<frame
@@ -414,7 +415,7 @@ function DiffCard(props: { entry: () => Action | undefined; mode: TimelineMode }
 									title="Current"
 									text={() => previewValue(props.entry()?.value)}
 									color={THEME.tree.string}
-									position={new UDim2(0.5, 4, 0, 0)}
+									position={udim2(0.5, 4, 0, 0)}
 									order={1}
 								/>
 							</frame>
@@ -426,7 +427,7 @@ function DiffCard(props: { entry: () => Action | undefined; mode: TimelineMode }
 								BackgroundTransparency={1}
 								Text={changed}
 								TextColor3={THEME.textDim}
-								TextSize={THEME.fontSize - 2}
+								TextSize={px(THEME.fontSize - 2)}
 								Font={FONT.ui}
 								TextWrapped={true}
 								TextXAlignment={Enum.TextXAlignment.Left}
@@ -435,7 +436,7 @@ function DiffCard(props: { entry: () => Action | undefined; mode: TimelineMode }
 							/>
 							<uilistlayout
 								FillDirection={Enum.FillDirection.Vertical}
-								Padding={new UDim(0, 10)}
+								Padding={udim(0, 10)}
 								SortOrder={Enum.SortOrder.LayoutOrder}
 							/>
 						</scrollingframe>
@@ -444,20 +445,20 @@ function DiffCard(props: { entry: () => Action | undefined; mode: TimelineMode }
 							<>
 								<textlabel
 									Name="ValueTitle"
-									Position={UDim2.fromOffset(0, VALUE_TOP)}
-									Size={new UDim2(1, 0, 0, 14)}
+									Position={offset(0, VALUE_TOP)}
+									Size={udim2(1, 0, 0, 14)}
 									BackgroundTransparency={1}
 									Text="Value"
 									TextColor3={THEME.textMuted}
-									TextSize={THEME.fontSize - 2}
+									TextSize={px(THEME.fontSize - 2)}
 									Font={FONT.medium}
 									TextXAlignment={Enum.TextXAlignment.Left}
 								/>
 								<Card
 									name="Value"
 									background={THEME.inputBg}
-									Position={UDim2.fromOffset(0, VALUE_TOP + 20)}
-									Size={new UDim2(1, 0, 1, -(VALUE_TOP + 20))}
+									Position={offset(0, VALUE_TOP + 20)}
+									Size={udim2(1, 0, 1, -(VALUE_TOP + 20))}
 								>
 									<CodeView value={() => props.entry()?.value} />
 								</Card>
@@ -497,8 +498,9 @@ export function Timeline(props: {
 				const index = entries().findIndex((entry) => entry.id === id);
 				if (index < 0) return;
 
-				const top = index * ROW_HEIGHT;
-				const bottom = top + ROW_HEIGHT;
+				const rowHeight = px(ROW_HEIGHT)();
+				const top = index * rowHeight;
+				const bottom = top + rowHeight;
 				const viewTop = frame.CanvasPosition.Y;
 				const viewHeight = frame.AbsoluteWindowSize.Y;
 
@@ -528,11 +530,11 @@ export function Timeline(props: {
 
 			<frame
 				Name="Body"
-				Position={UDim2.fromOffset(0, HEADER_HEIGHT + THEME.gap)}
-				Size={new UDim2(1, 0, 1, -(HEADER_HEIGHT + THEME.gap))}
+				Position={offset(0, HEADER_HEIGHT + THEME.gap)}
+				Size={udim2(1, 0, 1, -(HEADER_HEIGHT + THEME.gap))}
 				BackgroundTransparency={1}
 			>
-				<Card name="Entries" background={THEME.cardBg} padding={4} Size={new UDim2(0.5, -4, 1, 0)}>
+				<Card name="Entries" background={THEME.cardBg} padding={4} Size={udim2(0.5, -4, 1, 0)}>
 					<Show when={() => entries().isEmpty()}>{() => <EmptyState text={emptyText} />}</Show>
 					<VirtualizedList
 						items={entries}

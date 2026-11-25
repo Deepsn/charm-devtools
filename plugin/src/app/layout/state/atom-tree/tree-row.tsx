@@ -1,5 +1,6 @@
 import Vide, { source } from "@rbxts/vide";
 import { useAtom } from "@rbxts/vide-charm";
+import { px, udim, udim2 } from "app/hooks/use-px";
 import { selectedAtomId, toggleGroup } from "atoms/inspector";
 import { FONT, THEME } from "constants/theme";
 import { RowFlash } from "./row-flash";
@@ -54,7 +55,7 @@ function RowLabel(props: { row: () => TreeRow; selected: () => boolean; LayoutOr
 				return current.kind === "group" ? current.name : current.label;
 			}}
 			TextColor3={() => (props.selected() || props.row().kind === "group" ? THEME.text : THEME.textMuted)}
-			TextSize={THEME.fontSize}
+			TextSize={px(THEME.fontSize)}
 			Font={() => (props.row().kind === "group" ? FONT.medium : FONT.ui)}
 			TextXAlignment={Enum.TextXAlignment.Left}
 			TextTruncate={Enum.TextTruncate.AtEnd}
@@ -77,7 +78,7 @@ function RowCount(props: { row: () => TreeRow; LayoutOrder: number }) {
 				return current.kind === "group" ? tostring(current.count) : "";
 			}}
 			TextColor3={THEME.textDim}
-			TextSize={THEME.fontSize - 2}
+			TextSize={px(THEME.fontSize - 2)}
 			Font={FONT.mono}
 			TextXAlignment={Enum.TextXAlignment.Right}
 			Visible={() => props.row().kind === "group"}
@@ -132,13 +133,13 @@ export function TreeRowView(props: {
 			MouseEnter={() => hovered(true)}
 			MouseLeave={() => hovered(false)}
 		>
-			<uicorner CornerRadius={new UDim(0, 4)} />
+			<uicorner CornerRadius={udim(0, 4)} />
 
 			<RowFlash updatedAt={updatedAt} />
 
 			<frame
 				Name="Accent"
-				Size={new UDim2(0, 2, 0.65, 0)}
+				Size={udim2(0, 2, 0.65, 0)}
 				Position={UDim2.fromScale(0, 0.5)}
 				AnchorPoint={new Vector2(0, 0.5)}
 				BackgroundColor3={THEME.accent}
@@ -147,11 +148,11 @@ export function TreeRowView(props: {
 			/>
 
 			<frame Name="Content" Size={UDim2.fromScale(1, 1)} BackgroundTransparency={1}>
-				<uipadding PaddingLeft={new UDim(0, THEME.padding)} PaddingRight={new UDim(0, THEME.padding)} />
+				<uipadding PaddingLeft={udim(0, THEME.padding)} PaddingRight={udim(0, THEME.padding)} />
 				<uilistlayout
 					FillDirection={Enum.FillDirection.Horizontal}
 					VerticalAlignment={Enum.VerticalAlignment.Center}
-					Padding={new UDim(0, ROW_GAP)}
+					Padding={udim(0, ROW_GAP)}
 					SortOrder={Enum.SortOrder.LayoutOrder}
 				/>
 

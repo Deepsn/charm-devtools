@@ -1,4 +1,5 @@
 import Vide, { type Derivable } from "@rbxts/vide";
+import { px, udim, udim2 } from "app/hooks/use-px";
 import { FONT, THEME } from "constants/theme";
 
 const SECTION_GAP = 18;
@@ -15,17 +16,17 @@ export function Section(props: { title: string; order: number; children?: Vide.N
 			<uilistlayout
 				FillDirection={Enum.FillDirection.Vertical}
 				SortOrder={Enum.SortOrder.LayoutOrder}
-				Padding={new UDim(0, 8)}
+				Padding={udim(0, 8)}
 			/>
-			<uipadding PaddingTop={new UDim(0, props.order > 1 ? SECTION_GAP : 0)} />
+			<uipadding PaddingTop={udim(0, props.order > 1 ? SECTION_GAP : 0)} />
 
 			<textlabel
 				Name="Title"
-				Size={new UDim2(1, 0, 0, 18)}
+				Size={udim2(1, 0, 0, 18)}
 				BackgroundTransparency={1}
 				Text={props.title}
 				TextColor3={THEME.text}
-				TextSize={THEME.sectionSize}
+				TextSize={px(THEME.sectionSize)}
 				Font={FONT.bold}
 				TextXAlignment={Enum.TextXAlignment.Left}
 				LayoutOrder={0}
@@ -46,12 +47,12 @@ export function Chip(props: { text: Derivable<string>; color?: Derivable<Color3>
 			BorderSizePixel={0}
 			LayoutOrder={props.order}
 		>
-			<uicorner CornerRadius={new UDim(0, 4)} />
+			<uicorner CornerRadius={udim(0, 4)} />
 			<uipadding
-				PaddingLeft={new UDim(0, 7)}
-				PaddingRight={new UDim(0, 7)}
-				PaddingTop={new UDim(0, 3)}
-				PaddingBottom={new UDim(0, 3)}
+				PaddingLeft={udim(0, 7)}
+				PaddingRight={udim(0, 7)}
+				PaddingTop={udim(0, 3)}
+				PaddingBottom={udim(0, 3)}
 			/>
 			<textlabel
 				Name="Value"
@@ -60,7 +61,7 @@ export function Chip(props: { text: Derivable<string>; color?: Derivable<Color3>
 				BackgroundTransparency={1}
 				Text={props.text}
 				TextColor3={props.color ?? THEME.text}
-				TextSize={THEME.monoSize - 1}
+				TextSize={px(THEME.monoSize - 1)}
 				Font={FONT.mono}
 				TextXAlignment={Enum.TextXAlignment.Left}
 			/>
@@ -80,16 +81,16 @@ export function Field(props: { label: string; value: Derivable<string>; color?: 
 			<uilistlayout
 				FillDirection={Enum.FillDirection.Vertical}
 				SortOrder={Enum.SortOrder.LayoutOrder}
-				Padding={new UDim(0, 4)}
+				Padding={udim(0, 4)}
 			/>
 
 			<textlabel
 				Name="Label"
-				Size={new UDim2(1, 0, 0, 12)}
+				Size={udim2(1, 0, 0, 12)}
 				BackgroundTransparency={1}
 				Text={props.label.upper()}
 				TextColor3={THEME.textDim}
-				TextSize={THEME.labelSize}
+				TextSize={px(THEME.labelSize)}
 				Font={FONT.bold}
 				TextXAlignment={Enum.TextXAlignment.Left}
 				LayoutOrder={1}
@@ -104,11 +105,11 @@ export function SectionEmpty(props: { text: string; order: number }) {
 	return (
 		<textlabel
 			Name="Empty"
-			Size={new UDim2(1, 0, 0, 18)}
+			Size={udim2(1, 0, 0, 18)}
 			BackgroundTransparency={1}
 			Text={props.text}
 			TextColor3={THEME.textMuted}
-			TextSize={THEME.fontSize}
+			TextSize={px(THEME.fontSize)}
 			Font={FONT.ui}
 			TextXAlignment={Enum.TextXAlignment.Left}
 			LayoutOrder={props.order}

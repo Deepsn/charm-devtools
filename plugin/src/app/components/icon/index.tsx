@@ -1,6 +1,7 @@
 import Vide, { type Derivable, read } from "@rbxts/vide";
+import { px } from "app/hooks/use-px";
 
-// square icon sized as a fraction of the parent's height
+// square icon sized as a fraction of the parent's height, or `Size` design pixels when given
 export function Icon(props: {
 	image: Derivable<string>;
 	name?: string;
@@ -16,9 +17,11 @@ export function Icon(props: {
 			Name={props.name ?? "Icon"}
 			AnchorPoint={props.AnchorPoint ?? Vector2.zero}
 			Position={props.Position ?? UDim2.fromScale(0, 0)}
-			Size={() =>
-				props.Size ? UDim2.fromOffset(read(props.Size), read(props.Size)) : UDim2.fromScale(1, props.scale ?? 1)
-			}
+			Size={() => {
+				if (props.Size === undefined) return UDim2.fromScale(1, props.scale ?? 1);
+				const size = px(read(props.Size))();
+				return UDim2.fromOffset(size, size);
+			}}
 			BackgroundTransparency={1}
 			BorderSizePixel={0}
 			Image={props.image}

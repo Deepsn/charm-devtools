@@ -1,4 +1,5 @@
 import Vide, { Show, source } from "@rbxts/vide";
+import { offset, px, udim, udim2 } from "app/hooks/use-px";
 import { currentWindow, type WindowId } from "atoms/window";
 import { FONT, THEME } from "constants/theme";
 import { WINDOWS, type WindowTab } from "constants/windows";
@@ -10,20 +11,20 @@ function Tooltip(props: { text: string }) {
 		<textlabel
 			Name="Tooltip"
 			AnchorPoint={new Vector2(0, 0.5)}
-			Position={new UDim2(1, 8, 0.5, 0)}
-			Size={new UDim2(0, 0, 0, 22)}
+			Position={udim2(1, 8, 0.5, 0)}
+			Size={udim2(0, 0, 0, 22)}
 			AutomaticSize={Enum.AutomaticSize.X}
 			BackgroundColor3={THEME.cardBg}
 			BorderSizePixel={0}
 			Text={props.text}
 			TextColor3={THEME.text}
-			TextSize={THEME.fontSize}
+			TextSize={px(THEME.fontSize)}
 			Font={FONT.medium}
 			ZIndex={TOOLTIP_ZINDEX}
 		>
-			<uicorner CornerRadius={new UDim(0, 4)} />
+			<uicorner CornerRadius={udim(0, 4)} />
 			<uistroke Color={THEME.border} />
-			<uipadding PaddingLeft={new UDim(0, 8)} PaddingRight={new UDim(0, 8)} />
+			<uipadding PaddingLeft={udim(0, 8)} PaddingRight={udim(0, 8)} />
 		</textlabel>
 	);
 }
@@ -35,7 +36,7 @@ function RailButton(props: { window: WindowTab; active: () => WindowId; order: n
 	return (
 		<textbutton
 			Name={props.window.label}
-			Size={new UDim2(1, 0, 0, THEME.railItemHeight)}
+			Size={udim2(1, 0, 0, THEME.railItemHeight)}
 			BackgroundColor3={THEME.rowHover}
 			BackgroundTransparency={() => (hovered() && !isActive() ? 0.5 : 1)}
 			BorderSizePixel={0}
@@ -48,7 +49,7 @@ function RailButton(props: { window: WindowTab; active: () => WindowId; order: n
 		>
 			<frame
 				Name="Indicator"
-				Size={new UDim2(0, 2, 1, -12)}
+				Size={udim2(0, 2, 1, -12)}
 				Position={new UDim2(0, 0, 0.5, 0)}
 				AnchorPoint={new Vector2(0, 0.5)}
 				BackgroundColor3={THEME.accent}
@@ -60,7 +61,7 @@ function RailButton(props: { window: WindowTab; active: () => WindowId; order: n
 				Name="Icon"
 				AnchorPoint={new Vector2(0.5, 0.5)}
 				Position={UDim2.fromScale(0.5, 0.5)}
-				Size={UDim2.fromOffset(THEME.railIconSize, THEME.railIconSize)}
+				Size={offset(THEME.railIconSize, THEME.railIconSize)}
 				BackgroundTransparency={1}
 				BorderSizePixel={0}
 				Image={props.window.icon}
@@ -76,7 +77,7 @@ export function ActivityRail(props: { active: () => WindowId }) {
 	return (
 		<frame
 			Name="ActivityRail"
-			Size={new UDim2(0, THEME.railWidth, 1, 0)}
+			Size={udim2(0, THEME.railWidth, 1, 0)}
 			BackgroundColor3={THEME.railBg}
 			BorderSizePixel={0}
 			ZIndex={30}
@@ -86,7 +87,7 @@ export function ActivityRail(props: { active: () => WindowId }) {
 				SortOrder={Enum.SortOrder.LayoutOrder}
 				HorizontalAlignment={Enum.HorizontalAlignment.Center}
 			/>
-			<uipadding PaddingTop={new UDim(0, 6)} />
+			<uipadding PaddingTop={udim(0, 6)} />
 
 			{WINDOWS.map((window, index) => (
 				<RailButton window={window} active={props.active} order={index} />

@@ -1,4 +1,5 @@
 import Vide, { type Derivable, read, source } from "@rbxts/vide";
+import { offset, px, udim, udim2 } from "app/hooks/use-px";
 import { FONT, THEME } from "constants/theme";
 
 /** Pass `width` when nesting a popover: auto-sized buttons would grow to fit it. */
@@ -19,7 +20,7 @@ export function ToolbarButton(props: {
 	return (
 		<textbutton
 			Name={props.name}
-			Size={new UDim2(0, props.width ?? 0, 1, 0)}
+			Size={udim2(0, props.width ?? 0, 1, 0)}
 			AutomaticSize={props.width === undefined ? Enum.AutomaticSize.X : Enum.AutomaticSize.None}
 			BackgroundColor3={() => {
 				if (active()) return THEME.rowSelected;
@@ -34,9 +35,9 @@ export function ToolbarButton(props: {
 			MouseEnter={() => hovered(true)}
 			MouseLeave={() => hovered(false)}
 		>
-			<uicorner CornerRadius={new UDim(0, THEME.radius)} />
+			<uicorner CornerRadius={udim(0, THEME.radius)} />
 			<uistroke Color={() => (active() ? THEME.accent : THEME.border)} Transparency={() => (active() ? 0.2 : 0)} />
-			<uipadding PaddingLeft={new UDim(0, 10)} PaddingRight={new UDim(0, 10)} />
+			<uipadding PaddingLeft={udim(0, 10)} PaddingRight={udim(0, 10)} />
 
 			<frame
 				Name="Content"
@@ -48,13 +49,13 @@ export function ToolbarButton(props: {
 					FillDirection={Enum.FillDirection.Horizontal}
 					HorizontalAlignment={Enum.HorizontalAlignment.Center}
 					VerticalAlignment={Enum.VerticalAlignment.Center}
-					Padding={new UDim(0, 6)}
+					Padding={udim(0, 6)}
 					SortOrder={Enum.SortOrder.LayoutOrder}
 				/>
 				{props.icon !== undefined ? (
 					<imagelabel
 						Name="Icon"
-						Size={UDim2.fromOffset(15, 15)}
+						Size={offset(15, 15)}
 						BackgroundTransparency={1}
 						Image={props.icon}
 						ImageColor3={() => (active() ? THEME.accentText : THEME.textMuted)}
@@ -69,7 +70,7 @@ export function ToolbarButton(props: {
 						BackgroundTransparency={1}
 						Text={props.text}
 						TextColor3={() => (active() ? THEME.accentText : hovered() ? THEME.text : THEME.textMuted)}
-						TextSize={THEME.fontSize - 1}
+						TextSize={px(THEME.fontSize - 1)}
 						Font={FONT.medium}
 						LayoutOrder={1}
 					/>
@@ -97,7 +98,7 @@ export function IconButton(props: {
 	return (
 		<textbutton
 			Name={props.name}
-			Size={UDim2.fromOffset(size, size)}
+			Size={offset(size, size)}
 			BackgroundColor3={() => {
 				if (primary()) return THEME.accent;
 				return hovered() ? THEME.rowHover : THEME.cardBg;
@@ -110,7 +111,7 @@ export function IconButton(props: {
 			MouseEnter={() => hovered(true)}
 			MouseLeave={() => hovered(false)}
 		>
-			<uicorner CornerRadius={new UDim(0, THEME.radius - 1)} />
+			<uicorner CornerRadius={udim(0, THEME.radius - 1)} />
 			<uistroke Color={() => (primary() ? THEME.accent : THEME.border)} />
 			{props.children}
 		</textbutton>

@@ -1,4 +1,5 @@
 import Vide, { type Derivable } from "@rbxts/vide";
+import { px } from "app/hooks/use-px";
 import { FONT, THEME } from "constants/theme";
 
 export function EmptyState(props: { text: Derivable<string> }) {
@@ -9,7 +10,7 @@ export function EmptyState(props: { text: Derivable<string> }) {
 			BackgroundTransparency={1}
 			Text={props.text}
 			TextColor3={THEME.textDim}
-			TextSize={THEME.fontSize}
+			TextSize={px(THEME.fontSize)}
 			Font={FONT.ui}
 		/>
 	);

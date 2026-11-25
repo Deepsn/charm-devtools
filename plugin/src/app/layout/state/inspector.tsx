@@ -7,6 +7,7 @@ import { Icon } from "app/components/icon";
 import { type Tab, TabStrip } from "app/components/tab-strip";
 import { Timeline } from "app/components/timeline";
 import { ValueTree } from "app/components/value-tree";
+import { offset, px, udim, udim2 } from "app/hooks/use-px";
 import { atoms } from "atoms/atoms";
 import { selectedAtomId, type ValueView, valueView } from "atoms/inspector";
 import { atomTimeline, timelineEnabled } from "atoms/timeline";
@@ -27,19 +28,19 @@ function AtStatus(props: { text: () => string; color: () => Color3 }) {
 	return (
 		<textlabel
 			Name="At"
-			Size={UDim2.fromOffset(0, 18)}
+			Size={offset(0, 18)}
 			AutomaticSize={Enum.AutomaticSize.X}
 			BackgroundColor3={props.color}
 			BackgroundTransparency={0.85}
 			BorderSizePixel={0}
 			Text={props.text}
 			TextColor3={props.color}
-			TextSize={THEME.fontSize - 2}
+			TextSize={px(THEME.fontSize - 2)}
 			Font={FONT.mono}
 			LayoutOrder={0}
 		>
-			<uicorner CornerRadius={new UDim(0, 4)} />
-			<uipadding PaddingLeft={new UDim(0, 6)} PaddingRight={new UDim(0, 6)} />
+			<uicorner CornerRadius={udim(0, 4)} />
+			<uipadding PaddingLeft={udim(0, 6)} PaddingRight={udim(0, 6)} />
 		</textlabel>
 	);
 }
@@ -84,7 +85,7 @@ export function Inspector() {
 		<Card name="Inspector" padding={12}>
 			<uilistlayout
 				FillDirection={Enum.FillDirection.Vertical}
-				Padding={new UDim(0, SECTION_GAP)}
+				Padding={udim(0, SECTION_GAP)}
 				SortOrder={Enum.SortOrder.LayoutOrder}
 			/>
 
@@ -100,11 +101,11 @@ export function Inspector() {
 			<Show when={() => latest() !== undefined}>
 				{() => (
 					<>
-						<frame Name="Header" Size={new UDim2(1, 0, 0, HEADER_HEIGHT)} BackgroundTransparency={1} LayoutOrder={1}>
+						<frame Name="Header" Size={udim2(1, 0, 0, HEADER_HEIGHT)} BackgroundTransparency={1} LayoutOrder={1}>
 							<uilistlayout
 								FillDirection={Enum.FillDirection.Horizontal}
 								VerticalAlignment={Enum.VerticalAlignment.Center}
-								Padding={new UDim(0, 10)}
+								Padding={udim(0, 10)}
 								SortOrder={Enum.SortOrder.LayoutOrder}
 							/>
 
@@ -115,7 +116,7 @@ export function Inspector() {
 								<uilistlayout
 									FillDirection={Enum.FillDirection.Vertical}
 									VerticalAlignment={Enum.VerticalAlignment.Center}
-									Padding={new UDim(0, 2)}
+									Padding={udim(0, 2)}
 									SortOrder={Enum.SortOrder.LayoutOrder}
 								/>
 
@@ -129,7 +130,7 @@ export function Inspector() {
 										return atom !== undefined ? splitAtomName(atom.name).leaf : "";
 									}}
 									TextColor3={THEME.text}
-									TextSize={THEME.fontSize + 3}
+									TextSize={px(THEME.fontSize + 3)}
 									Font={FONT.bold}
 									TextXAlignment={Enum.TextXAlignment.Left}
 									TextTruncate={Enum.TextTruncate.AtEnd}
@@ -143,7 +144,7 @@ export function Inspector() {
 									BackgroundTransparency={1}
 									Text={() => `atom<${describeType(value())}>`}
 									TextColor3={THEME.textDim}
-									TextSize={THEME.monoSize - 1}
+									TextSize={px(THEME.monoSize - 1)}
 									Font={FONT.mono}
 									TextXAlignment={Enum.TextXAlignment.Left}
 									TextTruncate={Enum.TextTruncate.AtEnd}
@@ -161,7 +162,7 @@ export function Inspector() {
 								<uilistlayout
 									FillDirection={Enum.FillDirection.Horizontal}
 									VerticalAlignment={Enum.VerticalAlignment.Center}
-									Padding={new UDim(0, 8)}
+									Padding={udim(0, 8)}
 									SortOrder={Enum.SortOrder.LayoutOrder}
 								/>
 								<Show when={pinned}>
@@ -176,12 +177,7 @@ export function Inspector() {
 									)}
 								</Show>
 
-								<frame
-									Name="TabSlot"
-									Size={UDim2.fromOffset(132, THEME.tabHeight)}
-									BackgroundTransparency={1}
-									LayoutOrder={2}
-								>
+								<frame Name="TabSlot" Size={offset(132, THEME.tabHeight)} BackgroundTransparency={1} LayoutOrder={2}>
 									{TabStrip<ValueView>({
 										tabs: VIEW_TABS,
 										active: view,
@@ -193,7 +189,7 @@ export function Inspector() {
 
 						<frame
 							Name="Divider"
-							Size={new UDim2(1, 0, 0, 1)}
+							Size={udim2(1, 0, 0, 1)}
 							BackgroundColor3={THEME.divider}
 							BorderSizePixel={0}
 							LayoutOrder={2}
@@ -208,13 +204,13 @@ export function Inspector() {
 							LayoutOrder={3}
 						>
 							<uiflexitem FlexMode={Enum.UIFlexMode.Fill} />
-							<uicorner CornerRadius={new UDim(0, THEME.radius)} />
+							<uicorner CornerRadius={udim(0, THEME.radius)} />
 							<uistroke Color={THEME.border} />
 							<uipadding
-								PaddingTop={new UDim(0, SECTION_GAP)}
-								PaddingBottom={new UDim(0, SECTION_GAP)}
-								PaddingLeft={new UDim(0, SECTION_GAP)}
-								PaddingRight={new UDim(0, SECTION_GAP)}
+								PaddingTop={udim(0, SECTION_GAP)}
+								PaddingBottom={udim(0, SECTION_GAP)}
+								PaddingLeft={udim(0, SECTION_GAP)}
+								PaddingRight={udim(0, SECTION_GAP)}
 							/>
 							<Show when={() => shown() === undefined}>
 								{() => <EmptyState text="This atom had no value yet at this point" />}
@@ -232,10 +228,10 @@ export function Inspector() {
 												CanvasSize={UDim2.fromScale(0, 0)}
 												AutomaticCanvasSize={Enum.AutomaticSize.Y}
 												ScrollingDirection={Enum.ScrollingDirection.Y}
-												ScrollBarThickness={6}
+												ScrollBarThickness={px(6)}
 												ScrollBarImageColor3={THEME.scrollbar}
 											>
-												<uipadding PaddingTop={new UDim(0, 6)} PaddingLeft={new UDim(0, 8)} />
+												<uipadding PaddingTop={udim(0, 6)} PaddingLeft={udim(0, 8)} />
 												<ValueTree value={value} scope={() => latest()?.atomId ?? "root"} />
 											</scrollingframe>
 										),
@@ -255,7 +251,7 @@ export function Inspector() {
 						BackgroundTransparency={1}
 						LayoutOrder={4}
 					>
-						<uipadding PaddingTop={new UDim(0, SECTION_GAP)} />
+						<uipadding PaddingTop={udim(0, SECTION_GAP)} />
 						<Timeline timeline={atomTimeline} mode="atom" />
 					</frame>
 				)}

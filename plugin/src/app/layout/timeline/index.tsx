@@ -1,6 +1,7 @@
 import Vide from "@rbxts/vide";
 import { Card } from "app/components/card";
 import { Timeline } from "app/components/timeline";
+import { offset, udim, udim2 } from "app/hooks/use-px";
 import { EnvDropdown, SearchBox } from "app/layout/state/toolbar";
 import { globalTimeline, timelineSearch } from "atoms/timeline";
 import { THEME } from "constants/theme";
@@ -11,10 +12,10 @@ const BODY_TOP = THEME.filterHeight + THEME.gap;
 export function TimelinePage() {
 	return (
 		<frame Name="TimelinePage" Size={UDim2.fromScale(1, 1)} BackgroundTransparency={1}>
-			<frame Name="Toolbar" Size={new UDim2(1, 0, 0, THEME.filterHeight)} BackgroundTransparency={1} ZIndex={10}>
+			<frame Name="Toolbar" Size={udim2(1, 0, 0, THEME.filterHeight)} BackgroundTransparency={1} ZIndex={10}>
 				<uilistlayout
 					FillDirection={Enum.FillDirection.Horizontal}
-					Padding={new UDim(0, THEME.gap)}
+					Padding={udim(0, THEME.gap)}
 					SortOrder={Enum.SortOrder.LayoutOrder}
 				/>
 				<EnvDropdown />
@@ -23,8 +24,8 @@ export function TimelinePage() {
 
 			<frame
 				Name="Body"
-				Position={UDim2.fromOffset(0, BODY_TOP)}
-				Size={new UDim2(1, 0, 1, -BODY_TOP)}
+				Position={offset(0, BODY_TOP)}
+				Size={udim2(1, 0, 1, -BODY_TOP)}
 				BackgroundTransparency={1}
 				ZIndex={1}
 			>
