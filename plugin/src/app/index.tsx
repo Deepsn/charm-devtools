@@ -1,9 +1,9 @@
 import Vide, { match } from "@rbxts/vide";
 import { useAtom } from "@rbxts/vide-charm";
 import { ActivityRail } from "app/components/activity-rail";
-import { Atoms } from "app/layout/atoms";
-import { History } from "app/layout/history";
 import { Settings } from "app/layout/settings";
+import { State } from "app/layout/state";
+import { TimelinePage } from "app/layout/timeline";
 import { currentWindow } from "atoms/window";
 import { THEME } from "constants/theme";
 
@@ -39,8 +39,8 @@ export function App() {
 				/>
 
 				{match(active)({
-					history: () => History(),
-					atoms: () => Atoms(),
+					state: () => State(),
+					timeline: () => TimelinePage(),
 					settings: () => Settings(),
 				})}
 			</frame>

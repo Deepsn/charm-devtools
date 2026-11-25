@@ -1,4 +1,5 @@
 import type { WindowId } from "atoms/window";
+import { ICONS } from "constants/icons";
 
 export interface WindowTab {
 	id: WindowId;
@@ -7,7 +8,7 @@ export interface WindowTab {
 }
 
 export const WINDOWS: WindowTab[] = [
-	{ id: "atoms", label: "Atoms", icon: "rbxassetid://92694088951236" },
-	{ id: "history", label: "History", icon: "rbxassetid://71718845424462" },
-	{ id: "settings", label: "Settings", icon: "rbxassetid://101549466136132" },
+	{ id: "state", label: "State", icon: ICONS.stacks },
+	{ id: "timeline", label: "Timeline", icon: ICONS.history },
+	{ id: "settings", label: "Settings", icon: ICONS.settings },
 ];

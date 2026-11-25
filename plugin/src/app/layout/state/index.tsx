@@ -1,0 +1,37 @@
+import Vide from "@rbxts/vide";
+import { AtomTree } from "app/layout/state/atom-tree";
+import { Inspector } from "app/layout/state/inspector";
+import { Toolbar } from "app/layout/state/toolbar";
+import { THEME } from "constants/theme";
+
+const BODY_TOP = THEME.filterHeight + THEME.gap;
+const MAIN_OFFSET = THEME.listWidth + THEME.gap;
+
+export function State() {
+	return (
+		<frame Name="State" Size={UDim2.fromScale(1, 1)} BackgroundTransparency={1}>
+			<Toolbar />
+
+			<frame
+				Name="Body"
+				Position={UDim2.fromOffset(0, BODY_TOP)}
+				Size={new UDim2(1, 0, 1, -BODY_TOP)}
+				BackgroundTransparency={1}
+				ZIndex={1}
+			>
+				<frame Name="TreeSlot" Size={new UDim2(0, THEME.listWidth, 1, 0)} BackgroundTransparency={1}>
+					<AtomTree />
+				</frame>
+
+				<frame
+					Name="InspectorSlot"
+					Position={UDim2.fromOffset(MAIN_OFFSET, 0)}
+					Size={new UDim2(1, -MAIN_OFFSET, 1, 0)}
+					BackgroundTransparency={1}
+				>
+					<Inspector />
+				</frame>
+			</frame>
+		</frame>
+	);
+}

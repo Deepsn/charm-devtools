@@ -14,7 +14,7 @@ task.wait(2);
 atoms.anotherAtom(423);
 helloAtom("CLIENT Hello charm devtools");
 
-// while (true) {
-// 	task.wait(1);
-// 	helloAtom((v) => v + 1);
-// }
+while (true) {
+	task.wait(1);
+	helloAtom((v) => v + 1);
+}

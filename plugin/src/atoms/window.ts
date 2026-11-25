@@ -1,5 +1,5 @@
 import { atom } from "@rbxts/charm";
 
-export type WindowId = "history" | "settings" | "atoms";
+export type WindowId = "state" | "timeline" | "settings";
 
-export const currentWindow = atom<WindowId>("history");
+export const currentWindow = atom<WindowId>("state");
