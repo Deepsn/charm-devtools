@@ -7,6 +7,7 @@ import { App } from "app";
 import { addToHistory } from "atoms/history";
 import { enabled } from "atoms/plugin";
 import { IS_A_DEV, IS_DEV, IS_RUNNING } from "constants/core";
+import { seedTestState } from "utils/seed";
 
 const toolbar = plugin.CreateToolbar("Charm DevTools");
 const button = toolbar.CreateButton("Open devtools", "", "");
@@ -27,6 +28,7 @@ button.Click.Connect(() => enabled((prev) => !prev));
 
 if (IS_A_DEV(plugin) && IS_DEV(plugin) && !IS_RUNNING) {
 	enabled(true);
+	seedTestState();
 }
 
 const disposeEnabled = listen(enabled, (isEnabled) => {
