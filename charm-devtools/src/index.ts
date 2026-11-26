@@ -5,6 +5,8 @@ export {
 	type AtomWriteMiddleware,
 	addCharmHooks,
 	type CharmHooks,
+	type DependentInfo,
+	getAtomDependents,
 	getAtomInfo,
 	getHookedAtoms,
 	installCharmHooks,
@@ -13,6 +15,7 @@ export {
 	original,
 	setAtomLabel,
 	uninstallCharmHooks,
+	withoutDependencyTracking,
 } from "charm-hooks";
 export { hookAtom, hookAtomCreation, hookAtoms } from "hook-atom";
-export type { Action, SourceLocation } from "protocol";
+export type { Action, Dependent, DependentKind, DependentsUpdate, SourceLocation } from "protocol";

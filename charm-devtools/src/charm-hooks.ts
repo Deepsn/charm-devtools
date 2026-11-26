@@ -1,13 +1,26 @@
-import type { Atom, Getter, Update } from "@rbxts/charm";
+import type { Atom, Equals, Getter, Update } from "@rbxts/charm";
 import * as Charm from "@rbxts/charm";
 import { HttpService } from "@rbxts/services";
+import { formatSource, getCallerSource } from "caller-source";
+import { now } from "clock";
+import {
+	collectDependents,
+	createNode,
+	type GraphNode,
+	type GraphNodeKind,
+	recordRead,
+	recordWrite,
+	removeNode,
+	setGraphChangedCallback,
+	track,
+	withoutDependencyTracking,
+} from "graph";
 import { logger } from "logger";
 import type { SourceLocation } from "protocol";
 import { wrapAtom } from "wrap-atom";
 
 // biome-ignore lint/suspicious/noExplicitAny: accepts any atom
-type AnyAtom = Atom<any>;
-
+export type AnyAtom = Atom<any>;
 type Cleanup = () => void;
 
 export type NodeInfo = {
@@ -38,12 +51,16 @@ export type CharmHooks = {
 	computedCreated?: (getter: Getter<unknown>, info: NodeInfo) => void;
 	effectCreated?: (dispose: Cleanup, info: NodeInfo) => void;
 	effectDisposed?: (info: NodeInfo) => void;
+	dependenciesChanged?: () => void;
 };
 
-type CharmModule = typeof Charm;
-type MutableCharm = { -readonly [K in keyof CharmModule]: CharmModule[K] };
+export type DependentInfo = {
+	kind: GraphNodeKind;
+	info: NodeInfo & { label?: string };
+	depth: number;
+};
 
-const charm = Charm as unknown as MutableCharm;
+const charm = Charm as unknown as Record<string, unknown>;
 
 export const original = {
 	atom: Charm.atom,
@@ -52,151 +69,206 @@ export const original = {
 	untracked: Charm.untracked,
 	listen: Charm.listen,
 	subscribe: Charm.subscribe,
+	observe: Charm.observe,
+	onCleanup: Charm.onCleanup,
+	getActiveSub: Charm.getActiveSub,
 } as const;
 
 const hooks: CharmHooks[] = [];
 const atomInfos = setmetatable(new Map<AnyAtom, AtomInfo>(), { __mode: "k" });
+const atomNodes = setmetatable(new Map<AnyAtom, GraphNode>(), { __mode: "k" });
 
 let installed = false;
-
-function now() {
-	return DateTime.now().UnixTimestampMillis / 1000;
-}
-
-const PACKAGE_SOURCE = script.Parent?.GetFullName() ?? "";
-
-function isPackageSource(source: string) {
-	return source === PACKAGE_SOURCE || source.sub(1, PACKAGE_SOURCE.size() + 1) === `${PACKAGE_SOURCE}.`;
-}
-
-export function getCallerSource(): SourceLocation | undefined {
-	let level = 1;
-
-	while (true) {
-		if (level > 100) {
-			logger.warn("getCallerSource() exceeded 100 stack frames, returning undefined");
-			return undefined;
-		}
-
-		const [source, line] = debug.info(level++, "sl");
-		if (source === undefined) return undefined;
-		if (source === "[C]" || isPackageSource(source)) continue;
-		return { script: source, line };
-	}
-}
-
-export function formatSource(source: SourceLocation | undefined): string {
-	return source !== undefined ? `${source.script}:${source.line}` : "unknown";
-}
-
-export function getCallerTrace(): string {
-	return formatSource(getCallerSource());
-}
-
-function createInfo(): NodeInfo {
-	const source = getCallerSource();
-	return {
-		id: HttpService.GenerateGUID(false),
-		trace: formatSource(source),
-		source,
-		createdAt: now(),
-	};
-}
 
 function notify<K extends Exclude<keyof CharmHooks, "atomWrite">>(
 	name: K,
 	...args: Parameters<NonNullable<CharmHooks[K]>>
 ) {
 	for (const hook of [...hooks]) {
-		const callback = hook[name] as ((...args: unknown[]) => void) | undefined;
-		if (callback === undefined) continue;
+		const callback = hook[name] as Callback | undefined;
+		if (!callback) continue;
 
-		const [success, err] = pcall(callback, ...(args as unknown[]));
-		if (!success) {
-			logger.warn(`{name} hook errored: {err}`, { name, err });
-		}
+		const [success, err] = pcall(callback, ...args);
+		if (!success) logger.warn("{name} hook errored: {err}", { name, err });
 	}
 }
 
-function peek<T>(atom: Atom<T>): T {
-	return original.untracked(atom);
+function createInfo(): NodeInfo {
+	const source = getCallerSource();
+	return { id: HttpService.GenerateGUID(false), trace: formatSource(source), source, createdAt: now() };
 }
 
-function hookedAtom<T>(initialValue: T, equals?: Charm.Equals<T>): Atom<T> {
+function hookedAtom(initialValue: unknown, equals?: Equals<unknown>) {
 	const inner = original.atom(initialValue, equals);
 	const info: AtomInfo = { ...createInfo(), initialValue };
+	const node = createNode("atom", info);
 
-	const write = (update: Update<T>): T => {
-		const previous = peek(inner);
-		const middlewares: AtomWriteMiddleware[] = [];
-		for (const hook of hooks) {
-			if (hook.atomWrite) middlewares.push(hook.atomWrite);
-		}
+	const read = () => {
+		recordRead(node);
+		return inner();
+	};
 
-		const run = (index: number, current: Update<T>): unknown => {
+	const write = (update: Update<unknown>) => {
+		recordWrite(node);
+		const previous = original.untracked(inner);
+		const middlewares = hooks.mapFiltered((hook) => hook.atomWrite);
+
+		const run = (index: number, current: Update<unknown>): unknown => {
 			const middleware = middlewares[index];
-			if (middleware === undefined) return inner(current);
-			return middleware({ atom: wrapped, info, update: current, previous }, (nextUpdate) =>
-				run(index + 1, nextUpdate as Update<T>),
-			);
+			if (!middleware) return inner(current);
+			return middleware({ atom, info, update: current, previous }, (nextUpdate) => run(index + 1, nextUpdate));
 		};
-
 		run(0, update);
 
-		const value = peek(inner);
-		if (value !== previous) {
-			notify("atomChanged", wrapped, value, previous, info);
-		}
-
+		const value = original.untracked(inner);
+		if (value !== previous) notify("atomChanged", atom, value, previous, info);
 		return value;
 	};
 
-	const wrapped = wrapAtom(inner, write);
-	atomInfos.set(wrapped, info);
-	notify("atomCreated", wrapped, info);
+	const atom = wrapAtom(read, write);
+	atomInfos.set(atom, info);
+	atomNodes.set(atom, node);
+	notify("atomCreated", atom, info);
 
-	return wrapped;
+	return atom;
 }
 
-function hookedComputed<T>(getter: (previousValue?: T) => T): Getter<T> {
-	const computed = original.computed(getter);
-	notify("computedCreated", computed as Getter<unknown>, createInfo());
-	return computed;
-}
-
-// biome-ignore lint/suspicious/noConfusingVoidType: matches Charm's effect signature
-function hookedEffect(fn: () => Cleanup | void): Cleanup {
+function hookedComputed(getter: (previousValue?: unknown) => unknown) {
 	const info = createInfo();
-	const dispose = original.effect(fn);
-	let disposed = false;
+	const node = createNode("computed", info);
+	const inner = original.computed((previousValue) => track(node, "both", () => getter(previousValue)));
 
-	const hookedDispose = () => {
-		dispose();
-		if (disposed) return;
-		disposed = true;
-		notify("effectDisposed", info);
+	const computedOper = () => {
+		recordRead(node);
+		return inner();
 	};
 
-	notify("effectCreated", hookedDispose, info);
-	return hookedDispose;
+	notify("computedCreated", computedOper, info);
+	return computedOper;
 }
+
+function onEffectStopped(callback: () => void) {
+	const sub = original.getActiveSub();
+	if (!sub) return;
+
+	original.onCleanup(() => {
+		if (sub.flags === Charm.ReactiveFlags.None) callback();
+	}, true);
+}
+
+function nodeDisposer(node: GraphNode, onDisposed?: () => void) {
+	let disposed = false;
+
+	return () => {
+		if (disposed) return;
+		disposed = true;
+		removeNode(node);
+		onDisposed?.();
+	};
+}
+
+function untrackedCleanup(cleanup: Cleanup | undefined) {
+	return cleanup !== undefined ? () => withoutDependencyTracking(cleanup) : undefined;
+}
+
+function hookedEffect(fn: () => Cleanup | undefined) {
+	const info = createInfo();
+	const node = createNode("effect", info);
+	const markDisposed = nodeDisposer(node, () => notify("effectDisposed", info));
+
+	const stop = original.effect(() => {
+		onEffectStopped(markDisposed);
+		return untrackedCleanup(track(node, "both", fn));
+	});
+
+	const dispose = () => {
+		stop();
+		markDisposed();
+	};
+
+	notify("effectCreated", dispose, info);
+	return dispose;
+}
+
+function hookListener(skipFirstRun: boolean) {
+	return (getter: Getter<unknown>, callback: (value: unknown, previousValue: unknown) => void) => {
+		const node = createNode("listener", createInfo());
+		const markDisposed = nodeDisposer(node);
+		const tracked = original.computed(() => track(node, "reads", getter));
+		let current: unknown;
+		let skipNextRun = skipFirstRun;
+
+		const stop = original.effect(() => {
+			onEffectStopped(markDisposed);
+
+			const previous = current;
+			const value = tracked();
+			current = value;
+
+			if (skipNextRun) {
+				skipNextRun = false;
+				return;
+			}
+
+			original.untracked(() => track(node, "writes", () => callback(value, previous)));
+		});
+
+		return () => {
+			stop();
+			markDisposed();
+		};
+	};
+}
+
+function hookedObserve(
+	getter: Getter<ReadonlyMap<unknown, unknown>>,
+	callback: (value: unknown, key: unknown) => Cleanup | undefined,
+) {
+	const node = createNode("listener", createInfo());
+	const markDisposed = nodeDisposer(node);
+
+	const stop = original.observe(
+		() => {
+			onEffectStopped(markDisposed);
+			return track(node, "reads", getter);
+		},
+		(value, key) => untrackedCleanup(track(node, "appendWrites", () => callback(value, key))),
+	);
+
+	return () => {
+		stop();
+		markDisposed();
+	};
+}
+
+function hookedUntracked(fn: (...args: unknown[]) => unknown, ...args: unknown[]) {
+	return withoutDependencyTracking(() => original.untracked(fn, ...args));
+}
+
+const hooked = {
+	atom: hookedAtom,
+	computed: hookedComputed,
+	effect: hookedEffect,
+	listen: hookListener(false),
+	subscribe: hookListener(true),
+	observe: hookedObserve,
+	untracked: hookedUntracked,
+};
 
 export function installCharmHooks() {
 	assert(!installed, "Charm hooks already installed");
 	installed = true;
 
-	charm.atom = hookedAtom as CharmModule["atom"];
-	charm.computed = hookedComputed;
-	charm.effect = hookedEffect;
+	for (const [name, fn] of pairs(hooked)) charm[name] = fn;
+	setGraphChangedCallback(() => notify("dependenciesChanged"));
 }
 
 export function uninstallCharmHooks() {
 	assert(installed, "Charm hooks not installed");
 	installed = false;
 
-	charm.atom = original.atom;
-	charm.computed = original.computed;
-	charm.effect = original.effect;
+	for (const [name] of pairs(hooked)) charm[name] = original[name];
+	setGraphChangedCallback(undefined);
 }
 
 export function isCharmHooked() {
@@ -212,7 +284,7 @@ export function addCharmHooks(hook: CharmHooks): Cleanup {
 	};
 }
 
-export function getAtomInfo(atom: AnyAtom): AtomInfo | undefined {
+export function getAtomInfo(atom: AnyAtom) {
 	return atomInfos.get(atom);
 }
 
@@ -220,7 +292,14 @@ export function getHookedAtoms(): ReadonlyMap<AnyAtom, AtomInfo> {
 	return atomInfos;
 }
 
+export function getAtomDependents(atom: AnyAtom): DependentInfo[] {
+	const node = atomNodes.get(atom);
+	return node ? (collectDependents(node) as DependentInfo[]) : [];
+}
+
 export function setAtomLabel(atom: AnyAtom, label: string) {
 	const info = atomInfos.get(atom);
 	if (info) info.label = label;
 }
+
+export { withoutDependencyTracking } from "graph";
