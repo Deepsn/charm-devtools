@@ -14,9 +14,25 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+
+      - name: Detect release tag
+        id: tag
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            tag="$GITHUB_REF_NAME"
+          else
+            git fetch --tags --force --quiet origin
+            tag="$(git tag --points-at HEAD --sort=-v:refname | head -n 1)"
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "Release tag: ${tag:-<none>}"
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -62,10 +78,14 @@ jobs:
   release:
     name: Release
     needs: build
-    if: startsWith(github.ref, 'refs/tags/')
+    if: needs.build.outputs.tag != ''
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    # Branch and tag runs for the same commit can both reach this job; serialize them.
+    concurrency:
+      group: release-${{ needs.build.outputs.tag }}
+      cancel-in-progress: false
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v8
@@ -76,8 +96,8 @@ jobs:
       - name: Publish release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: ${{ github.ref_name }}
-          name: ${{ github.ref_name }}
+          tag_name: ${{ needs.build.outputs.tag }}
+          name: ${{ needs.build.outputs.tag }}
           generate_release_notes: true
           fail_on_unmatched_files: true
           files: |
