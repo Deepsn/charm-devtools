@@ -1,6 +1,6 @@
 {
 	"name": "@rbxts/charm-devtools",
-	"version": "1.0.0",
+	"version": "0.1.0",
 	"main": "out/init.luau",
 	"types": "out/index.d.ts",
 	"files": [
