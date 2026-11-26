@@ -45,26 +45,18 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Build package
-        run: bun run --filter @rbxts/charm-devtools build
+      - name: Build and pack package
+        run: |
+          bun run package
+          mkdir -p dist
+          mv rbxts-charm-devtools-*.tgz dist/
 
       - name: Build plugin
         run: bun run --filter charm-devtools-plugin build
 
       - name: Build plugin.rbxm
         working-directory: plugin
-        run: |
-          mkdir -p ../dist
-          rojo build default.project.json -o ../dist/plugin.rbxm
-
-      - name: Pack rbxts-charm-devtools.zip
-        run: |
-          set -euo pipefail
-          staging="$(mktemp -d)"
-          (cd charm-devtools && bun pm pack --destination "$staging")
-          tar -xzf "$staging"/*.tgz -C "$staging"
-          mv "$staging/package" "$staging/charm-devtools"
-          (cd "$staging" && zip -r "$GITHUB_WORKSPACE/dist/rbxts-charm-devtools.zip" charm-devtools)
+        run: rojo build default.project.json -o ../dist/plugin.rbxm
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v7
@@ -72,7 +64,7 @@ jobs:
           name: charm-devtools
           path: |
             dist/plugin.rbxm
-            dist/rbxts-charm-devtools.zip
+            dist/rbxts-charm-devtools-*.tgz
           if-no-files-found: error
 
   release:
@@ -102,4 +94,4 @@ jobs:
           fail_on_unmatched_files: true
           files: |
             dist/plugin.rbxm
-            dist/rbxts-charm-devtools.zip
+            dist/rbxts-charm-devtools-*.tgz
