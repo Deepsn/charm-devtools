@@ -1,24 +1,22 @@
 import { atom } from "@rbxts/charm";
-import type { Action } from "@rbxts/charm-devtools";
 import type { ValueKind } from "lib/format";
-
-export type Env = Action["env"];
-
-export type EnvScope = "all" | Env;
 
 export type SortMode = "name" | "recent";
 
-export type ValueView = "code" | "tree";
+export type InspectorWindow = "code" | "tree" | "dependents";
 
 export const selectedAtomId = atom<string | undefined>(undefined);
 
 export const atomSearch = atom("");
 
-export const envScope = atom<EnvScope>("all");
-
 export const sortMode = atom<SortMode>("name");
 
-export const valueView = atom<ValueView>("code");
+export const inspectorWindow = atom<InspectorWindow>("code");
+
+/** Which environment the inspector shows for atoms that exist on both the client and server. */
+export type EnvView = "both" | "client" | "server";
+
+export const envView = atom<EnvView>("both");
 
 export const kindFilter = atom<{ readonly [K in ValueKind]: boolean }>({
 	table: true,
@@ -44,8 +42,4 @@ export function toggleGroup(group: string) {
 		}
 		return nextSet;
 	});
-}
-
-export function inScope(scope: EnvScope, env: Env) {
-	return scope === "all" || scope === env;
 }

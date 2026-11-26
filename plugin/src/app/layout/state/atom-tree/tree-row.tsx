@@ -3,25 +3,12 @@ import { useAtom } from "@rbxts/vide-charm";
 import { px, udim, udim2 } from "app/hooks/use-px";
 import { selectedAtomId, toggleGroup } from "atoms/inspector";
 import { FONT, THEME } from "constants/theme";
+import { envColor } from "lib/format";
 import { RowFlash } from "./row-flash";
 import { RowIcon } from "./row-icon";
-import { ICON_SCALE, ROW_GAP, type TreeRow } from "./types";
+import { ROW_GAP, ROW_HEIGHT, type TreeRow } from "./types";
 
 const CHEVRON_SCALE = 0.45;
-
-function Square(props: { name: string; scale: number; LayoutOrder: number; visible?: () => boolean }) {
-	return (
-		<frame
-			Name={props.name}
-			Size={UDim2.fromScale(1, props.scale)}
-			BackgroundTransparency={1}
-			LayoutOrder={props.LayoutOrder}
-			Visible={props.visible ?? true}
-		>
-			<uiaspectratioconstraint AspectRatio={1} DominantAxis={Enum.DominantAxis.Height} />
-		</frame>
-	);
-}
 
 function RowChevron(props: { row: () => TreeRow; LayoutOrder: number }) {
 	return (
@@ -87,31 +74,67 @@ function RowCount(props: { row: () => TreeRow; LayoutOrder: number }) {
 	);
 }
 
-export function TreeRowView(props: {
-	row: () => TreeRow;
-	showEnv: () => boolean;
-	updatedAt: () => ReadonlyMap<string, number>;
-}) {
+function EnvDot(props: { color: () => Color3; visible: () => boolean; LayoutOrder: number }) {
+	return (
+		<frame
+			Name="Env"
+			Size={UDim2.fromScale(1, 0.3)}
+			BackgroundColor3={props.color}
+			BorderSizePixel={0}
+			Visible={props.visible}
+			LayoutOrder={props.LayoutOrder}
+		>
+			<uiaspectratioconstraint AspectRatio={1} DominantAxis={Enum.DominantAxis.Height} />
+			<uicorner CornerRadius={new UDim(1, 0)} />
+		</frame>
+	);
+}
+
+/** One dot per environment the atom lives on; merged atoms show both a client and a server dot. */
+function RowEnv(props: { row: () => TreeRow; LayoutOrder: number }) {
+	const env = () => {
+		const current = props.row();
+		return current.kind === "atom" ? current.env : undefined;
+	};
+
+	return (
+		<>
+			<EnvDot
+				color={() => {
+					const current = env();
+					return current === "both" ? envColor("client") : current !== undefined ? envColor(current) : THEME.textDim;
+				}}
+				visible={() => env() !== undefined}
+				LayoutOrder={props.LayoutOrder}
+			/>
+			<EnvDot color={() => envColor("server")} visible={() => env() === "both"} LayoutOrder={props.LayoutOrder + 1} />
+		</>
+	);
+}
+
+export function TreeRowView(props: { row: () => TreeRow; updatedAt: () => ReadonlyMap<string, number> }) {
 	const selected = useAtom(selectedAtomId);
 	const hovered = source(false);
 
 	const row = props.row;
-	const atomId = () => {
+	const atomIds = (): readonly string[] => {
 		const current = row();
-		return current.kind === "atom" ? current.action.atomId : undefined;
+		return current.kind === "atom" ? current.atomIds : [];
 	};
 	const isSelected = () => {
-		const id = atomId();
-		return id !== undefined && selected() === id;
+		const id = selected();
+		return id !== undefined && atomIds().includes(id);
 	};
 	const updatedAt = () => {
-		const id = atomId();
-		return id !== undefined ? props.updatedAt().get(id) : undefined;
+		let latest: number | undefined;
+		for (const id of atomIds()) {
+			const time = props.updatedAt().get(id);
+			if (time !== undefined && (latest === undefined || time > latest)) latest = time;
+		}
+		return latest;
 	};
-	const nested = () => {
-		const current = row();
-		return current.kind === "atom" && current.nested;
-	};
+	const gap = px(ROW_GAP);
+	const indentStep = px(ROW_HEIGHT * CHEVRON_SCALE + ROW_GAP);
 
 	return (
 		<textbutton
@@ -125,9 +148,9 @@ export function TreeRowView(props: {
 			Activated={() => {
 				const current = row();
 				if (current.kind === "group") {
-					toggleGroup(current.name);
-				} else {
-					selectedAtomId(current.action.atomId);
+					toggleGroup(current.key);
+				} else if (!isSelected()) {
+					selectedAtomId(current.atomIds[0]);
 				}
 			}}
 			MouseEnter={() => hovered(true)}
@@ -156,12 +179,19 @@ export function TreeRowView(props: {
 					SortOrder={Enum.SortOrder.LayoutOrder}
 				/>
 
-				<RowChevron row={row} LayoutOrder={0} />
-				{/* nested atoms indent by one icon so they line up under the group's label */}
-				<Square name="Indent" scale={ICON_SCALE} LayoutOrder={1} visible={nested} />
-				<RowIcon row={row} LayoutOrder={2} />
-				<RowLabel row={row} selected={isSelected} LayoutOrder={3} />
-				<RowCount row={row} LayoutOrder={4} />
+				{/* each level indents by one chevron so children line up under their parent's icon */}
+				<frame
+					Name="Indent"
+					Size={() => new UDim2(0, math.max(row().depth * indentStep() - gap(), 0), 1, 0)}
+					BackgroundTransparency={1}
+					LayoutOrder={0}
+					Visible={() => row().depth > 0}
+				/>
+				<RowChevron row={row} LayoutOrder={1} />
+				<RowIcon row={row} LayoutOrder={3} />
+				<RowLabel row={row} selected={isSelected} LayoutOrder={4} />
+				<RowEnv row={row} LayoutOrder={5} />
+				<RowCount row={row} LayoutOrder={7} />
 			</frame>
 		</textbutton>
 	);

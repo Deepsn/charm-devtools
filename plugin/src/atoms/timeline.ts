@@ -1,7 +1,10 @@
 import { atom, computed } from "@rbxts/charm";
 import type { Action } from "atoms";
+import { atomLabels, shownAtomIds } from "atoms/atoms";
+import { clearDependents } from "atoms/dependents";
 import { clearHistory, history } from "atoms/history";
-import { envScope, inScope, selectedAtomId } from "atoms/inspector";
+import { selectedAtomId } from "atoms/inspector";
+import type { DiffMode } from "lib/diff";
 import { includesText } from "lib/format";
 
 export type Timeline = ReturnType<typeof createTimeline>;
@@ -59,19 +62,42 @@ export function toggleTimeline() {
 	atomTimeline.cursor(undefined);
 }
 
-/** Updates of the atom selected on the State page. */
+/** Updates of the atom selected on the State page, across every environment shown in the inspector. */
 export const atomTimeline = createTimeline(() => {
-	const id = selectedAtomId();
-	return id !== undefined ? history().filter((action) => action.atomId === id) : [];
+	const ids = shownAtomIds();
+	return ids.isEmpty() ? [] : history().filter((action) => ids.includes(action.atomId));
 });
+
+/** Latest update of `atomId` in `list` at or before the pinned `entry`, or `latest` when following live. */
+export function valueAt(
+	list: readonly Action[],
+	atomId: string,
+	latest: Action | undefined,
+	entry: Action | undefined,
+) {
+	if (entry === undefined) return latest;
+	if (entry.atomId === atomId) return entry;
+
+	let found: Action | undefined;
+	for (const candidate of list) {
+		if (candidate.atomId !== atomId || candidate.timestamp > entry.timestamp) continue;
+		if (found === undefined || candidate.timestamp >= found.timestamp) found = candidate;
+	}
+	return found;
+}
 
 export const timelineSearch = atom("");
 
-/** Updates of every atom within the environment scope, for the Timeline page. */
+/** How the value panel compares an update with the previous one. */
+export const diffMode = atom<DiffMode>("split");
+
+/** Updates of every atom, for the Timeline page. */
 export const globalTimeline = createTimeline(() => {
-	const scope = envScope();
 	const query = timelineSearch();
-	return history().filter((action) => inScope(scope, action.env) && includesText(action.name, query));
+	const labels = atomLabels();
+	return history().filter(
+		(action) => includesText(action.name, query) || includesText(labels.get(action.name) ?? "", query),
+	);
 });
 
 /** Latest update of the same atom that happened before `action`. */
@@ -86,6 +112,7 @@ export function findPrevious(list: readonly Action[], action: Action) {
 
 export function clearAll() {
 	clearHistory();
+	clearDependents();
 	atomTimeline.cursor(undefined);
 	globalTimeline.cursor(undefined);
 	selectedAtomId(undefined);

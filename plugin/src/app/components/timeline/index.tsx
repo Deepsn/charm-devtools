@@ -1,19 +1,31 @@
-import Vide, { cleanup, type Derivable, derive, effect, Show, source, untrack } from "@rbxts/vide";
+import Vide, { cleanup, derive, effect, Show, source, untrack } from "@rbxts/vide";
 import { useAtom } from "@rbxts/vide-charm";
 import { IconButton, ToolbarButton } from "app/components/button";
 import { Card } from "app/components/card";
 import { CodeView } from "app/components/code-view";
+import { InlineDiff, SplitDiff } from "app/components/diff-view";
 import { EmptyState } from "app/components/empty-state";
 import { VirtualizedList } from "app/components/virtualized-list";
 import { createScrollControl } from "app/components/virtualized-list/scroll-control";
 import { offset, px, udim, udim2 } from "app/hooks/use-px";
 import type { Action } from "atoms";
+import { atomLabels } from "atoms/atoms";
 import { history } from "atoms/history";
 import { selectedAtomId } from "atoms/inspector";
-import { atomTimeline, clearAll, findPrevious, type Timeline as TimelineState, timelineEnabled } from "atoms/timeline";
+import {
+	atomTimeline,
+	clearAll,
+	diffMode,
+	findPrevious,
+	type Timeline as TimelineState,
+	timelineEnabled,
+} from "atoms/timeline";
 import { currentWindow } from "atoms/window";
 import { FONT, THEME } from "constants/theme";
-import { changedKeys, formatTime, kindColor, previewValue, valueKind } from "lib/format";
+import { type DiffMode, diffValues, type ValueDiff } from "lib/diff";
+import { envColor, formatTime, kindColor, previewValue, valueKind } from "lib/format";
+
+const EMPTY_DIFF: ValueDiff = { inline: [], left: [], right: [], added: 0, removed: 0 };
 
 export type TimelineMode = "atom" | "global";
 
@@ -185,9 +197,12 @@ function EntryRow(props: {
 	entry: () => Action;
 	active: () => boolean;
 	mode: TimelineMode;
+	showEnv: () => boolean;
 	onSelect: (entry: Action) => void;
 }) {
 	const hovered = source(false);
+	const labels = useAtom(atomLabels);
+	const labelOf = (name: string) => labels().get(name) ?? name;
 
 	return (
 		<textbutton
@@ -203,6 +218,18 @@ function EntryRow(props: {
 			MouseLeave={() => hovered(false)}
 		>
 			<uicorner CornerRadius={udim(0, 4)} />
+
+			<frame
+				Name="Env"
+				AnchorPoint={new Vector2(0, 0.5)}
+				Position={new UDim2(0, 3, 0.5, 0)}
+				Size={offset(5, 5)}
+				BackgroundColor3={() => envColor(props.entry().env)}
+				BorderSizePixel={0}
+				Visible={props.showEnv}
+			>
+				<uicorner CornerRadius={new UDim(1, 0)} />
+			</frame>
 
 			<textlabel
 				Name="Time"
@@ -225,7 +252,7 @@ function EntryRow(props: {
 				Text={() => {
 					const entry = props.entry();
 					if (props.mode === "atom") return previewValue(entry.value);
-					return `${entry.name} <font color="#${THEME.textDim.ToHex()}">updated</font>`;
+					return `${labelOf(entry.name)} <font color="#${THEME.textDim.ToHex()}">updated</font>`;
 				}}
 				TextColor3={() => {
 					if (props.mode === "atom") return kindColor(valueKind(props.entry().value));
@@ -240,77 +267,49 @@ function EntryRow(props: {
 	);
 }
 
-function ValueColumn(props: {
-	title: string;
-	text: () => string;
-	color: Color3;
-	position: Derivable<UDim2>;
-	order: number;
-}) {
+const DIFF_MODES: readonly { mode: DiffMode; label: string; width: number }[] = [
+	{ mode: "split", label: "Side by side", width: 96 },
+	{ mode: "inline", label: "Inline", width: 58 },
+	{ mode: "none", label: "None", width: 52 },
+];
+
+function DiffModePicker(props: { mode: () => DiffMode }) {
 	return (
 		<frame
-			Name={props.title}
-			Position={props.position}
-			Size={udim2(0.5, -4, 0, 0)}
-			AutomaticSize={Enum.AutomaticSize.Y}
+			Name="DiffMode"
+			AnchorPoint={new Vector2(1, 0)}
+			Position={UDim2.fromScale(1, 0)}
+			Size={UDim2.fromScale(0, 1)}
+			AutomaticSize={Enum.AutomaticSize.X}
 			BackgroundTransparency={1}
-			LayoutOrder={props.order}
 		>
 			<uilistlayout
-				FillDirection={Enum.FillDirection.Vertical}
-				Padding={udim(0, 6)}
+				FillDirection={Enum.FillDirection.Horizontal}
+				Padding={udim(0, 4)}
 				SortOrder={Enum.SortOrder.LayoutOrder}
 			/>
-			<textlabel
-				Name="Title"
-				Size={udim2(1, 0, 0, 14)}
-				BackgroundTransparency={1}
-				Text={props.title}
-				TextColor3={THEME.textMuted}
-				TextSize={px(THEME.fontSize - 2)}
-				FontFace={FONT.medium}
-				TextXAlignment={Enum.TextXAlignment.Left}
-				LayoutOrder={0}
-			/>
-			<frame
-				Name="Chip"
-				Size={UDim2.fromScale(1, 0)}
-				AutomaticSize={Enum.AutomaticSize.Y}
-				BackgroundColor3={THEME.inputBg}
-				BorderSizePixel={0}
-				LayoutOrder={1}
-			>
-				<uicorner CornerRadius={udim(0, 4)} />
-				<uistroke Color={THEME.border} />
-				<uipadding
-					PaddingLeft={udim(0, 8)}
-					PaddingRight={udim(0, 8)}
-					PaddingTop={udim(0, 6)}
-					PaddingBottom={udim(0, 6)}
+			{DIFF_MODES.map((option, index) => (
+				<ToolbarButton
+					name={option.label}
+					text={option.label}
+					width={option.width}
+					active={() => props.mode() === option.mode}
+					LayoutOrder={index}
+					onClick={() => diffMode(option.mode)}
 				/>
-				<textlabel
-					Name="Value"
-					Size={UDim2.fromScale(1, 0)}
-					AutomaticSize={Enum.AutomaticSize.Y}
-					BackgroundTransparency={1}
-					Text={props.text}
-					TextColor3={props.color}
-					TextSize={px(THEME.monoSize - 1)}
-					FontFace={FONT.mono}
-					TextWrapped={true}
-					TextXAlignment={Enum.TextXAlignment.Left}
-					TextYAlignment={Enum.TextYAlignment.Top}
-				/>
-			</frame>
+			))}
 		</frame>
 	);
 }
 
-const PREVIEW_HEIGHT = 104;
-const VALUE_TOP = 30 + PREVIEW_HEIGHT + 10;
+const TOOLBAR_TOP = 30;
+const TOOLBAR_HEIGHT = 24;
+const VALUE_TOP = TOOLBAR_TOP + TOOLBAR_HEIGHT + 8;
 
 function DiffCard(props: { entry: () => Action | undefined; mode: TimelineMode }) {
 	const historyState = useAtom(history);
+	const labels = useAtom(atomLabels);
+	const mode = useAtom(diffMode);
 	const global = props.mode === "global";
 
 	const inspect = () => {
@@ -327,12 +326,24 @@ function DiffCard(props: { entry: () => Action | undefined; mode: TimelineMode }
 		return entry !== undefined ? findPrevious(historyState(), entry) : undefined;
 	});
 
-	const changed = () => {
+	const diff = derive(() => {
 		const entry = props.entry();
+		if (entry === undefined || mode() === "none") return undefined;
 		const prev = previous();
-		if (entry === undefined || prev === undefined) return "";
-		const keys = changedKeys(prev.value, entry.value);
-		return keys.isEmpty() ? "" : `Changed: ${keys.join(", ")}`;
+		return diffValues(prev?.value, entry.value, prev !== undefined);
+	});
+
+	const title = () => {
+		if (previous() === undefined) return "Initial value";
+		return mode() === "none" ? "Value" : "Changes";
+	};
+
+	const stats = () => {
+		const current = diff();
+		if (current === undefined) return "";
+		const added = `<font color="#${THEME.diff.addedText.ToHex()}">+${current.added}</font>`;
+		const removed = `<font color="#${THEME.diff.removedText.ToHex()}">−${current.removed}</font>`;
+		return `${added}  ${removed}`;
 	};
 
 	return (
@@ -348,7 +359,10 @@ function DiffCard(props: { entry: () => Action | undefined; mode: TimelineMode }
 								Position={offset(20, 0)}
 								Size={udim2(1, global ? -180 : -100, 1, 0)}
 								BackgroundTransparency={1}
-								Text={() => props.entry()?.name ?? ""}
+								Text={() => {
+									const name = props.entry()?.name;
+									return name !== undefined ? (labels().get(name) ?? name) : "";
+								}}
 								TextColor3={THEME.text}
 								TextSize={px(THEME.fontSize)}
 								FontFace={FONT.medium}
@@ -383,87 +397,64 @@ function DiffCard(props: { entry: () => Action | undefined; mode: TimelineMode }
 							) : undefined}
 						</frame>
 
-						<scrollingframe
-							Name="Body"
-							Position={offset(0, 30)}
-							Size={global ? udim2(1, 0, 0, PREVIEW_HEIGHT) : udim2(1, 0, 1, -30)}
+						<frame
+							Name="ValueToolbar"
+							Position={offset(0, TOOLBAR_TOP)}
+							Size={udim2(1, 0, 0, TOOLBAR_HEIGHT)}
 							BackgroundTransparency={1}
-							BorderSizePixel={0}
-							CanvasSize={UDim2.fromScale(0, 0)}
-							AutomaticCanvasSize={Enum.AutomaticSize.Y}
-							ScrollingDirection={Enum.ScrollingDirection.Y}
-							ScrollBarThickness={px(4)}
-							ScrollBarImageColor3={THEME.scrollbar}
 						>
 							<frame
-								Name="Columns"
-								Size={UDim2.fromScale(1, 0)}
-								AutomaticSize={Enum.AutomaticSize.Y}
+								Name="Title"
+								Size={UDim2.fromScale(0, 1)}
+								AutomaticSize={Enum.AutomaticSize.X}
 								BackgroundTransparency={1}
 							>
-								<ValueColumn
-									title="Previous"
-									text={() => {
-										const prev = previous();
-										return prev !== undefined ? previewValue(prev.value) : "— initial value";
-									}}
-									color={THEME.tree.boolean}
-									position={UDim2.fromScale(0, 0)}
-									order={0}
+								<uilistlayout
+									FillDirection={Enum.FillDirection.Horizontal}
+									VerticalAlignment={Enum.VerticalAlignment.Center}
+									Padding={udim(0, 8)}
+									SortOrder={Enum.SortOrder.LayoutOrder}
 								/>
-								<ValueColumn
-									title="Current"
-									text={() => previewValue(props.entry()?.value)}
-									color={THEME.tree.string}
-									position={udim2(0.5, 4, 0, 0)}
-									order={1}
-								/>
-							</frame>
-
-							<textlabel
-								Name="Changed"
-								Size={UDim2.fromScale(1, 0)}
-								AutomaticSize={Enum.AutomaticSize.Y}
-								BackgroundTransparency={1}
-								Text={changed}
-								TextColor3={THEME.textDim}
-								TextSize={px(THEME.fontSize - 2)}
-								FontFace={FONT.ui}
-								TextWrapped={true}
-								TextXAlignment={Enum.TextXAlignment.Left}
-								LayoutOrder={1}
-								Visible={() => changed() !== ""}
-							/>
-							<uilistlayout
-								FillDirection={Enum.FillDirection.Vertical}
-								Padding={udim(0, 10)}
-								SortOrder={Enum.SortOrder.LayoutOrder}
-							/>
-						</scrollingframe>
-
-						{global ? (
-							<>
 								<textlabel
-									Name="ValueTitle"
-									Position={offset(0, VALUE_TOP)}
-									Size={udim2(1, 0, 0, 14)}
+									Name="Label"
+									Size={UDim2.fromScale(0, 1)}
+									AutomaticSize={Enum.AutomaticSize.X}
 									BackgroundTransparency={1}
-									Text="Value"
+									Text={title}
 									TextColor3={THEME.textMuted}
 									TextSize={px(THEME.fontSize - 2)}
 									FontFace={FONT.medium}
-									TextXAlignment={Enum.TextXAlignment.Left}
+									LayoutOrder={0}
 								/>
-								<Card
-									name="Value"
-									background={THEME.inputBg}
-									Position={offset(0, VALUE_TOP + 20)}
-									Size={udim2(1, 0, 1, -(VALUE_TOP + 20))}
-								>
-									<CodeView value={() => props.entry()?.value} />
-								</Card>
-							</>
-						) : undefined}
+								<textlabel
+									Name="Stats"
+									Size={UDim2.fromScale(0, 1)}
+									AutomaticSize={Enum.AutomaticSize.X}
+									BackgroundTransparency={1}
+									RichText={true}
+									Text={stats}
+									TextColor3={THEME.textMuted}
+									TextSize={px(THEME.monoSize - 1)}
+									FontFace={FONT.mono}
+									LayoutOrder={1}
+									Visible={() => stats() !== ""}
+								/>
+							</frame>
+							<DiffModePicker mode={mode} />
+						</frame>
+
+						<Card
+							name="Value"
+							background={THEME.inputBg}
+							Position={offset(0, VALUE_TOP)}
+							Size={udim2(1, 0, 1, -VALUE_TOP)}
+						>
+							<frame Name="Clip" Size={UDim2.fromScale(1, 1)} BackgroundTransparency={1} ClipsDescendants={true}>
+								<Show when={() => mode() === "none"}>{() => <CodeView value={() => props.entry()?.value} />}</Show>
+								<Show when={() => mode() === "split"}>{() => <SplitDiff diff={() => diff() ?? EMPTY_DIFF} />}</Show>
+								<Show when={() => mode() === "inline"}>{() => <InlineDiff diff={() => diff() ?? EMPTY_DIFF} />}</Show>
+							</frame>
+						</Card>
 					</>
 				)}
 			</Show>
@@ -474,6 +465,8 @@ function DiffCard(props: { entry: () => Action | undefined; mode: TimelineMode }
 export function Timeline(props: {
 	timeline: TimelineState;
 	mode: TimelineMode;
+	/** Marks each entry with its environment, for timelines mixing client and server updates. */
+	showEnv?: () => boolean;
 	Size?: () => UDim2;
 	Position?: () => UDim2;
 }) {
@@ -546,6 +539,7 @@ export function Timeline(props: {
 							<EntryRow
 								entry={entry}
 								mode={props.mode}
+								showEnv={props.showEnv ?? (() => props.mode === "global")}
 								active={() => active()?.id === entry().id}
 								onSelect={(selected) => props.timeline.select(selected)}
 							/>

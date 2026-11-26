@@ -4,6 +4,7 @@ import { listen, trigger } from "@rbxts/charm";
 import { createBridge } from "@rbxts/charm-devtools";
 import { mount } from "@rbxts/vide";
 import { App } from "app";
+import { setDependents } from "atoms/dependents";
 import { addToHistory } from "atoms/history";
 import { enabled } from "atoms/plugin";
 import { IS_A_DEV, IS_DEV, IS_RUNNING } from "constants/core";
@@ -24,7 +25,7 @@ const widget = plugin.CreateDockWidgetPluginGuiAsync(
 widget.Name = "Charm DevTools";
 widget.ZIndexBehavior = Enum.ZIndexBehavior.Sibling;
 
-const bridge = IS_RUNNING ? createBridge(addToHistory) : undefined;
+const bridge = IS_RUNNING ? createBridge(addToHistory, setDependents) : undefined;
 
 let unmount: (() => void) | undefined;
 

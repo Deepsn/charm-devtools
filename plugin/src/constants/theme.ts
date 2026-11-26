@@ -45,6 +45,13 @@ export const THEME = {
 	},
 	folder: Color3.fromRGB(139, 92, 246),
 
+	dependent: {
+		atom: Color3.fromRGB(99, 102, 241),
+		computed: Color3.fromRGB(34, 211, 238),
+		effect: Color3.fromRGB(251, 146, 60),
+		listener: Color3.fromRGB(244, 114, 182),
+	},
+
 	// value-tree syntax highlighting (VS Code dark inspired)
 	tree: {
 		key: Color3.fromRGB(156, 220, 254),
@@ -57,6 +64,18 @@ export const THEME = {
 		punctuation: Color3.fromRGB(120, 120, 128),
 		preview: Color3.fromRGB(120, 120, 128),
 		arrow: Color3.fromRGB(148, 148, 156),
+	},
+
+	// value diff (GitHub dark inspired)
+	diff: {
+		added: Color3.fromRGB(46, 160, 67),
+		removed: Color3.fromRGB(248, 81, 73),
+		addedText: Color3.fromRGB(86, 211, 100),
+		removedText: Color3.fromRGB(248, 113, 106),
+		lineTransparency: 0.85,
+		gutterTransparency: 0.7,
+		empty: Color3.fromRGB(34, 34, 44),
+		collapsed: Color3.fromRGB(37, 41, 82),
 	},
 
 	// sizes

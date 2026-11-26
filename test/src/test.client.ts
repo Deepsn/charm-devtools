@@ -1,4 +1,6 @@
-import "@rbxts/charm-devtools/out/install";
+import { install } from "@rbxts/charm-devtools";
+
+install();
 
 import { atom } from "@rbxts/charm";
 

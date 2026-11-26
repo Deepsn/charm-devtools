@@ -5,26 +5,26 @@ import { Card } from "app/components/card";
 import { CodeView } from "app/components/code-view";
 import { EmptyState } from "app/components/empty-state";
 import { Icon } from "app/components/icon";
-import { type Tab, TabStrip } from "app/components/tab-strip";
 import { Timeline } from "app/components/timeline";
 import { ValueTree } from "app/components/value-tree";
+import { type WindowTab, WindowTabs } from "app/components/window-tabs";
 import { offset, px, udim, udim2 } from "app/hooks/use-px";
-import { atoms } from "atoms/atoms";
-import { selectedAtomId, type ValueView, valueView } from "atoms/inspector";
-import { atomTimeline, timelineEnabled } from "atoms/timeline";
+import { DependentsView } from "app/layout/state/dependents";
+import type { Action } from "atoms";
+import { atoms, selectedIsMerged, selectedPair, shownAtomIds, shownEnvs } from "atoms/atoms";
+import { dependents } from "atoms/dependents";
+import { type EnvView, envView, type InspectorWindow, inspectorWindow, selectedAtomId } from "atoms/inspector";
+import { atomTimeline, timelineEnabled, valueAt } from "atoms/timeline";
 import { ICONS } from "constants/icons";
 import { FONT, THEME } from "constants/theme";
-import { describeType, formatTime, kindColor, splitAtomName, valueKind } from "lib/format";
+import { describeType, envColor, formatTime, kindColor, splitAtomName, valueKind } from "lib/format";
 import { openSource } from "lib/studio";
 
 const HEADER_HEIGHT = 42;
 const SECTION_GAP = THEME.gap / 2;
 const VALUE_SHARE = 0.45;
 
-const VIEW_TABS: readonly Tab<ValueView>[] = [
-	{ id: "code", label: "Code" },
-	{ id: "tree", label: "Tree" },
-];
+type Env = Action["env"];
 
 function AtStatus(props: { text: () => string; color: () => Color3 }) {
 	return (
@@ -62,23 +62,163 @@ function AtomBadge(props: { color: () => Color3 }) {
 	);
 }
 
+const ENV_VIEWS: readonly { id: EnvView; label: string }[] = [
+	{ id: "both", label: "Both" },
+	{ id: "client", label: "Client" },
+	{ id: "server", label: "Server" },
+];
+
+const ENVS: readonly Env[] = ["client", "server"];
+
+const PANE_HEADER_HEIGHT = 20;
+
+function EnvSelector(props: { LayoutOrder: number }) {
+	const view = useAtom(envView);
+
+	return (
+		<frame
+			Name="EnvView"
+			Size={offset(0, THEME.tabHeight)}
+			AutomaticSize={Enum.AutomaticSize.X}
+			BackgroundTransparency={1}
+			LayoutOrder={props.LayoutOrder}
+		>
+			<uilistlayout
+				FillDirection={Enum.FillDirection.Horizontal}
+				VerticalAlignment={Enum.VerticalAlignment.Center}
+				Padding={udim(0, 4)}
+				SortOrder={Enum.SortOrder.LayoutOrder}
+			/>
+			{ENV_VIEWS.map((option, index) => (
+				<ToolbarButton
+					name={option.label}
+					text={option.label}
+					active={() => view() === option.id}
+					LayoutOrder={index}
+					onClick={() => envView(option.id)}
+				/>
+			))}
+		</frame>
+	);
+}
+
+function EnvPane(props: { env: Env; order: number; children: Vide.Node }) {
+	return (
+		<frame
+			Name={props.env}
+			Size={udim2(0.5, -SECTION_GAP / 2, 1, 0)}
+			BackgroundTransparency={1}
+			LayoutOrder={props.order}
+		>
+			<textlabel
+				Name="Env"
+				Size={udim2(1, 0, 0, PANE_HEADER_HEIGHT)}
+				BackgroundTransparency={1}
+				Text={props.env.upper()}
+				TextColor3={envColor(props.env)}
+				TextSize={px(THEME.labelSize)}
+				FontFace={FONT.medium}
+				TextXAlignment={Enum.TextXAlignment.Left}
+			>
+				<uipadding PaddingLeft={udim(0, 8)} />
+			</textlabel>
+			<frame
+				Name="Content"
+				Position={offset(0, PANE_HEADER_HEIGHT)}
+				Size={udim2(1, 0, 1, -PANE_HEADER_HEIGHT)}
+				BackgroundTransparency={1}
+				ClipsDescendants={true}
+			>
+				{props.children}
+			</frame>
+		</frame>
+	);
+}
+
+/** Renders a window once per shown environment, side by side when both are shown. */
+function EnvPanes(props: { envs: () => readonly Env[]; children: (env: () => Env) => Vide.Node }) {
+	const split = () => props.envs().size() > 1;
+
+	return (
+		<>
+			<Show when={() => !split()}>{() => props.children(() => props.envs()[0] ?? "client")}</Show>
+			<Show when={split}>
+				{() => (
+					<frame Name="Split" Size={UDim2.fromScale(1, 1)} BackgroundTransparency={1}>
+						<uilistlayout
+							FillDirection={Enum.FillDirection.Horizontal}
+							Padding={udim(0, SECTION_GAP)}
+							SortOrder={Enum.SortOrder.LayoutOrder}
+						/>
+						{ENVS.map((env, index) => (
+							<EnvPane env={env} order={index}>
+								{props.children(() => env)}
+							</EnvPane>
+						))}
+					</frame>
+				)}
+			</Show>
+		</>
+	);
+}
+
+function ValueWindow(props: { shown: () => unknown; children: () => Vide.Node }) {
+	return (
+		<>
+			<Show when={() => props.shown() === undefined}>
+				{() => <EmptyState text="This atom had no value yet at this point" />}
+			</Show>
+			<Show when={() => props.shown() !== undefined}>{props.children}</Show>
+		</>
+	);
+}
+
 export function Inspector() {
 	const atomsState = useAtom(atoms);
 	const selected = useAtom(selectedAtomId);
 	const enabled = useAtom(timelineEnabled);
 	const paused = useAtom(atomTimeline.paused);
 	const entry = useAtom(atomTimeline.active);
-	const view = useAtom(valueView);
+	const activeWindow = useAtom(inspectorWindow);
+	const graph = useAtom(dependents);
+	const pair = useAtom(selectedPair);
+	const merged = useAtom(selectedIsMerged);
+	const envs = useAtom(shownEnvs);
+	const ids = useAtom(shownAtomIds);
+	const entries = useAtom(atomTimeline.entries);
 
 	const latest = derive(() => {
 		const id = selected();
 		return id !== undefined ? atomsState().find((action) => action.atomId === id) : undefined;
 	});
 
+	const dependentCount = () => {
+		let count = 0;
+		for (const id of ids()) count += graph().get(id)?.dependents.size() ?? 0;
+		return count > 0 ? tostring(count) : undefined;
+	};
+
+	const windows: readonly WindowTab<InspectorWindow>[] = [
+		{ id: "code", label: "Code" },
+		{ id: "tree", label: "Tree" },
+		{ id: "dependents", label: "Dependents", badge: dependentCount },
+	];
+
 	const timeline = () => enabled() && latest() !== undefined;
 
 	const pinned = () => timeline() && paused();
-	const shown = derive(() => (pinned() ? entry() : latest()));
+
+	/** Update of `env` shown in the inspector: the one at the pinned timeline entry, or the latest. */
+	const shownFor = (env: Env) => {
+		const current = pair()?.[env];
+		if (current === undefined) return undefined;
+		return valueAt(entries(), current.atomId, current, pinned() ? entry() : undefined);
+	};
+
+	const shown = derive(() => {
+		const env = envs()[0];
+		return env !== undefined ? shownFor(env) : undefined;
+	});
 
 	const value = () => shown()?.value;
 	const kind = () => kindColor(valueKind(value()));
@@ -179,6 +319,8 @@ export function Inspector() {
 									)}
 								</Show>
 
+								<Show when={merged}>{() => <EnvSelector LayoutOrder={1} />}</Show>
+
 								<Show when={() => latest()?.source !== undefined}>
 									{() => (
 										<frame
@@ -186,7 +328,7 @@ export function Inspector() {
 											Size={offset(0, THEME.tabHeight)}
 											AutomaticSize={Enum.AutomaticSize.X}
 											BackgroundTransparency={1}
-											LayoutOrder={1}
+											LayoutOrder={2}
 										>
 											<ToolbarButton
 												name="OpenSource"
@@ -199,69 +341,63 @@ export function Inspector() {
 										</frame>
 									)}
 								</Show>
-
-								<frame Name="TabSlot" Size={offset(132, THEME.tabHeight)} BackgroundTransparency={1} LayoutOrder={2}>
-									{TabStrip<ValueView>({
-										tabs: VIEW_TABS,
-										active: view,
-										onSelect: (id) => valueView(id),
-									})}
-								</frame>
 							</frame>
 						</frame>
 
-						<frame
-							Name="Divider"
-							Size={udim2(1, 0, 0, 1)}
-							BackgroundColor3={THEME.divider}
-							BorderSizePixel={0}
-							LayoutOrder={2}
-						/>
-
-						<frame
-							Name="Value"
-							Size={UDim2.fromScale(1, 0)}
-							BackgroundColor3={THEME.valueBg}
-							BorderSizePixel={0}
-							ClipsDescendants={true}
+						<WindowTabs<InspectorWindow>
+							name="Windows"
+							tabs={windows}
+							active={activeWindow}
+							onSelect={(id) => inspectorWindow(id)}
+							padding={SECTION_GAP}
 							LayoutOrder={3}
 						>
-							<uiflexitem FlexMode={Enum.UIFlexMode.Fill} />
-							<uicorner CornerRadius={udim(0, THEME.radius)} />
-							<uistroke Color={THEME.border} />
-							<uipadding
-								PaddingTop={udim(0, SECTION_GAP)}
-								PaddingBottom={udim(0, SECTION_GAP)}
-								PaddingLeft={udim(0, SECTION_GAP)}
-								PaddingRight={udim(0, SECTION_GAP)}
-							/>
-							<Show when={() => shown() === undefined}>
-								{() => <EmptyState text="This atom had no value yet at this point" />}
-							</Show>
-							<Show when={() => shown() !== undefined}>
-								{() =>
-									match(view)({
-										code: () => <CodeView value={value} />,
-										tree: () => (
-											<scrollingframe
-												Name="TreeScroll"
-												Size={UDim2.fromScale(1, 1)}
-												BackgroundTransparency={1}
-												BorderSizePixel={0}
-												CanvasSize={UDim2.fromScale(0, 0)}
-												AutomaticCanvasSize={Enum.AutomaticSize.Y}
-												ScrollingDirection={Enum.ScrollingDirection.Y}
-												ScrollBarThickness={px(6)}
-												ScrollBarImageColor3={THEME.scrollbar}
-											>
-												<uipadding PaddingTop={udim(0, 6)} PaddingLeft={udim(0, 8)} />
-												<ValueTree value={value} scope={() => latest()?.atomId ?? "root"} />
-											</scrollingframe>
-										),
-									})
-								}
-							</Show>
-						</frame>
+							{match(activeWindow)({
+								code: () => (
+									<EnvPanes envs={envs}>
+										{(env) => {
+											const action = () => shownFor(env());
+											return (
+												<ValueWindow shown={action}>{() => <CodeView value={() => action()?.value} />}</ValueWindow>
+											);
+										}}
+									</EnvPanes>
+								),
+								tree: () => (
+									<EnvPanes envs={envs}>
+										{(env) => {
+											const action = () => shownFor(env());
+											return (
+												<ValueWindow shown={action}>
+													{() => (
+														<scrollingframe
+															Name="TreeScroll"
+															Size={UDim2.fromScale(1, 1)}
+															BackgroundTransparency={1}
+															BorderSizePixel={0}
+															CanvasSize={UDim2.fromScale(0, 0)}
+															AutomaticCanvasSize={Enum.AutomaticSize.Y}
+															ScrollingDirection={Enum.ScrollingDirection.Y}
+															ScrollBarThickness={px(6)}
+															ScrollBarImageColor3={THEME.scrollbar}
+														>
+															<uipadding PaddingTop={udim(0, 6)} PaddingLeft={udim(0, 8)} />
+															<ValueTree
+																value={() => action()?.value}
+																scope={() => pair()?.[env()]?.atomId ?? "root"}
+															/>
+														</scrollingframe>
+													)}
+												</ValueWindow>
+											);
+										}}
+									</EnvPanes>
+								),
+								dependents: () => (
+									<EnvPanes envs={envs}>{(env) => <DependentsView atomId={() => pair()?.[env()]?.atomId} />}</EnvPanes>
+								),
+							})}
+						</WindowTabs>
 					</>
 				)}
 			</Show>
@@ -275,7 +411,7 @@ export function Inspector() {
 						LayoutOrder={4}
 					>
 						<uipadding PaddingTop={udim(0, SECTION_GAP)} />
-						<Timeline timeline={atomTimeline} mode="atom" />
+						<Timeline timeline={atomTimeline} mode="atom" showEnv={() => envs().size() > 1} />
 					</frame>
 				)}
 			</Show>

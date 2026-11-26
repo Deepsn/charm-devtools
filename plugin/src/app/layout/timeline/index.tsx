@@ -2,7 +2,7 @@ import Vide from "@rbxts/vide";
 import { Card } from "app/components/card";
 import { Timeline } from "app/components/timeline";
 import { offset, udim, udim2 } from "app/hooks/use-px";
-import { EnvDropdown, SearchBox } from "app/layout/state/toolbar";
+import { SearchBox } from "app/layout/state/toolbar";
 import { globalTimeline, timelineSearch } from "atoms/timeline";
 import { THEME } from "constants/theme";
 
@@ -18,7 +18,6 @@ export function TimelinePage() {
 					Padding={udim(0, THEME.gap)}
 					SortOrder={Enum.SortOrder.LayoutOrder}
 				/>
-				<EnvDropdown />
 				<SearchBox search={timelineSearch} placeholder="Search updates by atom..." />
 			</frame>
 

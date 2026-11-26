@@ -5,28 +5,14 @@ import { ToolbarButton } from "app/components/button";
 import { Icon } from "app/components/icon";
 import { Popover, PopoverItem, PopoverTitle } from "app/components/popover";
 import { offset, px, udim, udim2 } from "app/hooks/use-px";
-import {
-	atomSearch,
-	type EnvScope,
-	envScope,
-	kindFilter,
-	type SortMode,
-	sortMode,
-	toggleKindFilter,
-} from "atoms/inspector";
+import { atomSearch, kindFilter, type SortMode, sortMode, toggleKindFilter } from "atoms/inspector";
 import { timelineEnabled, toggleTimeline } from "atoms/timeline";
 import { ICONS } from "constants/icons";
 import { FONT, THEME } from "constants/theme";
-import { envColor, kindColor, VALUE_KINDS, type ValueKind } from "lib/format";
-
-const ENV_OPTIONS: readonly { id: EnvScope; label: string }[] = [
-	{ id: "all", label: "All environments" },
-	{ id: "server", label: "Server" },
-	{ id: "client", label: "LocalPlayer" },
-];
+import { kindColor, VALUE_KINDS, type ValueKind } from "lib/format";
 
 const SORT_OPTIONS: readonly { id: SortMode; label: string; short: string }[] = [
-	{ id: "name", label: "Name (A–Z)", short: "A–Z" },
+	{ id: "name", label: "Name (A-Z)", short: "A-Z" },
 	{ id: "recent", label: "Recently changed", short: "Recent" },
 ];
 
@@ -38,93 +24,8 @@ const KIND_LABELS: Record<ValueKind, string> = {
 	other: "Other",
 };
 
-const ENV_WIDTH = 160;
 const FILTER_WIDTH = 78;
 const SORT_WIDTH = 104;
-
-function scopeColor(scope: EnvScope) {
-	return scope === "all" ? THEME.accent : envColor(scope);
-}
-
-export function EnvDropdown() {
-	const scope = useAtom(envScope);
-	const open = source(false);
-	const hovered = source(false);
-
-	const label = () => ENV_OPTIONS.find((option) => option.id === scope())?.label ?? "";
-
-	return (
-		<textbutton
-			Name="EnvDropdown"
-			Size={udim2(0, ENV_WIDTH, 1, 0)}
-			BackgroundColor3={() => (hovered() || open() ? THEME.rowHover : THEME.cardBg)}
-			BorderSizePixel={0}
-			AutoButtonColor={false}
-			Text=""
-			ZIndex={() => (open() ? 5 : 1)}
-			LayoutOrder={0}
-			Activated={() => open(!open())}
-			MouseEnter={() => hovered(true)}
-			MouseLeave={() => hovered(false)}
-		>
-			<uicorner CornerRadius={udim(0, THEME.radius)} />
-			<uistroke Color={THEME.border} />
-			<uipadding PaddingLeft={udim(0, 12)} PaddingRight={udim(0, 12)} />
-
-			<frame
-				Name="Dot"
-				AnchorPoint={new Vector2(0, 0.5)}
-				Position={UDim2.fromScale(0, 0.5)}
-				Size={offset(8, 8)}
-				BackgroundColor3={() => scopeColor(scope())}
-				BorderSizePixel={0}
-			>
-				<uicorner CornerRadius={new UDim(1, 0)} />
-			</frame>
-
-			<textlabel
-				Name="Label"
-				Position={offset(16, 0)}
-				Size={udim2(1, -30, 1, 0)}
-				BackgroundTransparency={1}
-				Text={label}
-				TextColor3={THEME.text}
-				TextSize={px(THEME.fontSize)}
-				FontFace={FONT.bold}
-				TextXAlignment={Enum.TextXAlignment.Left}
-				TextTruncate={Enum.TextTruncate.AtEnd}
-			/>
-
-			<textlabel
-				Name="Chevron"
-				AnchorPoint={new Vector2(1, 0)}
-				Position={UDim2.fromScale(1, 0)}
-				Size={udim2(0, 12, 1, 0)}
-				BackgroundTransparency={1}
-				Text={() => (open() ? "▲" : "▼")}
-				TextColor3={THEME.textMuted}
-				TextSize={px(9)}
-				FontFace={FONT.mono}
-			/>
-
-			<Popover open={open} onClose={() => open(false)} width={ENV_WIDTH} inset={12}>
-				<PopoverTitle text="Environment" />
-				{ENV_OPTIONS.map((option, index) => (
-					<PopoverItem
-						text={option.label}
-						color={scopeColor(option.id)}
-						checked={() => scope() === option.id}
-						LayoutOrder={index + 1}
-						onClick={() => {
-							envScope(option.id);
-							open(false);
-						}}
-					/>
-				))}
-			</Popover>
-		</textbutton>
-	);
-}
 
 export function SearchBox(props: { search: Atom<string>; placeholder: string }) {
 	const search = useAtom(props.search);
@@ -224,7 +125,7 @@ function FilterButton() {
 	return (
 		<ToolbarButton
 			name="Filter"
-			text={() => (hidden() > 0 ? `Filter · ${VALUE_KINDS.size() - hidden()}` : "Filter")}
+			text={() => (hidden() > 0 ? `Filter - ${VALUE_KINDS.size() - hidden()}` : "Filter")}
 			active={() => open() || hidden() > 0}
 			width={FILTER_WIDTH}
 			ZIndex={() => (open() ? 5 : 1)}
@@ -258,7 +159,6 @@ export function Toolbar() {
 				SortOrder={Enum.SortOrder.LayoutOrder}
 			/>
 
-			<EnvDropdown />
 			<SearchBox search={atomSearch} placeholder="Search atoms..." />
 
 			<ToolbarButton name="Timeline" text="Timeline" active={timeline} LayoutOrder={2} onClick={toggleTimeline} />

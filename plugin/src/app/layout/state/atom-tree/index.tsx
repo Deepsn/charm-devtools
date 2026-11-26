@@ -4,8 +4,8 @@ import { Card } from "app/components/card";
 import { VirtualizedList } from "app/components/virtualized-list";
 import { offset, px, udim2 } from "app/hooks/use-px";
 import type { Action } from "atoms";
-import { atoms } from "atoms/atoms";
-import { atomSearch, collapsedGroups, envScope, kindFilter, sortMode } from "atoms/inspector";
+import { atoms, counterparts } from "atoms/atoms";
+import { atomSearch, collapsedGroups, kindFilter, sortMode } from "atoms/inspector";
 import { FONT, THEME } from "constants/theme";
 import { buildTreeRows } from "./rows";
 import { TreeRowView } from "./tree-row";
@@ -40,20 +40,20 @@ function useUpdatedAt(actions: () => readonly Action[]) {
 export function AtomTree() {
 	const atomsState = useAtom(atoms);
 	const search = useAtom(atomSearch);
-	const scope = useAtom(envScope);
 	const kinds = useAtom(kindFilter);
 	const collapsed = useAtom(collapsedGroups);
 	const sort = useAtom(sortMode);
+	const pairedAtoms = useAtom(counterparts);
 
 	const updatedAt = useUpdatedAt(atomsState);
 
 	const rows = derive(() =>
 		buildTreeRows(atomsState(), {
 			query: search(),
-			scope: scope(),
 			kinds: kinds(),
 			collapsed: collapsed(),
 			byRecent: sort() === "recent",
+			counterparts: pairedAtoms(),
 		}),
 	);
 
@@ -86,7 +86,7 @@ export function AtomTree() {
 				spacing={1}
 				ScrollBarThickness={6}
 				ScrollBarImageColor3={THEME.scrollbar}
-				render={(row) => <TreeRowView row={row} showEnv={() => scope() === "all"} updatedAt={updatedAt} />}
+				render={(row) => <TreeRowView row={row} updatedAt={updatedAt} />}
 			/>
 		</Card>
 	);

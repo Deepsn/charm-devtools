@@ -192,6 +192,62 @@ export function splitAtomName(name: string): AtomPath {
 	return { group: name.sub(1, index - 1), leaf: name.sub(index + 1) };
 }
 
+/** Hooked atoms are named after their source unless they were given a label; returns the line of such unlabeled atoms. */
+export function autoNamedLine(atom: { name: string; source?: { script: string; line: number } }): number | undefined {
+	const source = atom.source;
+	return source !== undefined && atom.name === `${source.script}:${source.line}` ? source.line : undefined;
+}
+
+/**
+ * Shortens each dotted path to its last segment, prepending parent segments while paths still share a label,
+ * e.g. `Client.atoms` and `Server.atoms` instead of `atoms` twice. Keyed by the original path.
+ */
+export function shortestUniquePaths(paths: readonly string[]): Map<string, string> {
+	const entries: { path: string; segments: string[]; depth: number }[] = [];
+	const seen = new Set<string>();
+	for (const path of paths) {
+		if (seen.has(path)) continue;
+		seen.add(path);
+		entries.push({ path, segments: path.split("."), depth: 1 });
+	}
+
+	const labelOf = (entry: (typeof entries)[number]) => {
+		const { segments, depth } = entry;
+		const kept: string[] = [];
+		for (const index of $range(segments.size() - depth, segments.size() - 1)) kept.push(segments[index]);
+		return kept.join(".");
+	};
+
+	while (true) {
+		const groups = new Map<string, (typeof entries)[number][]>();
+		for (const entry of entries) {
+			const label = labelOf(entry);
+			const group = groups.get(label);
+			if (group !== undefined) {
+				group.push(entry);
+			} else {
+				groups.set(label, [entry]);
+			}
+		}
+
+		let grew = false;
+		for (const [, group] of groups) {
+			if (group.size() < 2) continue;
+			for (const entry of group) {
+				if (entry.depth < entry.segments.size()) {
+					entry.depth += 1;
+					grew = true;
+				}
+			}
+		}
+		if (!grew) break;
+	}
+
+	const labels = new Map<string, string>();
+	for (const entry of entries) labels.set(entry.path, labelOf(entry));
+	return labels;
+}
+
 export function includesText(haystack: string, needle: string): boolean {
 	if (needle === "") return true;
 	const [found] = haystack.lower().find(needle.lower(), 1, true);
