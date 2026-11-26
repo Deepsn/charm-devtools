@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - name: Setup Rokit (rojo)
+        uses: CompeyDev/setup-rokit@v0.2.1
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build package
+        run: bun run --filter @rbxts/charm-devtools build
+
+      - name: Build plugin
+        run: bun run --filter charm-devtools-plugin build
+
+      - name: Build plugin.rbxm
+        working-directory: plugin
+        run: |
+          mkdir -p ../dist
+          rojo build default.project.json -o ../dist/plugin.rbxm
+
+      - name: Pack rbxts-charm-devtools.zip
+        run: |
+          set -euo pipefail
+          staging="$(mktemp -d)"
+          (cd charm-devtools && bun pm pack --destination "$staging")
+          tar -xzf "$staging"/*.tgz -C "$staging"
+          mv "$staging/package" "$staging/charm-devtools"
+          (cd "$staging" && zip -r "$GITHUB_WORKSPACE/dist/rbxts-charm-devtools.zip" charm-devtools)
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: charm-devtools
+          path: |
+            dist/plugin.rbxm
+            dist/rbxts-charm-devtools.zip
+          if-no-files-found: error
+
+  release:
+    name: Release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: charm-devtools
+          path: dist
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: |
+            dist/plugin.rbxm
+            dist/rbxts-charm-devtools.zip
