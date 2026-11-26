@@ -1,3 +1,5 @@
+import { hookAtomCreation } from "hook-atom";
+
 export { createBridge } from "bridge";
 export {
 	type AtomInfo,
@@ -19,3 +21,7 @@ export {
 } from "charm-hooks";
 export { hookAtom, hookAtomCreation, hookAtoms } from "hook-atom";
 export type { Action, Dependent, DependentKind, DependentsUpdate, SourceLocation } from "protocol";
+
+export function install() {
+	hookAtomCreation();
+}
