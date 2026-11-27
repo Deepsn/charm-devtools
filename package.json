@@ -14,7 +14,7 @@
 	"scripts": {
 		"postinstall": "bun scripts/link-node-modules.ts",
 		"build": "bun run --filter @rbxts/charm-devtools build && bun run --filter charm-devtools-plugin build && bun run --filter charm-devtools-test build",
-		"package": "bun run --filter @rbxts/charm-devtools build && cd charm-devtools && bun pm pack --destination ..",
+		"package": "bun run --filter @rbxts/charm-devtools build && cd charm-devtools && bun pm pack --filename rbxts-charm-devtools.tgz",
 		"build:plugin": "bun run --filter charm-devtools-plugin build:rbxm",
 		"serve": "bun run --filter charm-devtools-plugin serve",
 		"serve:test": "bun run --filter charm-devtools-test serve",

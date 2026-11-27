@@ -56,4 +56,4 @@ jobs:
           fail_on_unmatched_files: true
           files: |
             dist/plugin.rbxm
-            dist/rbxts-charm-devtools-*.tgz
+            dist/rbxts-charm-devtools.tgz

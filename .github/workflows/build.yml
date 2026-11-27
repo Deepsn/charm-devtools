@@ -33,7 +33,7 @@ jobs:
         run: |
           bun run package
           mkdir -p dist
-          mv rbxts-charm-devtools-*.tgz dist/
+          mv rbxts-charm-devtools.tgz dist/
 
       - name: Build plugin
         run: bun run --filter charm-devtools-plugin build
@@ -48,5 +48,5 @@ jobs:
           name: charm-devtools
           path: |
             dist/plugin.rbxm
-            dist/rbxts-charm-devtools-*.tgz
+            dist/rbxts-charm-devtools.tgz
           if-no-files-found: error
