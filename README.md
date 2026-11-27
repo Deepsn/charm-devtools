@@ -36,13 +36,13 @@ The package is not published to npm yet. Install it from the release tarball ins
 
 ```sh
 # npm
-npm install https://github.com/Deepsn/charm-devtools/releases/download/latest/rbxts-charm-devtools.tgz
+npm install https://github.com/Deepsn/charm-devtools/releases/latest/download/rbxts-charm-devtools.tgz
 
 # pnpm
-pnpm add https://github.com/Deepsn/charm-devtools/releases/download/latest/rbxts-charm-devtools.tgz
+pnpm add https://github.com/Deepsn/charm-devtools/releases/latest/download/rbxts-charm-devtools.tgz
 
 # bun
-bun add https://github.com/Deepsn/charm-devtools/releases/download/latest/rbxts-charm-devtools.tgz
+bun add https://github.com/Deepsn/charm-devtools/releases/latest/download/rbxts-charm-devtools.tgz
 ```
 
 `@rbxts/charm` is a peer dependency, so install it too if you haven't already:
