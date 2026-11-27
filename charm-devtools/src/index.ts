@@ -1,3 +1,4 @@
+import { IS_STUDIO } from "constants";
 import { hookAtomCreation } from "hook-atom";
 
 export { createBridge } from "bridge";
@@ -23,5 +24,6 @@ export { hookAtom, hookAtomCreation, hookAtoms } from "hook-atom";
 export type { Action, Dependent, DependentKind, DependentsUpdate, SourceLocation } from "protocol";
 
 export function install() {
+	if (!IS_STUDIO) return;
 	hookAtomCreation();
 }

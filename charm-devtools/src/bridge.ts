@@ -1,9 +1,16 @@
-import { IS_SERVER } from "constants";
+import { IS_SERVER, IS_STUDIO } from "constants";
 import { logger } from "logger";
 import { type Action, actionGuard, type DependentsUpdate, dependentsGuard } from "protocol";
 import { createTransportApi, getTransport, resolveTransport } from "transport";
 
+const noopBridge = {
+	dispose: () => {},
+	dispatch: (_payload: unknown) => {},
+};
+
 export function createBridge(onAction: (action: Action) => void, onDependents?: (update: DependentsUpdate) => void) {
+	if (!IS_STUDIO) return noopBridge;
+
 	const transport = createTransportApi(IS_SERVER ? resolveTransport() : getTransport());
 
 	transport.connect((payload) => {
@@ -25,6 +32,8 @@ export function createBridge(onAction: (action: Action) => void, onDependents?: 
 }
 
 export function resolveBridge() {
+	if (!IS_STUDIO) return noopBridge;
+
 	let transport: ReturnType<typeof createTransportApi> | undefined;
 	let queue: defined[] = [];
 
