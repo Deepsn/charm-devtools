@@ -1,5 +1,9 @@
 # Charm DevTools
 
+<div align="center">
+   <img src="assets/preview.png" width="600" alt="Preview" >
+</div>
+
 A Roblox Studio plugin and runtime library for inspecting [Charm](https://github.com/littensy/charm) atoms in real time. You can browse every atom on the server and client, see their current values, step through a timeline of changes with diffs, and see which computeds, effects and listeners depend on each atom.
 
 The repository contains:
