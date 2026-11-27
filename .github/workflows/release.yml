@@ -16,7 +16,6 @@ jobs:
       github.event.workflow_run.conclusion == 'success' &&
       (github.event.workflow_run.event == 'push' || github.event.workflow_run.event == 'workflow_dispatch')
     runs-on: ubuntu-latest
-    # Branch and tag pushes of the same commit both trigger a build; serialize their releases.
     concurrency:
       group: release-${{ github.event.workflow_run.head_sha }}
       cancel-in-progress: false
@@ -30,10 +29,14 @@ jobs:
         id: tag
         env:
           SHA: ${{ github.event.workflow_run.head_sha }}
+          REF_NAME: ${{ github.event.workflow_run.head_branch }}
         run: |
           set -euo pipefail
           git fetch --tags --force --quiet origin
-          tag="$(git tag --points-at "$SHA" --sort=-v:refname | head -n 1)"
+          tag=""
+          if [ -n "$REF_NAME" ] && tag_sha="$(git rev-parse -q --verify "refs/tags/$REF_NAME^{commit}")" && [ "$tag_sha" = "$SHA" ]; then
+            tag="$REF_NAME"
+          fi
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           echo "Release tag: ${tag:-<none>}"
 
